@@ -11,3 +11,5 @@ Debug/
 *.exp
 *.ilk
 VS2013Kodi_AddonProject/
+src/asplib/extern documents
+extern documents/
