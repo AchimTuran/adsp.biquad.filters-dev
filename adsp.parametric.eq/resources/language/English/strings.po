@@ -1,8 +1,8 @@
-# XBMC Media Center language file
-# Addon Name: Tvheadend HTSP Client
-# Addon id: pvr.hts
-# Addon version: 1.6.11
-# Addon Provider: Lars Op den Kamp, Team XBMC
+# Kodi language file
+# Addon Name: AudioDSP parametric EQ
+# Addon id: adsp.parametric.eq
+# Addon version: 0.0.1
+# Addon Provider: Achim Turan, Team Kodi
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -19,86 +19,22 @@ msgstr ""
 
 #settings labels
 
+# template configuration: src/template/configuration/templateConfiguration.cpp
 msgctxt "#30000"
-msgid "Input Resample Mode 1"
+msgid "Parametric EQ"
 msgstr ""
 
+# template configuration: src/template/configuration/templateConfiguration.cpp
 msgctxt "#30001"
-msgid "Setup Input Resample Mode 1"
+msgid "Setup Parametric EQ"
 msgstr ""
 
+# template configuration: src/template/configuration/templateConfiguration.cpp
 msgctxt "#30002"
-msgid "Here you can place your description for Input Resample Mode 1 (see help for more details)"
+msgid "ToDo: description for parametric EQ"
 msgstr ""
 
+# template configuration: src/template/configuration/templateConfiguration.cpp
 msgctxt "#30003"
-msgid "Here you can place your help for Input Resample Mode 1. All strings are placed in resources/language/<Language>/strings.po"
-msgstr ""
-
-msgctxt "#30004"
-msgid "Preprocess Mode 1"
-msgstr ""
-
-msgctxt "#30005"
-msgid "Setup Preprocess Mode 1"
-msgstr ""
-
-msgctxt "#30006"
-msgid "Here you can place your description for Preprocess Mode 1 (see help for more details)"
-msgstr ""
-
-msgctxt "#30007"
-msgid "Here you can place your help for Preprocess Mode 1. All strings are placed in resources/language/<Language>/strings.po"
-msgstr ""
-
-msgctxt "#30008"
-msgid "Master Mode 1"
-msgstr ""
-
-msgctxt "#30009"
-msgid "Setup Master Mode 1"
-msgstr ""
-
-msgctxt "#30010"
-msgid "Here you can place your description for Master Mode 1 (see help for more details)"
-msgstr ""
-
-msgctxt "#30011"
-msgid "Here you can place your help for Master Mode 1. All strings are placed in resources/language/<Language>/strings.po"
-msgstr ""
-
-msgctxt "#30012"
-msgid "Postprocess Mode 1"
-msgstr ""
-
-msgctxt "#30013"
-msgid "Setup Postprocess Mode 1"
-msgstr ""
-
-msgctxt "#30014"
-msgid "Here you can place your description for Postprocess Mode 1 (see help for more details)"
-msgstr ""
-
-msgctxt "#30015"
-msgid "Here you can place your help for Postprocess Mode 1. All strings are placed in resources/language/<Language>/strings.po"
-msgstr ""
-
-msgctxt "#30016"
-msgid "Output Resample Mode 1"
-msgstr ""
-
-msgctxt "#30017"
-msgid "Setup Output Resample Mode 1"
-msgstr ""
-
-msgctxt "#30018"
-"Here you can place your description for Output Resample Mode 1 (see help for more details)"
-msgstr ""
-
-msgctxt "#30019"
-msgid "Here you can place your help for Output Resample Mode 1. All strings are placed in resources/language/<Language>/strings.po"
-msgstr ""
-
-msgctxt "#30251"
-msgid "Preprocess"
+msgid "ToDo: Place a help for Parametric EQ. All strings are placed in resources/language/<Language>/strings.po"
 msgstr ""
