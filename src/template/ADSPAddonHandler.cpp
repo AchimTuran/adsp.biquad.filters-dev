@@ -204,7 +204,7 @@ void CADSPAddonHandler::Destroy()
 }
 
 
-AE_DSP_ERROR CADSPAddonHandler::StreamCreate(const AE_DSP_SETTINGS *addonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties)
+AE_DSP_ERROR CADSPAddonHandler::StreamCreate(const AE_DSP_SETTINGS *addonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, ADDON_HANDLE handle)
 {
 	const unsigned int iStreamID = addonSettings->iStreamID;
 	if(iStreamID >= AE_DSP_STREAM_MAX_STREAMS)
@@ -222,6 +222,8 @@ AE_DSP_ERROR CADSPAddonHandler::StreamCreate(const AE_DSP_SETTINGS *addonSetting
 	m_ADSPProcessor[iStreamID] = new CADSPProcessorHandle(addonSettings, pProperties);
 	if( m_ADSPProcessor[iStreamID] )
 	{
+		handle->dataIdentifier = iStreamID;
+		handle->callerAddress = m_ADSPProcessor[iStreamID];
 		return AE_DSP_ERROR_NO_ERROR;
 	}
 	else
@@ -265,7 +267,7 @@ CADSPProcessorHandle *CADSPAddonHandler::GetStream(AE_DSP_STREAM_ID Id)
 	return (m_ADSPProcessor[Id]);
 }
 
-AE_DSP_ERROR CADSPAddonHandler::StreamInitialize(const AE_DSP_SETTINGS *Settings)
+AE_DSP_ERROR CADSPAddonHandler::StreamInitialize(const ADDON_HANDLE handle, const AE_DSP_SETTINGS *Settings)
 {
 	return AE_DSP_ERROR_NO_ERROR;
 }

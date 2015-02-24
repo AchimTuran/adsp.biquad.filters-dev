@@ -46,9 +46,9 @@ public:
 	/*!
 	 * Control function for start and stop of dsp processing.
 	 */
-	AE_DSP_ERROR StreamCreate(const AE_DSP_SETTINGS *Settings, const AE_DSP_STREAM_PROPERTIES *pProperties);
+	AE_DSP_ERROR StreamCreate(const AE_DSP_SETTINGS *Settings, const AE_DSP_STREAM_PROPERTIES *pProperties, const ADDON_HANDLE handle);
 	AE_DSP_ERROR StreamDestroy(unsigned int Id);
-	AE_DSP_ERROR StreamInitialize(const AE_DSP_SETTINGS *Settings);
+	AE_DSP_ERROR StreamInitialize(const ADDON_HANDLE handle, const AE_DSP_SETTINGS *Settings);
 
 	/*!
 	 * initialize or destroy methods for the AddonHandler

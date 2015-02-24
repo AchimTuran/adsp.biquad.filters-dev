@@ -272,17 +272,17 @@ AE_DSP_ERROR CallMenuHook(const AE_DSP_MENUHOOK& Menuhook, const AE_DSP_MENUHOOK
 /*!
  * Control function for start and stop of dsp processing.
  */
-AE_DSP_ERROR StreamCreate(const AE_DSP_SETTINGS *AddonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties)
+AE_DSP_ERROR StreamCreate(const AE_DSP_SETTINGS *AddonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, ADDON_HANDLE handle)
 {
-	return g_AddonHandler.StreamCreate( AddonSettings, pProperties );
+	return g_AddonHandler.StreamCreate( AddonSettings, pProperties, handle );
 }
 
-AE_DSP_ERROR StreamDestroy(AE_DSP_STREAM_ID Id)
+AE_DSP_ERROR StreamDestroy(const ADDON_HANDLE handle)
 {
-	return g_AddonHandler.StreamDestroy(Id);
+	return g_AddonHandler.StreamDestroy(handle->dataIdentifier);
 }
 
-AE_DSP_ERROR StreamInitialize(const AE_DSP_SETTINGS *AddonSettings)
+AE_DSP_ERROR StreamInitialize(const ADDON_HANDLE handle, const AE_DSP_SETTINGS *AddonSettings)
 {
 	if( !AddonSettings )
 	{
@@ -290,16 +290,16 @@ AE_DSP_ERROR StreamInitialize(const AE_DSP_SETTINGS *AddonSettings)
 		return AE_DSP_ERROR_UNKNOWN;
 	}
 
-	return g_AddonHandler.StreamInitialize(AddonSettings);
+	return g_AddonHandler.StreamInitialize(handle, AddonSettings);
 }
 
 
 /*!
  * Pre processing related functions
  */
-unsigned int PreProcessNeededSamplesize(AE_DSP_STREAM_ID Id, unsigned int Mode_id)
+unsigned int PreProcessNeededSamplesize(const ADDON_HANDLE handle, unsigned int Mode_id)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->PreProcessNeededSamplesize(Mode_id);
@@ -311,9 +311,9 @@ unsigned int PreProcessNeededSamplesize(AE_DSP_STREAM_ID Id, unsigned int Mode_i
 	}
 }
 
-float PreProcessGetDelay(AE_DSP_STREAM_ID Id, unsigned int Mode_id)
+float PreProcessGetDelay(const ADDON_HANDLE handle, unsigned int Mode_id)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->PreProcessGetDelay(Mode_id);
@@ -329,9 +329,9 @@ float PreProcessGetDelay(AE_DSP_STREAM_ID Id, unsigned int Mode_id)
  * Resampling related functions before master processing.
  * only one dsp addon is allowed to do this
  */
-unsigned int InputResampleProcessNeededSamplesize(AE_DSP_STREAM_ID Id)
+unsigned int InputResampleProcessNeededSamplesize(const ADDON_HANDLE handle)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->InputResampleProcessNeededSamplesize();
@@ -343,9 +343,9 @@ unsigned int InputResampleProcessNeededSamplesize(AE_DSP_STREAM_ID Id)
 	}
 }
 
-int InputResampleSampleRate(AE_DSP_STREAM_ID Id)
+int InputResampleSampleRate(const ADDON_HANDLE handle)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->InputResampleSampleRate();
@@ -357,9 +357,9 @@ int InputResampleSampleRate(AE_DSP_STREAM_ID Id)
 	}
 }
   
-float InputResampleGetDelay(AE_DSP_STREAM_ID Id)
+float InputResampleGetDelay(const ADDON_HANDLE handle)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->InputResampleGetDelay();
@@ -375,9 +375,9 @@ float InputResampleGetDelay(AE_DSP_STREAM_ID Id)
  * Master processing functions
  * only one during playback selectable dsp addon is allowed to do this
  */
-AE_DSP_ERROR MasterProcessSetMode(AE_DSP_STREAM_ID Id, AE_DSP_STREAMTYPE Type, unsigned int Mode_id, int Unique_db_mode_id)
+AE_DSP_ERROR MasterProcessSetMode(const ADDON_HANDLE handle, AE_DSP_STREAMTYPE Type, unsigned int Mode_id, int Unique_db_mode_id)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return  p->MasterProcessSetMode(Type, Mode_id, Unique_db_mode_id);
@@ -389,9 +389,9 @@ AE_DSP_ERROR MasterProcessSetMode(AE_DSP_STREAM_ID Id, AE_DSP_STREAMTYPE Type, u
 	}
 }
 
-unsigned int MasterProcessNeededSamplesize(AE_DSP_STREAM_ID Id)
+unsigned int MasterProcessNeededSamplesize(const ADDON_HANDLE handle)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->MasterProcessNeededSamplesize();
@@ -403,9 +403,9 @@ unsigned int MasterProcessNeededSamplesize(AE_DSP_STREAM_ID Id)
 	}
 }
 
-float MasterProcessGetDelay(AE_DSP_STREAM_ID Id)
+float MasterProcessGetDelay(const ADDON_HANDLE handle)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->MasterProcessGetDelay();
@@ -417,9 +417,9 @@ float MasterProcessGetDelay(AE_DSP_STREAM_ID Id)
 	}
 }
 
-int MasterProcessGetOutChannels(AE_DSP_STREAM_ID Id, unsigned long &Out_channel_present_flags)
+int MasterProcessGetOutChannels(const ADDON_HANDLE handle, unsigned long &Out_channel_present_flags)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->MasterProcessGetOutChannels(Out_channel_present_flags);
@@ -431,9 +431,9 @@ int MasterProcessGetOutChannels(AE_DSP_STREAM_ID Id, unsigned long &Out_channel_
 	}
 }
 
-const char *MasterProcessGetStreamInfoString(AE_DSP_STREAM_ID Id)
+const char *MasterProcessGetStreamInfoString(const ADDON_HANDLE handle)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->MasterProcessGetStreamInfoString();
@@ -450,9 +450,9 @@ const char *MasterProcessGetStreamInfoString(AE_DSP_STREAM_ID Id)
  * Post processing related functions
  * all enabled addons allowed todo this
  */
-unsigned int PostProcessNeededSamplesize(AE_DSP_STREAM_ID Id, unsigned int Mode_id)
+unsigned int PostProcessNeededSamplesize(const ADDON_HANDLE handle, unsigned int Mode_id)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return  p->PostProcessNeededSamplesize(Mode_id);
@@ -464,9 +464,9 @@ unsigned int PostProcessNeededSamplesize(AE_DSP_STREAM_ID Id, unsigned int Mode_
 	}
 }
 
-float PostProcessGetDelay(AE_DSP_STREAM_ID Id, unsigned int Mode_id)
+float PostProcessGetDelay(const ADDON_HANDLE handle, unsigned int Mode_id)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->PostProcessGetDelay(Mode_id);
@@ -482,9 +482,9 @@ float PostProcessGetDelay(AE_DSP_STREAM_ID Id, unsigned int Mode_id)
  * Resampling related functions after final processing.
  * only one dsp addon is allowed to do this
  */
-unsigned int OutputResampleProcessNeededSamplesize(AE_DSP_STREAM_ID Id)
+unsigned int OutputResampleProcessNeededSamplesize(const ADDON_HANDLE handle)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->OutputResampleProcessNeededSamplesize();
@@ -496,9 +496,9 @@ unsigned int OutputResampleProcessNeededSamplesize(AE_DSP_STREAM_ID Id)
 	}
 }
 
-int OutputResampleSampleRate(AE_DSP_STREAM_ID Id)
+int OutputResampleSampleRate(const ADDON_HANDLE handle)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->OutputResampleSampleRate();
@@ -510,9 +510,9 @@ int OutputResampleSampleRate(AE_DSP_STREAM_ID Id)
 	}
 }
 
-float OutputResampleGetDelay(AE_DSP_STREAM_ID Id)
+float OutputResampleGetDelay(const ADDON_HANDLE handle)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->OutputResampleGetDelay();
@@ -527,10 +527,10 @@ float OutputResampleGetDelay(AE_DSP_STREAM_ID Id)
 /*!
  *	Addon Processing functions
  */
-bool InputProcess(AE_DSP_STREAM_ID Id, const float **Array_in, unsigned int Samples)
+bool InputProcess(const ADDON_HANDLE handle, const float **Array_in, unsigned int Samples)
 {
 #ifdef ADSP_ADDON_USE_INPUTPROCESS
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->InputProcess(Array_in, Samples);
@@ -545,10 +545,10 @@ bool InputProcess(AE_DSP_STREAM_ID Id, const float **Array_in, unsigned int Samp
 #endif
 }
 
-unsigned int InputResampleProcess(AE_DSP_STREAM_ID Id, float **Array_in, float **Array_out, unsigned int Samples)
+unsigned int InputResampleProcess(const ADDON_HANDLE handle, float **Array_in, float **Array_out, unsigned int Samples)
 {
 #ifdef ADSP_ADDON_USE_INPUTRESAMPLE
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->InputResampleProcess(Array_in, Array_out, Samples);
@@ -563,10 +563,10 @@ unsigned int InputResampleProcess(AE_DSP_STREAM_ID Id, float **Array_in, float *
 #endif
 }
 
-unsigned int PreProcess(AE_DSP_STREAM_ID Id, unsigned int Mode_id, float **Array_in, float **Array_out, unsigned int Samples)
+unsigned int PreProcess(const ADDON_HANDLE handle, unsigned int Mode_id, float **Array_in, float **Array_out, unsigned int Samples)
 {
 #ifdef ADSP_ADDON_USE_PREPROCESSING
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->PreProcess(Mode_id, Array_in, Array_out, Samples);
@@ -581,10 +581,10 @@ unsigned int PreProcess(AE_DSP_STREAM_ID Id, unsigned int Mode_id, float **Array
 #endif
 }
 
-unsigned int MasterProcess(AE_DSP_STREAM_ID Id, float **Array_in, float **Array_out, unsigned int Samples)
+unsigned int MasterProcess(const ADDON_HANDLE handle, float **Array_in, float **Array_out, unsigned int Samples)
 {
 #ifdef ADSP_ADDON_USE_MASTERPROCESS
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->MasterProcess(Array_in, Array_out, Samples);
@@ -599,10 +599,10 @@ unsigned int MasterProcess(AE_DSP_STREAM_ID Id, float **Array_in, float **Array_
 #endif
 }
 
-unsigned int PostProcess(AE_DSP_STREAM_ID Id, unsigned int Mode_id, float **Array_in, float **Array_out, unsigned int Samples)
+unsigned int PostProcess(const ADDON_HANDLE handle, unsigned int Mode_id, float **Array_in, float **Array_out, unsigned int Samples)
 {
 #ifdef ADSP_ADDON_USE_POSTPROCESS
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->PostProcess(Mode_id, Array_in, Array_out, Samples);
@@ -617,10 +617,10 @@ unsigned int PostProcess(AE_DSP_STREAM_ID Id, unsigned int Mode_id, float **Arra
 #endif
 }
 
-unsigned int OutputResampleProcess(AE_DSP_STREAM_ID Id, float **array_in, float **array_out, unsigned int samples)
+unsigned int OutputResampleProcess(const ADDON_HANDLE handle, float **array_in, float **array_out, unsigned int samples)
 {
 #ifdef ADSP_ADDON_USE_OUTPUTRESAMPLE
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->OutputResampleProcess(array_in,  array_out, samples);
@@ -635,9 +635,9 @@ unsigned int OutputResampleProcess(AE_DSP_STREAM_ID Id, float **array_in, float 
 #endif
 }
 
-AE_DSP_ERROR StreamIsModeSupported(AE_DSP_STREAM_ID Id, AE_DSP_MODE_TYPE Type, unsigned int Mode_id, int Unique_db_mode_id)
+AE_DSP_ERROR StreamIsModeSupported(const ADDON_HANDLE handle, AE_DSP_MODE_TYPE Type, unsigned int Mode_id, int Unique_db_mode_id)
 {
-	CADSPProcessorHandle *p = g_AddonHandler.GetStream(Id);
+	CADSPProcessorHandle *p = g_AddonHandler.GetStream(handle->dataIdentifier);
 	if(p)
 	{
 		return p->StreamIsModeSupported(Type, Mode_id, Unique_db_mode_id);
