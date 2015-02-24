@@ -19,6 +19,7 @@
  */
 
 #include <string>
+#include <kodi/util/util.h>
 
 #include "include/client.h"
 
@@ -200,7 +201,8 @@ bool CADSPAddonHandler::Init()
 
 void CADSPAddonHandler::Destroy()
 {
-	// ToDo: what should we process here?!?
+  for(int ii = 0; ii < AE_DSP_STREAM_MAX_STREAMS; ii++)
+    SAFE_DELETE(m_ADSPProcessor[ii]);
 }
 
 
@@ -264,7 +266,7 @@ CADSPProcessorHandle *CADSPAddonHandler::GetStream(AE_DSP_STREAM_ID Id)
 		return NULL;
 	}
 
-	return (m_ADSPProcessor[Id]);
+	return m_ADSPProcessor[Id];
 }
 
 AE_DSP_ERROR CADSPAddonHandler::StreamInitialize(const ADDON_HANDLE handle, const AE_DSP_SETTINGS *Settings)
