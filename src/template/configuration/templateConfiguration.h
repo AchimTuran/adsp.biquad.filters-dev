@@ -137,10 +137,10 @@
  */
 typedef enum
 {	
-	POST_MODE1_ID=0
+	POST_MODE_PARAMETRIC_EQ_ID=0
 }adspProcessingModeIDs;
 
 typedef enum 
 {
-	ID_MENU_POST_PROCESS = 0
+	ID_MENU_POST_PROCESS_PARAMETRIC_EQ = 0
 }adspMENUIDs;
