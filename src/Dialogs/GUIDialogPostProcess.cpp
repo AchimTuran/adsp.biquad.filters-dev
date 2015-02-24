@@ -2,7 +2,7 @@
 
 
 CGUIDialogPostProcess::CGUIDialogPostProcess() :
-	CGUIDialogBase(	"DialogMasterProcess.xml", false, true )
+	CGUIDialogBase(	"DialogParametricEQ.xml", false, true )
 {
 }
 
