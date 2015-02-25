@@ -27,6 +27,14 @@
  */
 #include <string>
 #include "template/include/IADSPProcessor.h"
+#include <asplib/BiQuads/apslib_BiQuadFactory.h>
+
+typedef struct
+{
+  unsigned long         ChannelFlag;
+  unsigned int          ChannelID;
+  ASPLIB_BIQUAD_HANDLE *BiQuadHandle;
+}ADSP_CHANNEL_HANDLE;
 
 //!	In this class you can define your processing modes.
 /*! 
@@ -122,4 +130,7 @@ public:
 	 * @remarks Optional. Must be used and set if a channel up- or downmix is processed from the active master mode
 	 */
 	virtual int MasterProcessGetOutChannels(unsigned long &Out_channel_present_flags);
-};
+};private:
+  ADSP_CHANNEL_HANDLE    *m_ChannelHandle;
+  int                     m_MaxProcessingChannels;
+  uint                    m_MaxFreqBands;

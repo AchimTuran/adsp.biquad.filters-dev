@@ -27,16 +27,63 @@
 #include <string.h>
 
 #include "DSPProcessor.h"
-#include "channelUpmixer.h"
+#include "template/ADSPHelpers.h"
+using namespace asplib;
 
 // set addon properties here
 CDSPProcessor::CDSPProcessor()
 {
+  m_MaxFreqBands = 10;
+  m_MaxProcessingChannels = m_StreamSettings.iOutChannels;
+  m_ChannelHandle = new ADSP_CHANNEL_HANDLE[m_MaxProcessingChannels];
+  if(!m_ChannelHandle)
+  {
+    // ToDo: throw error message!
+  }
+
+  int lastChannelID = 0;
+  for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
+  {
+    // ToDo: add functions for opt modules and channel bypass!
+    m_ChannelHandle[ii].BiQuadHandle = CBiQuadFactory::get_BiQuads(m_MaxFreqBands, m_StreamSettings.iProcessSamplerate, ASPLIB_OPT_NATIVE);
+    if(!m_ChannelHandle[ii].BiQuadHandle)
+    {
+      // ToDo: throw some error message!
+    }
+
+    // set all gain values to 0dB
+    CBiQuadFactory::set_constQPeakingParams(m_ChannelHandle[ii].BiQuadHandle, 0.0f);
+
+    // map next channel to BiQuad Filter
+    unsigned long tempChannelFlag = 1<<lastChannelID;
+    m_ChannelHandle[ii].ChannelID = CADSPHelpers::GetNextChID(m_StreamSettings.iOutChannels,
+                                                              CADSPHelpers::Translate_ChFlag_TO_ChID((AE_DSP_CHANNEL_PRESENT)tempChannelFlag));
+    m_ChannelHandle[ii].ChannelFlag = CADSPHelpers::Translate_ChID_TO_ChFlag((AE_DSP_CHANNEL)m_ChannelHandle[ii].ChannelID);
+    if(m_ChannelHandle[ii].ChannelID == AE_DSP_CH_INVALID)
+    {
+      // ToDo: throw some error message!
+      // no next channel found!
+    }
+    lastChannelID = m_ChannelHandle[ii].ChannelID;
+  }
 }
 
 // delete your buffers here
 CDSPProcessor::~CDSPProcessor()
 {
+  if(m_ChannelHandle)
+  {
+    for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
+    {
+      ASPLIB_ERR err = CBiQuadFactory::destroy_BiQuads(&m_ChannelHandle->BiQuadHandle);
+      if(err != ASPLIB_ERR_NO_ERROR)
+      {
+        // ToDo: show some error message!
+      }
+    }
+    delete[] m_ChannelHandle;
+    m_ChannelHandle = NULL;
+  } 
 }
 
 bool CDSPProcessor::InputProcess(const float **Array_in, unsigned int Samples)
