@@ -34,6 +34,10 @@ using namespace asplib;
 CDSPProcessor::CDSPProcessor()
 {
   m_MaxFreqBands = 10;
+  m_MaxProcessingChannels = 0;
+  m_ChannelHandle = NULL;
+}
+
 // delete your buffers here
 CDSPProcessor::~CDSPProcessor()
 {
@@ -51,6 +55,9 @@ CDSPProcessor::~CDSPProcessor()
     m_ChannelHandle = NULL;
   } 
 }
+
+AE_DSP_ERROR CDSPProcessor::Create()
+{
   m_MaxProcessingChannels = m_StreamSettings.iOutChannels;
   m_ChannelHandle = new ADSP_CHANNEL_HANDLE[m_MaxProcessingChannels];
   if(!m_ChannelHandle)
@@ -81,26 +88,10 @@ CDSPProcessor::~CDSPProcessor()
       // ToDo: throw some error message!
       // no next channel found!
     }
-    lastChannelID = m_ChannelHandle[ii].ChannelID;
+    lastChannelID = m_ChannelHandle[ii].ChannelID +1;
   }
-}
 
-// delete your buffers here
-CDSPProcessor::~CDSPProcessor()
-{
-  if(m_ChannelHandle)
-  {
-    for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
-    {
-      ASPLIB_ERR err = CBiQuadFactory::destroy_BiQuads(&m_ChannelHandle->BiQuadHandle);
-      if(err != ASPLIB_ERR_NO_ERROR)
-      {
-        // ToDo: show some error message!
-      }
-    }
-    delete[] m_ChannelHandle;
-    m_ChannelHandle = NULL;
-  } 
+  return AE_DSP_ERROR_NO_ERROR;
 }
 
 unsigned int CDSPProcessor::PostProcess(unsigned int Mode_id, float **Array_in, float **Array_out, unsigned int Samples)
