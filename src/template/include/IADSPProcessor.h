@@ -268,6 +268,14 @@ public:
 	 */
 	virtual AE_DSP_ERROR StreamIsModeSupported(AE_DSP_MODE_TYPE Type, unsigned int Mode_id, int Unique_db_mode_id);
 
+  //! ToDo: description.
+  /*!
+   * Returns ToDo!
+   * @return ToDo!
+   * @remarks ToDo!
+   */
+  virtual AE_DSP_ERROR Create() = 0;
+
 protected:
 	//! Used stream settings for details see AE_DSP_SETTINGS.
 	AE_DSP_SETTINGS m_StreamSettings;

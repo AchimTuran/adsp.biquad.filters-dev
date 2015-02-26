@@ -208,31 +208,34 @@ void CADSPAddonHandler::Destroy()
 
 AE_DSP_ERROR CADSPAddonHandler::StreamCreate(const AE_DSP_SETTINGS *addonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, ADDON_HANDLE handle)
 {
-	const unsigned int iStreamID = addonSettings->iStreamID;
-	if(iStreamID >= AE_DSP_STREAM_MAX_STREAMS)
-	{
-		XBMC->Log(LOG_ERROR, "StreamID was equal or greater than AE_DSP_STREAM_MAX_STREAMS!");
-		return AE_DSP_ERROR_UNKNOWN;
-	}
+  const unsigned int iStreamID = addonSettings->iStreamID;
+  if(iStreamID >= AE_DSP_STREAM_MAX_STREAMS)
+  {
+    XBMC->Log(LOG_ERROR, "StreamID was equal or greater than AE_DSP_STREAM_MAX_STREAMS!");
+    return AE_DSP_ERROR_UNKNOWN;
+  }
 
-	if(m_ADSPProcessor[iStreamID])
-	{
-		delete m_ADSPProcessor[iStreamID];
-		m_ADSPProcessor[iStreamID] = NULL;
-	}
+  if(m_ADSPProcessor[iStreamID])
+  {
+    delete m_ADSPProcessor[iStreamID];
+    m_ADSPProcessor[iStreamID] = NULL;
+  }
 
-	m_ADSPProcessor[iStreamID] = new CADSPProcessorHandle(addonSettings, pProperties);
-	if( m_ADSPProcessor[iStreamID] )
-	{
-		handle->dataIdentifier = iStreamID;
-		handle->callerAddress = m_ADSPProcessor[iStreamID];
-		return AE_DSP_ERROR_NO_ERROR;
-	}
-	else
-	{
-		XBMC->Log(LOG_ERROR, "Couldn't create new ADSP-Stream! Not enough free memory?");
-		return AE_DSP_ERROR_FAILED;
-	}
+  m_ADSPProcessor[iStreamID] = new CADSPProcessorHandle(addonSettings, pProperties);
+  if(m_ADSPProcessor[iStreamID])
+  {
+    handle->dataIdentifier  = iStreamID;
+    handle->dataAddress     = NULL;
+    handle->callerAddress   = m_ADSPProcessor[iStreamID];
+
+    m_ADSPProcessor[iStreamID]->Create();
+    return AE_DSP_ERROR_NO_ERROR;
+  }
+  else
+  {
+    XBMC->Log(LOG_ERROR, "Couldn't create new ADSP-Stream! Not enough free memory?");
+    return AE_DSP_ERROR_FAILED;
+  }
 }
 
 
