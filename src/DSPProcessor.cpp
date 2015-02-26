@@ -34,6 +34,23 @@ using namespace asplib;
 CDSPProcessor::CDSPProcessor()
 {
   m_MaxFreqBands = 10;
+// delete your buffers here
+CDSPProcessor::~CDSPProcessor()
+{
+  if(m_ChannelHandle)
+  {
+    for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
+    {
+      ASPLIB_ERR err = CBiQuadFactory::destroy_BiQuads(&m_ChannelHandle->BiQuadHandle);
+      if(err != ASPLIB_ERR_NO_ERROR)
+      {
+        // ToDo: show some error message!
+      }
+    }
+    delete[] m_ChannelHandle;
+    m_ChannelHandle = NULL;
+  } 
+}
   m_MaxProcessingChannels = m_StreamSettings.iOutChannels;
   m_ChannelHandle = new ADSP_CHANNEL_HANDLE[m_MaxProcessingChannels];
   if(!m_ChannelHandle)
