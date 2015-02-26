@@ -80,7 +80,7 @@ AE_DSP_ERROR CDSPProcessor::Create()
 
     // map next channel to BiQuad Filter
     unsigned long tempChannelFlag = 1<<lastChannelID;
-    m_ChannelHandle[ii].ChannelID = CADSPHelpers::GetNextChID(m_StreamSettings.iOutChannels,
+    m_ChannelHandle[ii].ChannelID = CADSPHelpers::GetNextChID(m_StreamSettings.lOutChannelPresentFlags,
                                                               CADSPHelpers::Translate_ChFlag_TO_ChID((AE_DSP_CHANNEL_PRESENT)tempChannelFlag));
     m_ChannelHandle[ii].ChannelFlag = CADSPHelpers::Translate_ChID_TO_ChFlag((AE_DSP_CHANNEL)m_ChannelHandle[ii].ChannelID);
     if(m_ChannelHandle[ii].ChannelID == AE_DSP_CH_INVALID)
