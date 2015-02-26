@@ -62,30 +62,12 @@ public:
 	 * @return Amount of samples processed
 	 * @remarks Optional. Is set by AE_DSP_ADDON_CAPABILITIES and asked with GetAddonCapabilities
 	 */
-	virtual unsigned int PostProcess(unsigned int Mode_id, float **Array_in, float **Array_out, unsigned int Samples);
+  virtual unsigned int PostProcess(unsigned int Mode_id, float **Array_in, float **Array_out, unsigned int Samples);
 
-	/*!
-	 * @brief Re-sampling after master processing becomes performed with it if needed, only
-	 * one add-on can perform it.
-	 * @param Array_in Pointer to input data memory
-	 * @param Array_out Pointer to output data memory
-	 * @param Samples Amount of samples inside Array_in
-	 * @return Amount of samples processed
-	 * @remarks Optional. Is set by AE_DSP_ADDON_CAPABILITIES and asked with GetAddonCapabilities
-	 */
-	virtual unsigned int OutputResampleProcess(float **Array_in, float **Array_out, unsigned int Samples);
+  virtual AE_DSP_ERROR Create();
 
-	/*! 
-	 * @brief	Overloading the function and set output channels flags to the same value as input flags.
-	 *			So it will be possible to copy all channels with its own audio samples to XBMC's dsp system.
-	 * @retval	Out_channel_present_flags the exact channel present flags after performed up-/downmix 
-	 *			for availible flags see AE_DSP_CHANNEL_PRESENT in xbmc_adsp_types.h
-	 * @return	The amount channels, when no up- or downmix should be performed always return -1. 
-	 *			This method returns always -1 by default.
-	 * @remarks Optional. Must be used and set if a channel up- or downmix is processed from the active master mode
-	 */
-	virtual int MasterProcessGetOutChannels(unsigned long &Out_channel_present_flags);
-};private:
+private:
   ADSP_CHANNEL_HANDLE    *m_ChannelHandle;
   int                     m_MaxProcessingChannels;
   uint                    m_MaxFreqBands;
+};
