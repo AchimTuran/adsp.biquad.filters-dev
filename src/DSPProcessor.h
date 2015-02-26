@@ -43,58 +43,13 @@ typedef struct
 class CDSPProcessor : public IADSPProcessor
 {
 public:
-	//! Here for example you can create global buffers of your Addon
-	CDSPProcessor();
+  //! Here for example you can create global buffers of your Addon
+  CDSPProcessor();
 
-	//! Here for example you can delete global buffers from your Addon
-	~CDSPProcessor();
+  //! Here for example you can delete global buffers from your Addon
+  ~CDSPProcessor();
 
-	//!	Can be used to have unchanged stream.
-	/*!
-	 * @param Array_in Pointer to data memory
-	 * @param Samples Amount of samples inside Array_in
-	 * @return true if work was OK
-	 * @remarks All ADSP add-ons allowed to-do this. This Mode is optional and can be enabled if you define ADSP_ADDON_USE_INPUTPROCESS in templateConfiguration.h.
-	 */
-	virtual bool InputProcess(const float **Array_in, unsigned int Samples);
-
-	//! This mode is processed before a mastermode and can be used to have a high quality resample.
-	/*!
-	 * @param id The stream id
-	 * @param Array_in Pointer to input data memory
-	 * @param Array_out Pointer to output data memory
-	 * @param Samples Amount of samples inside Array_in
-	 * @return Amount of samples processed
-	 * @remarks Only one ADSP add-on is allowed to-do this! This Mode is optional and can be enabled if you define ADSP_ADDON_USE_INPUTRESAMPLE in templateConfiguration.h.
-	 */
-	virtual unsigned int InputResampleProcess(float **Array_in, float **Array_out, unsigned int Samples);
-
-	//! ADSP preprocessing.
-	/*!
-	 * @param Mode_id The mode inside add-on which must be performed on call. 
-	 * Id is set from add-on and can be modified templateConfiguration.cpp by editing adspPreModeNum array.
-	 * Best practise is to use a global enum to have only a mode id once. For example see adspProcessingModeIDs in templateConfiguration.h
-	 * @param Array_in Pointer to input data memory
-	 * @param Array_out Pointer to output data memory
-	 * @param Samples Amount of samples inside Array_in
-	 * @return Amount of samples processed
-	 * @remarks All ADSP add-ons allowed to-do this. This Mode is optional and can be enabled if you define ADSP_ADDON_USE_PREPROCESSING in templateConfiguration.h.
-	 */
-	virtual unsigned int PreProcess(unsigned int Mode_id, float **Array_in, float **Array_out, unsigned int Samples);
-
-	//! Master processing becomes performed with it Here a channel up-mix/down-mix 
-	//! for stereo surround sound can be performed. Only one master mode can be selected
-	//! in listening mode.
-	/*!
-	 * @param Array_in Pointer to input data memory
-	 * @param Array_out Pointer to output data memory
-	 * @param Samples Amount of samples inside Array_in
-	 * @return Amount of samples processed
-	 * @remarks Optional. Is set by AE_DSP_ADDON_CAPABILITIES and asked with GetAddonCapabilities
-	 */
-	virtual unsigned int MasterProcess(float **Array_in, float **Array_out, unsigned int Samples);
-
-	/*!
+  /*!
 	 * @brief DSP post processing
 	 * On the post processing can be things performed with additional channel upmix like 6.1 to 7.1
 	 * or frequency/volume corrections, speaker distance handling, equalizer... .
