@@ -142,5 +142,5 @@ typedef enum
 
 typedef enum 
 {
-	ID_MENU_POST_PROCESS_PARAMETRIC_EQ = 0
+	ID_MENU_POST_PROCESS_PARAMETRIC_EQ = 1
 }adspMENUIDs;
