@@ -14,3 +14,7 @@ VS2013Kodi_AddonProject/
 src/asplib/extern documents
 extern documents/
 adsp.parametric.eq/resources/skins/media/tmp/
+
+#ignore eclipse project files
+.cproject
+.project
