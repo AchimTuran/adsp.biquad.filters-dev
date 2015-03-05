@@ -21,6 +21,7 @@
 
 
 
+#include <iterator>
 #include "SettingsManager.h"
 using namespace std;
 
@@ -31,18 +32,31 @@ CSettingsManager::CSettingsManager(string XMLFilename)
     // ToDo: throw exception!
   }
 
-  m_Settings.erase();
+  m_Settings.clear();
 }
 
 CSettingsManager::~CSettingsManager()
 {
   save_CurrentSettings();
+
+  // delete settings map
+  for(SettingsMap::iterator iter = m_Settings.begin(); iter != m_Settings.end(); iter++)
+  {
+    string key = iter->first;
+    ISettingsElement *settingsElement = iter->second;
+
+    if(settingsElement)
+    {
+      delete settingsElement;
+    }
+
+    m_Settings.erase(iter);
+  }
 }
 
 void CSettingsManager::save_CurrentSettings()
 {
-    // ToDo: implement xml stuff
-    iterator<map<std::string, *ISettingsElement>> iter = m_Settings.begin();
+  // ToDo: implement xml stuff
 }
 
 void CSettingsManager::add_Setting(std::string Key, std::string Value)

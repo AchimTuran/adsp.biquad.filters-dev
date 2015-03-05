@@ -32,7 +32,7 @@
 #define DOUBLE_SETTINGS(X)        dynamic_cast<*CSettingsElementTemplate<double>>(X)
 #define BOOL_SETTINGS(X)          dynamic_cast<*CSettingsElementTemplate<bool>>(X)
 
-//typedef std::map<std::string, *ISettingsElement> SettingsMap;
+typedef std::map<std::string, ISettingsElement*> SettingsMap;
 
 class CSettingsManager
 {
@@ -53,7 +53,7 @@ class CSettingsManager
 
   protected:
     //SettingsMap m_Settings;
-    std::map<std::string, *ISettingsElement> m_Settings;
+    SettingsMap m_Settings;
 
   private:
     void save_CurrentSettings();
