@@ -30,10 +30,10 @@ using namespace ADDON;
 
 #include "ADDONOptional.h"
 
+#include "Dialogs/GUIDialogPreProcess.h"
+#include "Dialogs/GUIDialogMasterProcess.h"
 #include "Dialogs/GUIDialogPostProcess.h"
-
-// include asplib headers
-#include <asplib/utils/computeDeviceInfo/cpuInfo.h>
+#include "Dialogs/GUIDialogOutputResample.h"
 
 CADDONOptional::CADDONOptional()
 {
@@ -72,55 +72,96 @@ void CADDONOptional::ReadSettings(void)
 
 AE_DSP_ERROR CADDONOptional::CallMenuHook(const AE_DSP_MENUHOOK& Menuhook, const AE_DSP_MENUHOOK_DATA &Item)
 {
-  switch(Menuhook.iHookId)
-  {
-    case ID_MENU_POST_PROCESS_PARAMETRIC_EQ:
-    {
-      CGUIDialogPostProcess menu;
-      menu.DoModal();
-    }
-    break;
+	switch(Menuhook.iHookId)
+	{
+	case ID_MENU_PRE_PROCESS:
+		{
+			CGUIDialogPreProcess menu;
+			menu.DoModal();
+		}
+	break;
+	
+	case ID_MENU_MASTER_PROCESS:
+		{
+			CGUIDialogMasterProcess menu;
+			menu.DoModal();
+		}
+	break;
 
-    default:
-      XBMC->Log(LOG_ERROR, "called unknown menu hook!" );
-      return AE_DSP_ERROR_FAILED;
-    break;
-  };
-  //if (menuhook.iHookId == ID_MENU_PRE_PROCESS)
-  //{
-  //	CGUIDialogSpeakerGain settings(item.data.iStreamId);
-  //	settings.DoModal();
-  //}
-  //else if (menuhook.iHookId == ID_MENU_SPEAKER_DISTANCE_SETUP)
-  //{
-  //	CGUIDialogSpeakerDistance settings(item.data.iStreamId);
-  //	settings.DoModal();
-  //}
-  //else if (menuhook.iHookId == ID_MASTER_PROCESS_FREE_SURROUND)
-  //{
-  //	CGUIDialogFreeSurround settings(item.data.iStreamId);
-  //	settings.DoModal();
-  //}
-  //else if (menuhook.iHookId == ID_MENU_EXTENDED_SETTINGS)
-  //{
-  //	CGUIDialogSpeakerDistance settings(0);
-  //	settings.DoModal();
-  //}
-  return AE_DSP_ERROR_NO_ERROR;
+	case ID_MENU_POST_PROCESS:
+		{
+			CGUIDialogPostProcess menu;
+			menu.DoModal();
+		}
+	break;
+
+	case ID_MENU_OUTPUT_RESAMPLE_PROCESS:
+		{
+			CGUIDialogOutputResample menu;
+			menu.DoModal();
+		}
+	break;
+
+	default:
+		XBMC->Log(LOG_ERROR, "called unknown menu hook!" );
+		return AE_DSP_ERROR_FAILED;
+	break;
+	};
+	//if (menuhook.iHookId == ID_MENU_PRE_PROCESS)
+	//{
+	//	CGUIDialogSpeakerGain settings(item.data.iStreamId);
+	//	settings.DoModal();
+	//}
+	//else if (menuhook.iHookId == ID_MENU_SPEAKER_DISTANCE_SETUP)
+	//{
+	//	CGUIDialogSpeakerDistance settings(item.data.iStreamId);
+	//	settings.DoModal();
+	//}
+	//else if (menuhook.iHookId == ID_MASTER_PROCESS_FREE_SURROUND)
+	//{
+	//	CGUIDialogFreeSurround settings(item.data.iStreamId);
+	//	settings.DoModal();
+	//}
+	//else if (menuhook.iHookId == ID_MENU_EXTENDED_SETTINGS)
+	//{
+	//	CGUIDialogSpeakerDistance settings(0);
+	//	settings.DoModal();
+	//}
+	return AE_DSP_ERROR_NO_ERROR;
 }
 
 bool CADDONOptional::OptionalInit()
 {
-  // now we register out menu hooks
-  AE_DSP_MENUHOOK hook;
+	// now we register out menu hooks
+	AE_DSP_MENUHOOK hook;
 
-  // register menu hook for the post process
-  hook.iHookId            = ID_MENU_POST_PROCESS_PARAMETRIC_EQ;
-  hook.category           = AE_DSP_MENUHOOK_POST_PROCESS;
-  hook.iLocalizedStringId = 30000;
-  hook.iRelevantModeId    = POST_MODE_PARAMETRIC_EQ_ID;
-  hook.bNeedPlayback      = false;
-  ADSP->AddMenuHook(&hook);
+	// register menu hook for the pre process
+	hook.iHookId            = ID_MENU_PRE_PROCESS;
+	hook.category           = AE_DSP_MENUHOOK_PRE_PROCESS;
+    hook.iLocalizedStringId = 30021;
+    hook.iRelevantModeId    = PRE_MODE1_ID;
+    ADSP->AddMenuHook(&hook);
 
-  return true;
+	// register menu hook for the master process
+	hook.iHookId            = ID_MENU_MASTER_PROCESS;
+	hook.category           = AE_DSP_MENUHOOK_MASTER_PROCESS;
+    hook.iLocalizedStringId = 30022;
+    hook.iRelevantModeId    = MA_MODE1_ID;
+    ADSP->AddMenuHook(&hook);
+
+	// register menu hook for the post process
+	hook.iHookId            = ID_MENU_POST_PROCESS;
+	hook.category           = AE_DSP_MENUHOOK_POST_PROCESS;
+    hook.iLocalizedStringId = 30023;
+    hook.iRelevantModeId    = POST_MODE1_ID;
+    ADSP->AddMenuHook(&hook);
+
+	// register menu hook for the output resample process
+	hook.iHookId            = ID_MENU_PRE_PROCESS;
+	hook.category           = AE_DSP_MENUHOOK_RESAMPLE;
+    hook.iLocalizedStringId = 30024;
+    hook.iRelevantModeId    = OUTPUT_RESAMPLE_MODE_ID;
+    ADSP->AddMenuHook(&hook);
+
+	return true;
 }
