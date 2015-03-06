@@ -20,6 +20,8 @@
 
 
 
+#include "../AddonExceptions/TAddonException.h"
+
 class ISettingsElement
 {
 public:
@@ -39,12 +41,12 @@ public:
   {
     if(Type <= MIN_SETTING || Type >= MAX_SETTING)
     {
-      // ToDo: throw exception!
+      throw ADDON_STRING_EXCEPTION_HANDLER("Requested unsupported settings type!");
     }
 
     if(Key.empty() || Key == "")
     {
-      // ToDo: throw exception!
+      throw ADDON_STRING_EXCEPTION_HANDLER("Invalid Key used!");
     }
 
     m_Type = Type;
