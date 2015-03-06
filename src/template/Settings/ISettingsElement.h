@@ -25,7 +25,7 @@
 class ISettingsElement
 {
 public:
-  typedef enum SettingsTypes
+  typedef enum
   {
       MIN_SETTING = -1,
       STRING_SETTING,
@@ -35,7 +35,7 @@ public:
       DOUBLE_SETTING,
       BOOL_SETTING,
       MAX_SETTING
-  };
+  }SettingsTypes;
 
   ISettingsElement(std::string Key, SettingsTypes Type)
   {
@@ -50,7 +50,7 @@ public:
     }
 
     m_Type = Type;
-    m_Key = Key;
+    m_Key  = Key;
   }
 
   virtual ~ISettingsElement() {}
