@@ -25,10 +25,10 @@
 #include "ISettingsElement.h"
 
 template<typename T>
-class CSettingsElementTemplate : public ISettingsElement
+class TSettingsElement : public ISettingsElement
 {
   public:
-    typedef enum SettingsTypes
+    typedef enum
     {
         MIN_SETTING = -1,
         STRING_SETTING,
@@ -37,18 +37,18 @@ class CSettingsElementTemplate : public ISettingsElement
         FLOAT_SETTING,
         BOOL_SETTING,
         MAX_SETTING
-    };
+    }SettingsTypes;
 
-    CSettingsElementTemplate(T &Value, std::string Key, SettingsTypes Type) :
+    TSettingsElement(T &Value, std::string Key, SettingsTypes Type) :
       ISettingsElement(Key, Type)
     {
       m_Value = Value;
     }
 
-    virtual ~CSettingsElementTemplate() {}
+    virtual ~TSettingsElement() {}
 
-    virtual T get_Setting()               { return m_Value; }
-    virtual void set_Setting(T &Setting)  { m_Value = Setting; }
+    virtual T get_Setting()             { return m_Value; }
+    virtual void set_Setting(T &Value)  { m_Value = Value; }
 
   protected:
     T m_Value;

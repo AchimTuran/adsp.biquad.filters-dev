@@ -20,17 +20,27 @@
  */
 
 
+
 #include <map>
 #include <string>
 
-#include "SettingElementTemplate.h"
+#include "TSettingsElement.h"
 
-#define STRING_SETTINGS(X)        dynamic_cast<*CSettingsElementTemplate<std::string>>(X)
-#define UNSIGNED_INT_SETTINGS(X)  dynamic_cast<*CSettingsElementTemplate<unsigned int>>(X)
-#define INT_SETTINGS(X)           dynamic_cast<*CSettingsElementTemplate<int>>(X)
-#define FLOAT_SETTINGS(X)         dynamic_cast<*CSettingsElementTemplate<float>>(X)
-#define DOUBLE_SETTINGS(X)        dynamic_cast<*CSettingsElementTemplate<double>>(X)
-#define BOOL_SETTINGS(X)          dynamic_cast<*CSettingsElementTemplate<bool>>(X)
+// Settings typdefs
+typedef TSettingsElement<std::string>   CStringSetting;
+typedef TSettingsElement<unsigned int>  CUnsignedIntSetting;
+typedef TSettingsElement<int>           CIntSetting;
+typedef TSettingsElement<float>         CFloatSetting;
+typedef TSettingsElement<double>        CDoubleSetting;
+typedef TSettingsElement<bool>          CBoolSetting;
+
+// Settings macro helpers
+#define STRING_SETTINGS(X)        dynamic_cast<CStringSetting*>(X)
+#define UNSIGNED_INT_SETTINGS(X)  dynamic_cast<CUnsignedIntSetting*>(X)
+#define INT_SETTINGS(X)           dynamic_cast<CIntSetting*>(X)
+#define FLOAT_SETTINGS(X)         dynamic_cast<CFloatSetting*>(X)
+#define DOUBLE_SETTINGS(X)        dynamic_cast<CDoubleSetting*>(X)
+#define BOOL_SETTINGS(X)          dynamic_cast<CBoolSetting*>(X)
 
 typedef std::map<std::string, ISettingsElement*> SettingsMap;
 
@@ -54,8 +64,9 @@ class CSettingsManager
   protected:
     //SettingsMap m_Settings;
     SettingsMap m_Settings;
+    std::string m_XMLFilename;
 
   private:
     void save_CurrentSettings();
-
+    void parse_SettingsXML();
 };

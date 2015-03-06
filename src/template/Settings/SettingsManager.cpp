@@ -1,4 +1,3 @@
-#pragma once
 /*
  *      Copyright (C) 2005-2014 Team XBMC
  *      http://xbmc.org
@@ -23,23 +22,28 @@
 
 #include <iterator>
 #include "SettingsManager.h"
+
+#include "../AddonExceptions/TAddonException.h"
 using namespace std;
 
 CSettingsManager::CSettingsManager(string XMLFilename)
 {
   if(XMLFilename == "" || XMLFilename.empty())
   {
-    // ToDo: throw exception!
+    throw ADDON_STRING_EXCEPTION_HANDLER("Invalid XML filename!");
   }
+  m_XMLFilename = XMLFilename;
 
   m_Settings.clear();
+
+  parse_SettingsXML();
 }
 
 CSettingsManager::~CSettingsManager()
 {
   save_CurrentSettings();
 
-  // delete settings map
+  // delete settings map and its elements
   for(SettingsMap::iterator iter = m_Settings.begin(); iter != m_Settings.end(); iter++)
   {
     string key = iter->first;
@@ -48,6 +52,7 @@ CSettingsManager::~CSettingsManager()
     if(settingsElement)
     {
       delete settingsElement;
+      iter->second = NULL;
     }
 
     m_Settings.erase(iter);
@@ -57,46 +62,155 @@ CSettingsManager::~CSettingsManager()
 void CSettingsManager::save_CurrentSettings()
 {
   // ToDo: implement xml stuff
+  // isXMLFilePresent?
+  // Yes --> update XML data and store it in the corresponding XML file
+  // No  --> create XML file and store XML data
+}
+
+void CSettingsManager::parse_SettingsXML()
+{
+  // ToDo: implement xml stuff
+  // isXMLFilePresent?
+  // generate XML data
+  // Yes --> read XML data
+  // No  --> do nothing
 }
 
 void CSettingsManager::add_Setting(std::string Key, std::string Value)
 {
-  // ToDo: Implement this method
+  SettingsMap::iterator iter = m_Settings.find(Key);
+  if(iter != m_Settings.end())
+  { // replace current value with the new value
+    STRING_SETTINGS(iter->second)->set_Setting(Value);
+  }
+  else
+  { // generate a new Element
+    ISettingsElement *element = new CStringSetting(Value, Key, ISettingsElement::STRING_SETTING);
+    if(!element)
+    {
+      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
+    }
+
+    m_Settings[Key] = element;
+  }
 }
 
 void CSettingsManager::add_Setting(std::string Key, unsigned int Value)
 {
-  // ToDo: Implement this method
+  SettingsMap::iterator iter = m_Settings.find(Key);
+  if(iter != m_Settings.end())
+  { // replace current value with the new value
+    UNSIGNED_INT_SETTINGS(iter->second)->set_Setting(Value);
+  }
+  else
+  { // generate a new Element
+    ISettingsElement *element = new CUnsignedIntSetting(Value, Key, ISettingsElement::UNSIGNED_INT_SETTING);
+    if(!element)
+    {
+      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
+    }
+
+    m_Settings[Key] = element;
+  }
 }
 
 void CSettingsManager::add_Setting(std::string Key, int Value)
 {
-  // ToDo: Implement this method
+  SettingsMap::iterator iter = m_Settings.find(Key);
+  if(iter != m_Settings.end())
+  { // replace current value with the new value
+    INT_SETTINGS(iter->second)->set_Setting(Value);
+  }
+  else
+  { // generate a new Element
+    ISettingsElement *element = new CIntSetting(Value, Key, ISettingsElement::INT_SETTING);
+    if(!element)
+    {
+      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
+    }
+
+    m_Settings[Key] = element;
+  }
 }
 
 void CSettingsManager::add_Setting(std::string Key, float Value)
 {
-  // ToDo: Implement this method
+  SettingsMap::iterator iter = m_Settings.find(Key);
+  if(iter != m_Settings.end())
+  { // replace current value with the new value
+    FLOAT_SETTINGS(iter->second)->set_Setting(Value);
+  }
+  else
+  { // generate a new Element
+    ISettingsElement *element = new CFloatSetting(Value, Key, ISettingsElement::FLOAT_SETTING);
+    if(!element)
+    {
+      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
+    }
+
+    m_Settings[Key] = element;
+  }
 }
 
 void CSettingsManager::add_Setting(std::string Key, double Value)
 {
-  // ToDo: Implement this method
+  SettingsMap::iterator iter = m_Settings.find(Key);
+  if(iter != m_Settings.end())
+  { // replace current value with the new value
+    DOUBLE_SETTINGS(iter->second)->set_Setting(Value);
+  }
+  else
+  { // generate a new Element
+    ISettingsElement *element = new CDoubleSetting(Value, Key, ISettingsElement::DOUBLE_SETTING);
+    if(!element)
+    {
+      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
+    }
+
+    m_Settings[Key] = element;
+  }
 }
 
 void CSettingsManager::add_Setting(std::string Key, bool Value)
 {
-  // ToDo: Implement this method
+  SettingsMap::iterator iter = m_Settings.find(Key);
+  if(iter != m_Settings.end())
+  { // replace current value with the new value
+    BOOL_SETTINGS(iter->second)->set_Setting(Value);
+  }
+  else
+  { // generate a new Element
+    ISettingsElement *element = new CBoolSetting(Value, Key, ISettingsElement::BOOL_SETTING);
+    if(!element)
+    {
+      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
+    }
+
+    m_Settings[Key] = element;
+  }
 }
 
 void CSettingsManager::destroy_Setting(std::string Key)
 {
-  // ToDo: Implement this method
+  SettingsMap::iterator iter = m_Settings.find(Key);
+  if(iter != m_Settings.end())
+  {
+    delete iter->second;
+    iter->second = NULL;
+    m_Settings.erase(iter);
+  }
 }
 
 ISettingsElement *CSettingsManager::find_Setting(std::string Key)
 {
-  // ToDo: Implement this method
+  SettingsMap::iterator iter = m_Settings.find(Key);
 
-  return NULL;
+  if(iter != m_Settings.end())
+  {
+    return iter->second;
+  }
+  else
+  {
+    return NULL;
+  }
 }
