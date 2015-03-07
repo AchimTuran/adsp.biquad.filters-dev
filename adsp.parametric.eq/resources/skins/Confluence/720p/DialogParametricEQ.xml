@@ -30,7 +30,7 @@
             <width>720</width>
             <height>30</height>
             <font>font13_title</font>
-            <label>$ADDON[adsp.basic 30251]</label>
+            <label>$ADDON[adsp.parametric.eq 30100]</label>
             <align>center</align>
             <aligny>center</aligny>
             <textcolor>selected</textcolor>
@@ -53,79 +53,199 @@
             <ondown>10</ondown>
             <visible>system.getbool(input.enablemouse)</visible>
         </control>
+		<control type="slider" id="8000">
+			<description>My first slider control</description>
+			<posx>200</posx>
+			<posy>80</posy>
+			<width>400</width>
+			<height>30</height>
+			<visible>true</visible>
+			<texturefocus>-</texturefocus>
+			<texturenofocus>-</texturenofocus>
+			<texturesliderbar>osd_slider_bg_2.png</texturesliderbar>
+			<textureslidernib>osd_slider_nibNF.png</textureslidernib>
+			<textureslidernibfocus>osd_slider_nib.png</textureslidernibfocus>
+			<info></info>
+			<action></action>
+			<controloffsetx></controloffsetx>
+			<controloffsety></controloffsety>
+			<pulseonselect></pulseonselect>
+			<onup>2</onup>
+			<ondown>3</ondown>
+			<onleft>1</onleft>
+			<onright>1</onright>
+		</control>
+		<control type="label" id="8001">
+			<description>My First label</description>
+			<posx>40</posx>
+			<posy>80</posy>
+			<width>160</width>
+			<height>30</height>
+			<visible>true</visible>
+			<align>center</align>
+			<aligny>center</aligny>
+			<scroll>false</scroll>
+			<label>32Hz</label>
+			<info>32Hz Band Label</info>
+			<number></number>
+			<angle>0</angle>
+			<haspath>false</haspath>
+			<font>font14</font>
+			<textcolor>FFB2D4F5</textcolor>
+			<shadowcolor>ff000000</shadowcolor>
+			<wrapmultiline>false</wrapmultiline>
+			<scrollspeed>50</scrollspeed>
+			<scrollsuffix> - </scrollsuffix>
+		</control>
+		<control type="label" id="8002">
+			<description>My First label</description>
+			<posx>600</posx>
+			<posy>80</posy>
+			<width>160</width>
+			<height>30</height>
+			<visible>true</visible>
+			<align>center</align>
+			<aligny>center</aligny>
+			<scroll>false</scroll>
+			<label>Value</label>
+			<info>32Hz Band Value</info>
+			<number></number>
+			<angle>0</angle>
+			<haspath>false</haspath>
+			<font>font14</font>
+			<textcolor>FFB2D4F5</textcolor>
+			<shadowcolor>ff000000</shadowcolor>
+			<wrapmultiline>false</wrapmultiline>
+			<scrollspeed>50</scrollspeed>
+			<scrollsuffix> - </scrollsuffix>
+		</control>
         <control type="grouplist" id="9000">
-          <description>General Options list</description>
+          <description>Gain Slider Group List</description>
           <posx>40</posx>
-          <posy>55</posy>
+          <posy>150</posy>
           <width>720</width>
-          <height>475</height>
-          <onup>9001</onup>
-          <ondown>9001</ondown>
-          <control type="sliderex" id="41">
-            <description>Circular wrap</description>
+          <height>490</height>
+          <onup>8000</onup>
+          <ondown>10000</ondown>
+		  <control type="sliderex" id="9050">
+            <description>Preamp</description>
             <height>40</height>
             <texturenofocus border="5">button-nofocus.png</texturenofocus>
             <texturefocus border="5">button-focus2.png</texturefocus>
             <font>font13</font>
             <textcolor>grey2</textcolor>
             <focusedcolor>white</focusedcolor>
-            <label>$ADDON[adsp.basic 30258]</label>
+            <label>$ADDON[adsp.parametric.eq 30150]</label>
           </control>
-          <control type="sliderex" id="42">
-            <description>Shift</description>
+          <control type="sliderex" id="9051">
+            <description>Frequency Band 32Hz</description>
             <height>40</height>
             <texturenofocus border="5">button-nofocus.png</texturenofocus>
             <texturefocus border="5">button-focus2.png</texturefocus>
             <font>font13</font>
             <textcolor>grey2</textcolor>
             <focusedcolor>white</focusedcolor>
-            <label>$ADDON[adsp.basic 30260]</label>
+            <label>$ADDON[adsp.parametric.eq 30151]</label>
           </control>
-          <control type="sliderex" id="43">
-            <description>Depth</description>
+		  <control type="sliderex" id="9052">
+            <description>Frequency Band 64Hz</description>
             <height>40</height>
             <texturenofocus border="5">button-nofocus.png</texturenofocus>
             <texturefocus border="5">button-focus2.png</texturefocus>
             <font>font13</font>
             <textcolor>grey2</textcolor>
             <focusedcolor>white</focusedcolor>
-            <label>$ADDON[adsp.basic 30253]</label>
+            <label>$ADDON[adsp.parametric.eq 30152]</label>
           </control>
-          <control type="sliderex" id="44">
-            <description>Focus</description>
+		  <control type="sliderex" id="9053">
+            <description>Frequency Band 125Hz</description>
             <height>40</height>
             <texturenofocus border="5">button-nofocus.png</texturenofocus>
             <texturefocus border="5">button-focus2.png</texturefocus>
             <font>font13</font>
             <textcolor>grey2</textcolor>
             <focusedcolor>white</focusedcolor>
-            <label>$ADDON[adsp.basic 30254]</label>
+            <label>$ADDON[adsp.parametric.eq 30153]</label>
           </control>
-          <control type="sliderex" id="45">
-            <description>front seperation</description>
+		  <control type="sliderex" id="9054">
+            <description>Frequency Band 250Hz</description>
             <height>40</height>
             <texturenofocus border="5">button-nofocus.png</texturenofocus>
             <texturefocus border="5">button-focus2.png</texturefocus>
             <font>font13</font>
             <textcolor>grey2</textcolor>
             <focusedcolor>white</focusedcolor>
-            <label>$ADDON[adsp.basic 30256]</label>
+            <label>$ADDON[adsp.parametric.eq 30154]</label>
           </control>
-          <control type="sliderex" id="46">
-            <description>rear seperation</description>
+		  <control type="sliderex" id="9055">
+            <description>Frequency Band 500Hz</description>
             <height>40</height>
             <texturenofocus border="5">button-nofocus.png</texturenofocus>
             <texturefocus border="5">button-focus2.png</texturefocus>
             <font>font13</font>
             <textcolor>grey2</textcolor>
             <focusedcolor>white</focusedcolor>
-            <label>$ADDON[adsp.basic 30257]</label>
+            <label>$ADDON[adsp.parametric.eq 30155]</label>
+          </control>
+		  <control type="sliderex" id="9056">
+            <description>Frequency Band 1kHz</description>
+            <height>40</height>
+            <texturenofocus border="5">button-nofocus.png</texturenofocus>
+            <texturefocus border="5">button-focus2.png</texturefocus>
+            <font>font13</font>
+            <textcolor>grey2</textcolor>
+            <focusedcolor>white</focusedcolor>
+            <label>$ADDON[adsp.parametric.eq 30156]</label>
+          </control>
+		  <control type="sliderex" id="9057">
+            <description>Frequency Band 2kHz</description>
+            <height>40</height>
+            <texturenofocus border="5">button-nofocus.png</texturenofocus>
+            <texturefocus border="5">button-focus2.png</texturefocus>
+            <font>font13</font>
+            <textcolor>grey2</textcolor>
+            <focusedcolor>white</focusedcolor>
+            <label>$ADDON[adsp.parametric.eq 30157]</label>
+          </control>
+		  <control type="sliderex" id="9058">
+            <description>Frequency Band 4kHz</description>
+            <height>40</height>
+            <texturenofocus border="5">button-nofocus.png</texturenofocus>
+            <texturefocus border="5">button-focus2.png</texturefocus>
+            <font>font13</font>
+            <textcolor>grey2</textcolor>
+            <focusedcolor>white</focusedcolor>
+            <label>$ADDON[adsp.parametric.eq 30158]</label>
+          </control>
+		  <control type="sliderex" id="9059">
+            <description>Frequency Band 8kHz</description>
+            <height>40</height>
+            <texturenofocus border="5">button-nofocus.png</texturenofocus>
+            <texturefocus border="5">button-focus2.png</texturefocus>
+            <font>font13</font>
+            <textcolor>grey2</textcolor>
+            <focusedcolor>white</focusedcolor>
+            <label>$ADDON[adsp.parametric.eq 30159]</label>
+          </control>
+		  <control type="sliderex" id="9060">
+            <description>Frequency Band 16kHz</description>
+            <height>40</height>
+            <texturenofocus border="5">button-nofocus.png</texturenofocus>
+            <texturefocus border="5">button-focus2.png</texturefocus>
+            <font>font13</font>
+            <textcolor>grey2</textcolor>
+            <focusedcolor>white</focusedcolor>
+            <label>$ADDON[adsp.parametric.eq 30160]</label>
           </control>
         </control>
-        <control type="group" id="9001">
+        <control type="group" id="10000">
             <posx>95</posx>
             <posy>535</posy>
-            <control type="button" id="1">
+			<onup>9000</onup>
+			<ondown>10000</ondown>
+			<onleft>10000</onleft>
+			<onright>10000</onright>
+            <control type="button" id="10050">
                 <description>Ok Button</description>
                 <posx>0</posx>
                 <posy>0</posy>
@@ -138,11 +258,11 @@
                 <label>186</label>
                 <font>font12_title</font>
                 <onup>9000</onup>
-                <onleft>5</onleft>
-                <onright>2</onright>
-                <ondown>9000</ondown>
+                <onleft>10052</onleft>
+                <onright>10051</onright>
+                <ondown>10000</ondown>
             </control>
-            <control type="button" id="2">
+            <control type="button" id="10051">
                 <description>Cancel Button</description>
                 <posx>210</posx>
                 <posy>0</posy>
@@ -155,11 +275,11 @@
                 <label>222</label>
                 <font>font12_title</font>
                 <onup>9000</onup>
-                <onleft>1</onleft>
-                <onright>5</onright>
-                <ondown>9000</ondown>
+                <onleft>10050</onleft>
+                <onright>10052</onright>
+                <ondown>10000</ondown>
             </control>
-            <control type="button" id="5">
+            <control type="button" id="10052">
                 <description>Default Button</description>
                 <posx>420</posx>
                 <posy>0</posy>
@@ -172,9 +292,9 @@
                 <label>409</label>
                 <font>font12_title</font>
                 <onup>9000</onup>
-                <onleft>2</onleft>
-                <onright>1</onright>
-                <ondown>9000</ondown>
+                <onleft>10051</onleft>
+                <onright>10052</onright>
+                <ondown>10000</ondown>
             </control>
         </control>
     </controls>
