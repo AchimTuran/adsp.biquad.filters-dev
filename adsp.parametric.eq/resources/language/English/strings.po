@@ -38,3 +38,63 @@ msgstr ""
 msgctxt "#30003"
 msgid "ToDo: Place a help for Parametric EQ. All strings are placed in resources/language/<Language>/strings.po"
 msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30100"
+msgid "Parametric EQ - Settings"
+msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30150"
+msgid "Preamp"
+msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30151"
+msgid "32Hz"
+msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30152"
+msgid "64Hz"
+msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30153"
+msgid "125Hz"
+msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30154"
+msgid "250Hz"
+msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30155"
+msgid "500Hz"
+msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30156"
+msgid "1kHz"
+msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30157"
+msgid "2kHz"
+msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30158"
+msgid "4kHz"
+msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30159"
+msgid "8kHz"
+msgstr ""
+
+# Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
+msgctxt "#30160"
+msgid "16kHz"
+msgstr ""
