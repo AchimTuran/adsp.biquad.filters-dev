@@ -32,4 +32,8 @@ private:
 	virtual bool OnClick(int controlId);
 	virtual bool OnFocus(int controlId);
 	virtual bool OnAction(int actionId);
+  virtual void OnClose();
+
+  CAddonGUISliderControl *m_Slider32Hz;
+  float m_Gain32Hz;
 };

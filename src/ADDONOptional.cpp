@@ -114,8 +114,9 @@ bool CADDONOptional::OptionalInit()
 	// register menu hook for the post process parametric eq
   hook.iHookId              = ID_MENU_POST_PROCESS_PARAMETRIC_EQ;
   hook.category             = AE_DSP_MENUHOOK_POST_PROCESS;
-  hook.iLocalizedStringId   = 30023;
+  hook.iLocalizedStringId   = 30000;
   hook.iRelevantModeId      = POST_MODE_PARAMETRIC_EQ_ID;
+  hook.bNeedPlayback        = false;
   ADSP->AddMenuHook(&hook);
 
 	return true;
