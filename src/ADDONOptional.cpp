@@ -30,10 +30,7 @@ using namespace ADDON;
 
 #include "ADDONOptional.h"
 
-#include "Dialogs/GUIDialogPreProcess.h"
-#include "Dialogs/GUIDialogMasterProcess.h"
 #include "Dialogs/GUIDialogPostProcess.h"
-#include "Dialogs/GUIDialogOutputResample.h"
 
 CADDONOptional::CADDONOptional()
 {
@@ -74,38 +71,17 @@ AE_DSP_ERROR CADDONOptional::CallMenuHook(const AE_DSP_MENUHOOK& Menuhook, const
 {
 	switch(Menuhook.iHookId)
 	{
-	case ID_MENU_PRE_PROCESS:
-		{
-			CGUIDialogPreProcess menu;
-			menu.DoModal();
-		}
-	break;
-	
-	case ID_MENU_MASTER_PROCESS:
-		{
-			CGUIDialogMasterProcess menu;
-			menu.DoModal();
-		}
-	break;
-
-	case ID_MENU_POST_PROCESS:
+	  case ID_MENU_POST_PROCESS_PARAMETRIC_EQ:
 		{
 			CGUIDialogPostProcess menu;
 			menu.DoModal();
 		}
-	break;
+	  break;
 
-	case ID_MENU_OUTPUT_RESAMPLE_PROCESS:
-		{
-			CGUIDialogOutputResample menu;
-			menu.DoModal();
-		}
-	break;
-
-	default:
-		XBMC->Log(LOG_ERROR, "called unknown menu hook!" );
-		return AE_DSP_ERROR_FAILED;
-	break;
+	  default:
+		  XBMC->Log(LOG_ERROR, "called unknown menu hook!" );
+		  return AE_DSP_ERROR_FAILED;
+	  break;
 	};
 	//if (menuhook.iHookId == ID_MENU_PRE_PROCESS)
 	//{
@@ -135,33 +111,12 @@ bool CADDONOptional::OptionalInit()
 	// now we register out menu hooks
 	AE_DSP_MENUHOOK hook;
 
-	// register menu hook for the pre process
-	hook.iHookId            = ID_MENU_PRE_PROCESS;
-	hook.category           = AE_DSP_MENUHOOK_PRE_PROCESS;
-    hook.iLocalizedStringId = 30021;
-    hook.iRelevantModeId    = PRE_MODE1_ID;
-    ADSP->AddMenuHook(&hook);
-
-	// register menu hook for the master process
-	hook.iHookId            = ID_MENU_MASTER_PROCESS;
-	hook.category           = AE_DSP_MENUHOOK_MASTER_PROCESS;
-    hook.iLocalizedStringId = 30022;
-    hook.iRelevantModeId    = MA_MODE1_ID;
-    ADSP->AddMenuHook(&hook);
-
-	// register menu hook for the post process
-	hook.iHookId            = ID_MENU_POST_PROCESS;
-	hook.category           = AE_DSP_MENUHOOK_POST_PROCESS;
-    hook.iLocalizedStringId = 30023;
-    hook.iRelevantModeId    = POST_MODE1_ID;
-    ADSP->AddMenuHook(&hook);
-
-	// register menu hook for the output resample process
-	hook.iHookId            = ID_MENU_PRE_PROCESS;
-	hook.category           = AE_DSP_MENUHOOK_RESAMPLE;
-    hook.iLocalizedStringId = 30024;
-    hook.iRelevantModeId    = OUTPUT_RESAMPLE_MODE_ID;
-    ADSP->AddMenuHook(&hook);
+	// register menu hook for the post process parametric eq
+  hook.iHookId              = ID_MENU_POST_PROCESS_PARAMETRIC_EQ;
+  hook.category             = AE_DSP_MENUHOOK_POST_PROCESS;
+  hook.iLocalizedStringId   = 30023;
+  hook.iRelevantModeId      = POST_MODE_PARAMETRIC_EQ_ID;
+  ADSP->AddMenuHook(&hook);
 
 	return true;
 }
