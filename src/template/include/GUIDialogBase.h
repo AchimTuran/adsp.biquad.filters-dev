@@ -38,11 +38,13 @@ private:
 	static bool OnInitCB(GUIHANDLE cbhdl);
 	static bool OnActionCB(GUIHANDLE cbhdl, int actionId);
 
+protected:
 	CAddonGUIWindow          *m_window;	// window handle
 
 private:	// private virtual methods
-	virtual bool OnInit()				= 0;
+	virtual bool OnInit()               = 0;
 	virtual bool OnClick(int controlId) = 0;
 	virtual bool OnFocus(int controlId) = 0;
 	virtual bool OnAction(int actionId) = 0;
+  virtual void OnClose()              = 0;
 };

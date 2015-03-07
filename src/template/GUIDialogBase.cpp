@@ -72,6 +72,8 @@ void CGUIDialogBase::Close()
 	{
 		m_window->Close();
 	}
+
+  OnClose();
 }
 
 void CGUIDialogBase::DoModal()
