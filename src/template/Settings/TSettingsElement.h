@@ -28,17 +28,6 @@ template<typename T>
 class TSettingsElement : public ISettingsElement
 {
   public:
-    typedef enum
-    {
-        MIN_SETTING = -1,
-        STRING_SETTING,
-        UNSIGNED_INT_SETTING,
-        INT_SETTING,
-        FLOAT_SETTING,
-        BOOL_SETTING,
-        MAX_SETTING
-    }SettingsTypes;
-
     TSettingsElement(T &Value, std::string Key, SettingsTypes Type) :
       ISettingsElement(Key, Type)
     {
