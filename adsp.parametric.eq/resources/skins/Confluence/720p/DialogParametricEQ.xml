@@ -54,7 +54,7 @@
             <visible>system.getbool(input.enablemouse)</visible>
         </control>
 		<control type="slider" id="8000">
-			<description>My first slider control</description>
+			<description>32Hz Frequency Band Slider</description>
 			<posx>200</posx>
 			<posy>80</posy>
 			<width>400</width>
@@ -75,8 +75,8 @@
 			<onleft>1</onleft>
 			<onright>1</onright>
 		</control>
-		<control type="label" id="8001">
-			<description>My First label</description>
+		<control type="label" id="8100">
+			<description>32Hz Frequency Band Label</description>
 			<posx>40</posx>
 			<posy>80</posy>
 			<width>160</width>
@@ -85,7 +85,7 @@
 			<align>center</align>
 			<aligny>center</aligny>
 			<scroll>false</scroll>
-			<label>32Hz</label>
+			<label>$ADDON[adsp.parametric.eq 30150]</label>
 			<info>32Hz Band Label</info>
 			<number></number>
 			<angle>0</angle>
@@ -97,10 +97,76 @@
 			<scrollspeed>50</scrollspeed>
 			<scrollsuffix> - </scrollsuffix>
 		</control>
-		<control type="label" id="8002">
-			<description>My First label</description>
+		<control type="label" id="8200">
+			<description>32Hz dB Level</description>
 			<posx>600</posx>
 			<posy>80</posy>
+			<width>160</width>
+			<height>30</height>
+			<visible>true</visible>
+			<align>center</align>
+			<aligny>center</aligny>
+			<scroll>false</scroll>
+			<label>Value</label>
+			<info>32Hz Band Value</info>
+			<number></number>
+			<angle>0</angle>
+			<haspath>false</haspath>
+			<font>font14</font>
+			<textcolor>FFB2D4F5</textcolor>
+			<shadowcolor>ff000000</shadowcolor>
+			<wrapmultiline>false</wrapmultiline>
+			<scrollspeed>50</scrollspeed>
+			<scrollsuffix> - </scrollsuffix>
+		</control>
+		<control type="slider" id="8001">
+			<description>64Hz Frequency Band Slider</description>
+			<posx>200</posx>
+			<posy>130</posy>
+			<width>400</width>
+			<height>30</height>
+			<visible>true</visible>
+			<texturefocus>-</texturefocus>
+			<texturenofocus>-</texturenofocus>
+			<texturesliderbar>osd_slider_bg_2.png</texturesliderbar>
+			<textureslidernib>osd_slider_nibNF.png</textureslidernib>
+			<textureslidernibfocus>osd_slider_nib.png</textureslidernibfocus>
+			<info></info>
+			<action></action>
+			<controloffsetx></controloffsetx>
+			<controloffsety></controloffsety>
+			<pulseonselect></pulseonselect>
+			<onup>2</onup>
+			<ondown>3</ondown>
+			<onleft>1</onleft>
+			<onright>1</onright>
+		</control>
+		<control type="label" id="8101">
+			<description>64Hz Frequency Band Label</description>
+			<posx>40</posx>
+			<posy>130</posy>
+			<width>160</width>
+			<height>30</height>
+			<visible>true</visible>
+			<align>center</align>
+			<aligny>center</aligny>
+			<scroll>false</scroll>
+			<label>$ADDON[adsp.parametric.eq 30151]</label>
+			<info>32Hz Band Label</info>
+			<number></number>
+			<angle>0</angle>
+			<haspath>false</haspath>
+			<font>font14</font>
+			<textcolor>FFB2D4F5</textcolor>
+			<shadowcolor>ff000000</shadowcolor>
+			<wrapmultiline>false</wrapmultiline>
+			<scrollspeed>50</scrollspeed>
+			<scrollsuffix> - </scrollsuffix>
+		</control>
+		<control type="label" id="8201">
+			<description>64Hz dB Level</description>
+			<posx>600</posx>
+			<posy>130</posy>
 			<width>160</width>
 			<height>30</height>
 			<visible>true</visible>
@@ -127,6 +193,7 @@
           <height>490</height>
           <onup>8000</onup>
           <ondown>10000</ondown>
+		  <visible>false</visible>
 		  <control type="sliderex" id="9050">
             <description>Preamp</description>
             <height>40</height>
