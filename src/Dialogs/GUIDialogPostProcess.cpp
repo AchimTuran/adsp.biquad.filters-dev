@@ -1,8 +1,29 @@
+/*
+ *      Copyright (C) 2005-2014 Team XBMC
+ *      http://xbmc.org
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
 #include "GUIDialogPostProcess.h"
-#include <string.h>
-#include <iostream>
-#include <string>
-#include <sstream>
+#include "utils/stdStringUtils.h"
+#include <math.h>
+using namespace std;
 
 #define BUTTON_CANCEL   10050
 #define BUTTON_OK       10051
@@ -11,12 +32,13 @@
 #define SLIDER_32Hz_LABEL 8001
 #define SLIDER_32Hz_VALUE 8002
 
-std::string floatToString(float Value);
+std::string float_dB_toString(float dB);
 
 CGUIDialogPostProcess::CGUIDialogPostProcess() :
 	CGUIDialogBase(	"DialogParametricEQ.xml", false, true )
 {
   m_Slider32Hz = NULL;
+  m_Gain32Hz = 0.0f;
 }
 
 CGUIDialogPostProcess::~CGUIDialogPostProcess()
@@ -30,7 +52,7 @@ bool CGUIDialogPostProcess::OnInit()
   m_Slider32Hz->SetFloatInterval(2.0f);
   m_Slider32Hz->SetFloatValue(0.0f);
   m_window->SetControlLabel(SLIDER_32Hz_LABEL, "32Hz");
-  m_window->SetControlLabel(SLIDER_32Hz_VALUE, std::string(floatToString(m_Gain32Hz) + "dB").c_str());
+  m_window->SetControlLabel(SLIDER_32Hz_VALUE, float_dB_toString(m_Gain32Hz).c_str());
 	return true;
 }
 
@@ -54,7 +76,7 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
 
     case SLIDER_32Hz:
       m_Gain32Hz = m_Slider32Hz->GetFloatValue();
-      m_window->SetControlLabel(SLIDER_32Hz_VALUE, std::string(floatToString(m_Gain32Hz) + "dB").c_str());
+      m_window->SetControlLabel(SLIDER_32Hz_VALUE, float_dB_toString(m_Gain32Hz).c_str());
     break;
 
     default:
@@ -91,22 +113,18 @@ void CGUIDialogPostProcess::OnClose()
   }
 }
 
-std::string floatToString(float Value)
+std::string float_dB_toString(float dB)
 {
-  std::ostringstream ss;
-  ss << (float)((int)(10.0f*Value + 0.5f))/10.0f;
-  std::string str(ss.str());
+  std::string str = toString(roundf(dB*10.0f)/10.0f);
+  float val10 = ((int)fabsf(roundf(dB*10.0f)));
+  int fraction = (int)(val10 - ((int)(val10/10.0f)*10.0f));
+
+  if(fraction == 0 || dB == 0.0f)
+  {
+    str += ".0";
+  }
+
+  str += "dB";
+  
   return str;
 }
-
-//template <typename T> string tostr(const T& t)
-//{
-//  ostringstream os;
-//  os<<t;
-//  return os.str();
-//}
-//double x = 14.4;
-//int y = 21;
-//
-//string sx = tostr(x);
-//string sy = tostr(y);
