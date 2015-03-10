@@ -44,6 +44,21 @@ msgctxt "#30100"
 msgid "Parametric EQ - Settings"
 msgstr ""
 
+# Parametric EQ Addon Settings: resources/settings.xml
+msgctxt "#30120"
+msgid "Enable Postprocess Parametric EQ"
+msgstr ""
+
+# Parametric EQ Addon Settings: resources/settings.xml
+msgctxt "#30111"
+msgid "Enable Preprocess Parametric EQ"
+msgstr ""
+
+# Parametric EQ Addon Settings: resources/parametricEQSettings.xml
+msgctxt "#30122"
+msgid "Enable Parameter Fading"
+msgstr ""
+
 # Dialog Parametric EQ: resources/skins/Confluence/720p/DialogParametricEQ.xml
 msgctxt "#30150"
 msgid "Preamp"
