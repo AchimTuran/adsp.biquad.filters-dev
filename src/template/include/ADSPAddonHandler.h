@@ -28,10 +28,12 @@
 #include ADSP_PROCESSOR_HEADER_FILE
 
 #ifdef ADSP_ADDON_OPTIONAL_CLASS_NAME
-#include ADSP_ADDON_OPTIONAL_HEADER_FILE
+  #include ADSP_ADDON_OPTIONAL_HEADER_FILE
 #endif
 
 extern std::string g_strAddonPath;
+class CADSPAddonHandler;
+extern CADSPAddonHandler g_AddonHandler;
 
 class CADSPAddonHandler
 //#if USE_ADDONOPTIONAL
