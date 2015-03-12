@@ -136,11 +136,15 @@
  * because a mode id should only use once in the whole ADSP addon.
  */
 typedef enum
-{	
-	POST_MODE_PARAMETRIC_EQ_ID=1
+{
+  ADSP_MODE_ID_UNKNOWN = 0,
+  POST_MODE_PARAMETRIC_EQ_ID,
+  ADSP_MODE_ID_MAX
 }adspProcessingModeIDs;
 
 typedef enum 
 {
-	ID_MENU_POST_PROCESS_PARAMETRIC_EQ = 1
+  ID_MENU_UNKNOWN = 0,
+  ID_MENU_POST_PROCESS_PARAMETRIC_EQ,
+  ID_MENU_MAX
 }adspMENUIDs;
