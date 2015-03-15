@@ -26,7 +26,7 @@
 
 #include "TSettingsElement.h"
 
-// Settings typdefs
+// Settings typedefs
 typedef TSettingsElement<std::string>   CStringSetting;
 typedef TSettingsElement<unsigned int>  CUnsignedIntSetting;
 typedef TSettingsElement<int>           CIntSetting;
@@ -62,11 +62,12 @@ class CSettingsManager
     ISettingsElement *find_Setting(std::string Key);
 
   protected:
+    void destroy();
     //SettingsMap m_Settings;
     SettingsMap m_Settings;
     std::string m_XMLFilename;
 
-  private:
+  //private:
     void save_CurrentSettings();
     void parse_SettingsXML();
 };

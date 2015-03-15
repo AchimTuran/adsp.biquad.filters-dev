@@ -41,6 +41,11 @@ CSettingsManager::CSettingsManager(string XMLFilename)
 
 CSettingsManager::~CSettingsManager()
 {
+  destroy();
+}
+
+void CSettingsManager::destroy()
+{
   save_CurrentSettings();
 
   // delete settings map and its elements
@@ -58,7 +63,6 @@ CSettingsManager::~CSettingsManager()
     m_Settings.erase(iter);
   }
 }
-
 void CSettingsManager::save_CurrentSettings()
 {
   // ToDo: implement xml stuff
@@ -180,7 +184,7 @@ void CSettingsManager::add_Setting(std::string Key, bool Value)
   }
   else
   { // generate a new Element
-    ISettingsElement *element = new CBoolSetting(Value, Key, ISettingsElement::BOOL_SETTING);
+    ISettingsElement *element = (ISettingsElement*)new CBoolSetting(Value, Key, ISettingsElement::BOOL_SETTING);
     if(!element)
     {
       throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
