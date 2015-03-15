@@ -28,13 +28,15 @@
 #include <string>
 #include "template/include/IADSPProcessor.h"
 #include <asplib/BiQuads/apslib_BiQuadFactory.h>
+#include "BiQuadManager/message/BiQuadMessage.h"
+#include "BiQuadManager/BiQuadManager_types.h"
 
-typedef struct
-{
-  unsigned long         ChannelFlag;
-  unsigned int          ChannelID;
-  ASPLIB_BIQUAD_HANDLE *BiQuadHandle;
-}ADSP_CHANNEL_HANDLE;
+//typedef struct
+//{
+//  unsigned long         ChannelFlag;
+//  unsigned int          ChannelID;
+//  ASPLIB_BIQUAD_HANDLE *BiQuadHandle;
+//}ADSP_CHANNEL_HANDLE;
 
 //!	In this class you can define your processing modes.
 /*! 
@@ -66,8 +68,16 @@ public:
 
   virtual AE_DSP_ERROR Create();
 
+  CBiQuadMessageBase::BIQUAD_MESSAGE_RET send_Message(CBiQuadMessage *Message);
+
 private:
-  ADSP_CHANNEL_HANDLE    *m_ChannelHandle;
-  int                     m_MaxProcessingChannels;
-  uint                    m_MaxFreqBands;
+  void process_NewMessage();
+
+  ADSP_BiQuad                  *m_BiQuads;
+  ADSP_BiQuad                  *m_TempBiQuad;
+  volatile bool                 m_NewMessage;
+  int                           m_MaxProcessingChannels;
+  uint                          m_MaxFreqBands;
+  CBiQuadMessage_BiQuadHandle  *m_BiQuadHandleMessage;
+  CBiQuadMessage_Coefficients  *m_BiQuadCoefficientsMessage;
 };

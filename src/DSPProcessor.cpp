@@ -35,60 +35,63 @@ CDSPProcessor::CDSPProcessor()
 {
   m_MaxFreqBands = 10;
   m_MaxProcessingChannels = 0;
-  m_ChannelHandle = NULL;
+  m_BiQuads = NULL;
+  m_TempBiQuad = NULL;
+  m_NewMessage = false;
 }
 
 // delete your buffers here
 CDSPProcessor::~CDSPProcessor()
 {
-  if(m_ChannelHandle)
+  if(m_BiQuads)
   {
     for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
     {
-      ASPLIB_ERR err = CBiQuadFactory::destroy_BiQuads(&m_ChannelHandle->BiQuadHandle);
+      ASPLIB_ERR err = CBiQuadFactory::destroy_BiQuads(&m_BiQuads->BiQuadHandle);
       if(err != ASPLIB_ERR_NO_ERROR)
       {
         // ToDo: show some error message!
       }
     }
-    delete[] m_ChannelHandle;
-    m_ChannelHandle = NULL;
+    delete[] m_BiQuads;
+    m_BiQuads = NULL;
   } 
 }
 
 AE_DSP_ERROR CDSPProcessor::Create()
 {
   m_MaxProcessingChannels = m_StreamSettings.iOutChannels;
-  m_ChannelHandle = new ADSP_CHANNEL_HANDLE[m_MaxProcessingChannels];
-  if(!m_ChannelHandle)
+  m_BiQuads = new ADSP_BiQuad[m_MaxProcessingChannels];
+  if(!m_BiQuads)
   {
     // ToDo: throw error message!
   }
 
-  int lastChannelID = 0;
+  int lastAudioChannel = 0;
   for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
   {
     // ToDo: add functions for opt modules and channel bypass!
-    m_ChannelHandle[ii].BiQuadHandle = CBiQuadFactory::get_BiQuads(m_MaxFreqBands, m_StreamSettings.iProcessSamplerate, ASPLIB_OPT_NATIVE);
-    if(!m_ChannelHandle[ii].BiQuadHandle)
+    m_BiQuads[ii].BiQuadHandle = CBiQuadFactory::get_BiQuads(m_MaxFreqBands, m_StreamSettings.iProcessSamplerate, ASPLIB_OPT_NATIVE);
+    if(!m_BiQuads[ii].BiQuadHandle)
     {
       // ToDo: throw some error message!
     }
 
     // set all gain values to 0dB
-    CBiQuadFactory::set_constQPeakingParams(m_ChannelHandle[ii].BiQuadHandle, 0.0f);
+    CBiQuadFactory::set_constQPeakingParams(m_BiQuads[ii].BiQuadHandle, 0.0f);
+    m_BiQuads[ii].
 
     // map next channel to BiQuad Filter
-    unsigned long tempChannelFlag = 1<<lastChannelID;
-    m_ChannelHandle[ii].ChannelID = CADSPHelpers::GetNextChID(m_StreamSettings.lOutChannelPresentFlags,
+    unsigned long tempChannelFlag = 1<<lastAudioChannel;
+    m_BiQuads[ii].AudioChannel = CADSPHelpers::GetNextChID(m_StreamSettings.lOutChannelPresentFlags,
                                                               CADSPHelpers::Translate_ChFlag_TO_ChID((AE_DSP_CHANNEL_PRESENT)tempChannelFlag));
-    m_ChannelHandle[ii].ChannelFlag = CADSPHelpers::Translate_ChID_TO_ChFlag((AE_DSP_CHANNEL)m_ChannelHandle[ii].ChannelID);
-    if(m_ChannelHandle[ii].ChannelID == AE_DSP_CH_INVALID)
+    m_BiQuads[ii].ChannelFlag = CADSPHelpers::Translate_ChID_TO_ChFlag((AE_DSP_CHANNEL)m_BiQuads[ii].AudioChannel);
+    if(m_BiQuads[ii].AudioChannel == AE_DSP_CH_INVALID)
     {
       // ToDo: throw some error message!
       // no next channel found!
     }
-    lastChannelID = m_ChannelHandle[ii].ChannelID +1;
+    lastAudioChannel = m_BiQuads[ii].AudioChannel +1;
   }
 
   return AE_DSP_ERROR_NO_ERROR;
@@ -96,11 +99,17 @@ AE_DSP_ERROR CDSPProcessor::Create()
 
 unsigned int CDSPProcessor::PostProcess(unsigned int Mode_id, float **Array_in, float **Array_out, unsigned int Samples)
 {
+  if(m_NewMessage)
+  {
+    process_NewMessage();
+    m_NewMessage = false;
+  }
+
   for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
   {
-    ASPLIB_ERR err = CBiQuadFactory::calc_BiQuadSamples(m_ChannelHandle[ii].BiQuadHandle,
-                                                        Array_in[m_ChannelHandle[ii].ChannelID],
-                                                        Array_out[m_ChannelHandle[ii].ChannelID],
+    ASPLIB_ERR err = CBiQuadFactory::calc_BiQuadSamples(m_BiQuads[ii].BiQuadHandle,
+                                                        Array_in[m_BiQuads[ii].AudioChannel],
+                                                        Array_out[m_BiQuads[ii].AudioChannel],
                                                         Samples);
     if(err != ASPLIB_ERR_NO_ERROR)
     {
@@ -110,4 +119,73 @@ unsigned int CDSPProcessor::PostProcess(unsigned int Mode_id, float **Array_in, 
   }
 
   return Samples;
+}
+
+CBiQuadMessageBase::BIQUAD_MESSAGE_RET CDSPProcessor::send_Message(CBiQuadMessage *Message)
+{
+  if(!Message || Message->get_ModeID() != POST_MODE_PARAMETRIC_EQ_ID)
+  {
+    return CBiQuadMessage::BiQuadMessage_InvalidInput;
+  }
+
+  // ToDo: check if AudioChannel is present
+
+  while(m_NewMessage); // wait for old message
+
+  switch(Message->get_MessageType())
+  {
+    case CBiQuadMessage::BIQUAD_MESSAGE_SEND_BIQUAD_HANDLE:
+    {
+      m_BiQuadHandleMessage = dynamic_cast<CBiQuadMessage_BiQuadHandle*>(Message);
+
+      m_NewMessage = true;
+      while(m_NewMessage); // wait for message to be processed
+    }
+    break;
+
+    //not needed message!
+    //case CBiQuadMessage::BIQUAD_MESSAGE_DESTROY_BIQUAD_HANDLE:
+    //break;
+
+    case CBiQuadMessage::BIQUAD_MESSAGE_GET_BIQUAD_CONFIG_CHANNEL:
+    {
+      m_BiQuadHandleMessage = dynamic_cast<CBiQuadMessage_BiQuadHandle*>(Message);
+
+      m_NewMessage = true;
+      while(m_NewMessage); // wait for message to be processed
+    }
+    break;
+
+    case CBiQuadMessage::BIQAUD_MESSAGE_SEND_COEFFICIENTS:
+    {
+      m_BiQuadCoefficientsMessage = dynamic_cast<CBiQuadMessage_Coefficients*>(Message);
+
+      m_NewMessage = true;
+      while(m_NewMessage); // wait for message to be processed
+    }
+    break;
+
+    case CBiQuadMessage::BIQAUD_MESSAGE_SEND_COEFFIECIENTS_IDX:
+    {
+      CBiQuadMessage_Coefficients *p = dynamic_cast<CBiQuadMessage_Coefficients*>(Message);
+      // ToDo: send coe to correct BiQuadIdx!
+      // wait einbauen, bis thread alles übernommen hat
+    }
+    break;
+
+    case CBiQuadMessage::BIQUAD_MESSAGE_GET_SAMPLE_FREQUENCY:
+      dynamic_cast<BiQuadMessage_SampleFrequency*>(Message)->m_MessageObj = (float)m_StreamSettings.iProcessSamplerate;
+    break;
+
+    default:
+      return CBiQuadMessage::BiQuadMessage_UnsupportedMessageType;
+    break;
+  }
+
+  return CBiQuadMessage::BiQuadMessage_Success;
+}
+
+void DSPProcessor::process_NewMessage()
+{
+}
 }
