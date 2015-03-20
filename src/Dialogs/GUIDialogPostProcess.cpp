@@ -25,20 +25,53 @@
 #include <math.h>
 using namespace std;
 
-#define BUTTON_CANCEL   10050
-#define BUTTON_OK       10051
-#define BUTTON_DEFAULT  10052
-#define SLIDER_32Hz     8000
-#define SLIDER_32Hz_LABEL 8001
-#define SLIDER_32Hz_VALUE 8002
+#define BUTTON_CANCEL         10050
+#define BUTTON_OK             10051
+#define BUTTON_DEFAULT        10052
+#define SLIDER_PREAMP         8000
+#define SLIDER_PREAMP_LABEL   8100
+#define SLIDER_PREAMP_VALUE   8200
+#define SLIDER_32Hz           8001
+#define SLIDER_32Hz_LABEL     8101
+#define SLIDER_32Hz_VALUE     8201
+#define SLIDER_64Hz           8002
+#define SLIDER_64Hz_LABEL     8102
+#define SLIDER_64Hz_VALUE     8202
+#define SLIDER_125Hz          8003
+#define SLIDER_125Hz_LABEL    8103
+#define SLIDER_125Hz_VALUE    8203
+#define SLIDER_250Hz          8004
+#define SLIDER_250Hz_LABEL    8104
+#define SLIDER_250Hz_VALUE    8204
+#define SLIDER_500Hz          8005
+#define SLIDER_500Hz_LABEL    8105
+#define SLIDER_500Hz_VALUE    8205
+#define SLIDER_1kHz           8006
+#define SLIDER_1kHz_LABEL     8106
+#define SLIDER_1kHz_VALUE     8206
+#define SLIDER_2kHz           8007
+#define SLIDER_2kHz_LABEL     8107
+#define SLIDER_2kHz_VALUE     8207
+#define SLIDER_4kHz           8008
+#define SLIDER_4kHz_LABEL     8108
+#define SLIDER_4kHz_VALUE     8208
+#define SLIDER_8kHz           8009
+#define SLIDER_8kHz_LABEL     8109
+#define SLIDER_8kHz_VALUE     8209
+#define SLIDER_16kHz          8010
+#define SLIDER_16kHz_LABEL    8110
+#define SLIDER_16kHz_VALUE    8210
 
 std::string float_dB_toString(float dB);
 
 CGUIDialogPostProcess::CGUIDialogPostProcess() :
 	CGUIDialogBase(	"DialogParametricEQ.xml", false, true )
 {
-  m_Slider32Hz = NULL;
-  m_Gain32Hz = 0.0f;
+  for(int ii = 0; ii < MAX_FREQ_BANDS +1; ii++)
+  {
+    m_Sliders[ii] = NULL;
+    m_Gains[ii] = 0.0f;
+  }
 }
 
 CGUIDialogPostProcess::~CGUIDialogPostProcess()
@@ -47,12 +80,22 @@ CGUIDialogPostProcess::~CGUIDialogPostProcess()
 
 bool CGUIDialogPostProcess::OnInit()
 {
-  m_Slider32Hz = GUI->Control_getSlider(m_window, SLIDER_32Hz);
-  m_Slider32Hz->SetFloatRange(-24.0f, 24.f);
-  m_Slider32Hz->SetFloatInterval(2.0f);
-  m_Slider32Hz->SetFloatValue(0.0f);
-  m_window->SetControlLabel(SLIDER_32Hz_LABEL, "32Hz");
-  m_window->SetControlLabel(SLIDER_32Hz_VALUE, float_dB_toString(m_Gain32Hz).c_str());
+  for(int ii = 0; ii < MAX_FREQ_BANDS +1; ii++)
+  {
+    m_Sliders[ii] = GUI->Control_getSlider(m_window, SLIDER_PREAMP + ii);
+    if(!m_Sliders[ii])
+    {
+      XBMC->Log(ADDON::LOG_ERROR, "Slider with ID: %i not found!", ii);
+      return false;
+    }
+
+    m_Sliders[ii]->SetFloatRange(-24.0f, 24.f);
+    m_Sliders[ii]->SetFloatInterval(2.0f);
+    m_Sliders[ii]->SetFloatValue(0.0f);
+    m_window->SetControlLabel(SLIDER_PREAMP_LABEL + ii, XBMC->GetLocalizedString(30150 + ii));
+    m_window->SetControlLabel(SLIDER_PREAMP_VALUE + ii, float_dB_toString(m_Gains[ii]).c_str());
+  }
+
 	return true;
 }
 
@@ -74,12 +117,23 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
     }
     break;
 
+    case SLIDER_PREAMP:
     case SLIDER_32Hz:
-      m_Gain32Hz = m_Slider32Hz->GetFloatValue();
-      m_window->SetControlLabel(SLIDER_32Hz_VALUE, float_dB_toString(m_Gain32Hz).c_str());
+    case SLIDER_64Hz:
+    case SLIDER_125Hz:
+    case SLIDER_250Hz:
+    case SLIDER_500Hz:
+    case SLIDER_1kHz:
+    case SLIDER_2kHz:
+    case SLIDER_4kHz:
+    case SLIDER_8kHz:
+    case SLIDER_16kHz:
+      m_Gains[controlId - SLIDER_PREAMP] = m_Sliders[controlId - SLIDER_PREAMP]->GetFloatValue();
+      m_window->SetControlLabel(controlId + 200, float_dB_toString(m_Gains[controlId - SLIDER_PREAMP]).c_str());
     break;
 
     default:
+      return false;
     break;
   }
 
@@ -107,16 +161,20 @@ bool CGUIDialogPostProcess::OnAction(int actionId)
 
 void CGUIDialogPostProcess::OnClose()
 {
-  if(m_Slider32Hz)
+  for(int ii = 0; ii < MAX_FREQ_BANDS +1; ii++)
   {
-    GUI->Control_releaseSlider(m_Slider32Hz);
+    if(m_Sliders[ii])
+    {
+      GUI->Control_releaseSlider(m_Sliders[ii]);
+      m_Sliders[ii] = NULL;
+    }
   }
 }
 
 std::string float_dB_toString(float dB)
 {
   std::string str = toString(roundf(dB*10.0f)/10.0f);
-  float val10 = ((int)fabsf(roundf(dB*10.0f)));
+  float val10 = (float)((int)fabsf(roundf(dB*10.0f)));
   int fraction = (int)(val10 - ((int)(val10/10.0f)*10.0f));
 
   if(fraction == 0 || dB == 0.0f)
