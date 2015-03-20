@@ -117,12 +117,7 @@ class TBiQuadMessage : public CBiQuadMessage
 
     T &get_MessageObj()
     {
-      if(m_MessageObj)
-      {
-        return m_MessageObj;
-      }
-
-      return NULL;
+      return m_MessageObj;
     }
 
   protected:
