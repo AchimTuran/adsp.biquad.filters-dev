@@ -665,7 +665,7 @@
 			<controloffsety></controloffsety>
 			<pulseonselect></pulseonselect>
 			<onup>8008</onup>
-			<ondown>10000</ondown>
+			<ondown>8010</ondown>
 			<onleft>8009</onleft>
 			<onright>8009</onright>
 		</control>
@@ -730,10 +730,10 @@
 			<controloffsetx></controloffsetx>
 			<controloffsety></controloffsety>
 			<pulseonselect></pulseonselect>
-			<onup>8008</onup>
+			<onup>8009</onup>
 			<ondown>10000</ondown>
-			<onleft>8009</onleft>
-			<onright>8009</onright>
+			<onleft>8010</onleft>
+			<onright>8010</onright>
 		</control>
 		<control type="label" id="8110">
 			<description>16kHz Frequency Band Label</description>
@@ -782,7 +782,7 @@
         <control type="group" id="10000">
             <posx>95</posx>
             <posy>630</posy>
-			<onup>8009</onup>
+			<onup>8010</onup>
 			<ondown>10000</ondown>
 			<onleft>10000</onleft>
 			<onright>10000</onright>
@@ -798,7 +798,7 @@
                 <texturefocus border="5">button-focus.png</texturefocus>
                 <label>186</label>
                 <font>font12_title</font>
-                <onup>8009</onup>
+                <onup>8010</onup>
                 <onleft>10052</onleft>
                 <onright>10051</onright>
                 <ondown>10000</ondown>
@@ -815,7 +815,7 @@
                 <texturefocus border="5">button-focus.png</texturefocus>
                 <label>222</label>
                 <font>font12_title</font>
-                <onup>8009</onup>
+                <onup>8010</onup>
                 <onleft>10050</onleft>
                 <onright>10052</onright>
                 <ondown>10000</ondown>
@@ -832,7 +832,7 @@
                 <texturefocus border="5">button-focus.png</texturefocus>
                 <label>409</label>
                 <font>font12_title</font>
-                <onup>8009</onup>
+                <onup>8010</onup>
                 <onleft>10051</onleft>
                 <onright>10052</onright>
                 <ondown>10000</ondown>
