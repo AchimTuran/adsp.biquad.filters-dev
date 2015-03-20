@@ -23,6 +23,7 @@
 
 
 #include "../../template/configuration/templateConfiguration.h"
+#include <kodi/xbmc_adsp_types.h>
 
 class CBiQuadMessageBase
 {
@@ -37,7 +38,7 @@ class CBiQuadMessageBase
     }BIQUAD_MESSAGE_RET;
 
     CBiQuadMessageBase();
-    ~CBiQuadMessageBase();
+    virtual ~CBiQuadMessageBase();
 
     adspProcessingModeIDs get_ModeID();
     adspProcessingModeIDs set_ModeID(adspProcessingModeIDs ModeID);

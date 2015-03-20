@@ -71,7 +71,7 @@ AE_DSP_ERROR CDSPProcessor::Create()
   for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
   {
     // ToDo: add functions for opt modules and channel bypass!
-    m_BiQuads[ii].BiQuadHandle = CBiQuadFactory::get_BiQuads(m_MaxFreqBands, m_StreamSettings.iProcessSamplerate, ASPLIB_OPT_NATIVE);
+    m_BiQuads[ii].BiQuadHandle = CBiQuadFactory::get_BiQuads(m_MaxFreqBands, (float)m_StreamSettings.iProcessSamplerate, ASPLIB_OPT_NATIVE);
     if(!m_BiQuads[ii].BiQuadHandle)
     {
       // ToDo: throw some error message!
@@ -79,7 +79,6 @@ AE_DSP_ERROR CDSPProcessor::Create()
 
     // set all gain values to 0dB
     CBiQuadFactory::set_constQPeakingParams(m_BiQuads[ii].BiQuadHandle, 0.0f);
-    m_BiQuads[ii].
 
     // map next channel to BiQuad Filter
     unsigned long tempChannelFlag = 1<<lastAudioChannel;
@@ -158,7 +157,7 @@ CBiQuadMessageBase::BIQUAD_MESSAGE_RET CDSPProcessor::send_Message(CBiQuadMessag
 
     case CBiQuadMessage::BIQAUD_MESSAGE_SEND_COEFFICIENTS:
     {
-      m_BiQuadCoefficientsMessage = dynamic_cast<CBiQuadMessage_Coefficients*>(Message);
+      m_BiQuadCoefficientsMessage = (CBiQuadMessage_Coefficients*)Message;
 
       m_NewMessage = true;
       while(m_NewMessage); // wait for message to be processed
@@ -174,7 +173,7 @@ CBiQuadMessageBase::BIQUAD_MESSAGE_RET CDSPProcessor::send_Message(CBiQuadMessag
     break;
 
     case CBiQuadMessage::BIQUAD_MESSAGE_GET_SAMPLE_FREQUENCY:
-      dynamic_cast<BiQuadMessage_SampleFrequency*>(Message)->m_MessageObj = (float)m_StreamSettings.iProcessSamplerate;
+      dynamic_cast<BiQuadMessage_Float*>(Message)->get_MessageObj() = (float)m_StreamSettings.iProcessSamplerate;
     break;
 
     default:
@@ -185,7 +184,6 @@ CBiQuadMessageBase::BIQUAD_MESSAGE_RET CDSPProcessor::send_Message(CBiQuadMessag
   return CBiQuadMessage::BiQuadMessage_Success;
 }
 
-void DSPProcessor::process_NewMessage()
+void CDSPProcessor::process_NewMessage()
 {
-}
 }

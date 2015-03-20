@@ -24,13 +24,19 @@
 
 #include <iostream>
 #include "BiQuadMessageBase.h"
+#include "BiQuadManager/BiQuadManager_types.h"
 #include "asplib/constants_typedefs/asplib_typedefs.h"
 
+// prototypes
+class CBiQuadMessage_BiQuadHandle;
+class CBiQuadMessage_Coefficients;
+class CBiQuadMessage;
 template<class T> class TBiQuadMessage;
 
-typedef TBiQuadMessage<CBiQuadManagerMessage_Gain> BiQuadMessage_BiQuadHandle;
+// typedefs
+typedef TBiQuadMessage<CBiQuadMessage_BiQuadHandle> BiQuadMessage_BiQuadHandle;
 typedef TBiQuadMessage<CBiQuadMessage_Coefficients> BiQuadMessage_Coefficients;
-typedef TBiQuadMessage<float> BiQuadMessage_SampleFrequency;
+typedef TBiQuadMessage<float> BiQuadMessage_Float;
 
 class CBiQuadMessage_BiQuadHandle
 {

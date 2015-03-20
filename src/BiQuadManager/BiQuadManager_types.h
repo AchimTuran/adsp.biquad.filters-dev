@@ -22,6 +22,8 @@
 
 
 #include <asplib/BiQuads/apslib_BiQuadFactory.h>
+#include <kodi/xbmc_adsp_types.h>
+#include "template/ADSPHelpers.h"
 
 typedef enum
 {
