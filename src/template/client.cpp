@@ -18,19 +18,24 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
+
+#include <vector>
+#include <string>
+
+// include template configuration header files
 #include "configuration/templateConfiguration.h"
 #include "../template/include/MACROHelper.h"
 #include "include/checkTemplateConfig.h"
 
-#include <vector>
-#include <string>
-#include "include/client.h"
+// include kodi platform header files
 #include <kodi/xbmc_adsp_dll.h>
-#include "util/util.h"
+#include <kodi/util/util.h>
 
 // include adsp template specific header files
+#include "include/client.h"
 #include "include/ADSPProcessorHandle.h"
 #include "include/ADSPAddonHandler.h"
+
 // includes your DSP Processor class
 #include ADSP_PROCESSOR_HEADER_FILE
 
