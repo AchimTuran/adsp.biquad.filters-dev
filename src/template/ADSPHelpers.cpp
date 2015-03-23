@@ -23,6 +23,20 @@
 #include <math.h>
 using namespace std;
 
+#if !defined(TARGET_WINDOWS)
+  inline float abs(float Val)
+  {
+    if(Val >= 0.0f)
+    {
+      return Val;
+    }
+    else
+    {
+      return -1.0f*Val;
+    }
+  }
+#endif
+
 // Channel Layouts and channel names are from: https://trac.ffmpeg.org/wiki/AudioChannelManipulation
 AE_DSP_CHANNEL CADSPHelpers::Translate_ChFlag_TO_ChID(AE_DSP_CHANNEL_PRESENT ChFlag)
 {
