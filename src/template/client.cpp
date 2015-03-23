@@ -28,7 +28,8 @@
 #include "include/checkTemplateConfig.h"
 
 // include kodi platform header files
-#include <kodi/xbmc_adsp_dll.h>
+#include <kodi/kodi_adsp_dll.h>
+//#include <kodi/kodi_adsp_types.h>
 #include <kodi/util/util.h>
 
 // include adsp template specific header files
@@ -58,9 +59,9 @@ std::string   g_strUserPath       = "";
 std::string   g_strAddonPath      = "";
 
 
-CHelper_libXBMC_addon *XBMC       = NULL;
-CHelper_libXBMC_adsp  *ADSP       = NULL;
-CHelper_libXBMC_gui   *GUI        = NULL;
+CHelper_libXBMC_addon   *KODI       = NULL;
+CHelper_libKODI_adsp    *ADSP       = NULL;
+CHelper_libKODI_guilib  *GUI        = NULL;
 
 /*
  *	ADSP Addon handling class
@@ -85,30 +86,30 @@ ADDON_STATUS ADDON_Create(void* hdl, void* props)
 
 	AE_DSP_PROPERTIES* adspprops = (AE_DSP_PROPERTIES*)props;
 
-	XBMC = new CHelper_libXBMC_addon;
-	if (!XBMC->RegisterMe(hdl))
+	KODI = new CHelper_libXBMC_addon;
+	if (!KODI->RegisterMe(hdl))
 	{
-		SAFE_DELETE(XBMC);
+		SAFE_DELETE(KODI);
 		return ADDON_STATUS_PERMANENT_FAILURE;
 	}
 
-	GUI = new CHelper_libXBMC_gui;
+	GUI = new CHelper_libKODI_guilib;
 	if (!GUI->RegisterMe(hdl))
 	{
 		SAFE_DELETE(GUI);
-		SAFE_DELETE(XBMC);
+		SAFE_DELETE(KODI);
 		return ADDON_STATUS_PERMANENT_FAILURE;
 	}
 
-	ADSP = new CHelper_libXBMC_adsp;
+	ADSP = new CHelper_libKODI_adsp;
 	if (!ADSP->RegisterMe(hdl))
 	{
 		SAFE_DELETE(ADSP);
 		SAFE_DELETE(GUI);
-		SAFE_DELETE(XBMC);
+		SAFE_DELETE(KODI);
 		return ADDON_STATUS_PERMANENT_FAILURE;
 	}
-	XBMC->Log(LOG_DEBUG, "%s - Creating the Audio DSP add-on template", __FUNCTION__);
+	KODI->Log(LOG_DEBUG, "%s - Creating the Audio DSP add-on template", __FUNCTION__);
 
 	m_CurStatus     = ADDON_STATUS_UNKNOWN;
 	g_strUserPath   = adspprops->strUserPath;
@@ -141,7 +142,7 @@ void ADDON_Destroy()
 
   SAFE_DELETE(ADSP);
   SAFE_DELETE(GUI);
-  SAFE_DELETE(XBMC);
+  SAFE_DELETE(KODI);
 
   m_CurStatus = ADDON_STATUS_UNKNOWN;
 }
@@ -213,26 +214,22 @@ void ADDON_Announce(const char *Flag, const char *Sender, const char *Message, c
  ***********************************************************/
 const char* GetAudioDSPAPIVersion(void)
 {
-  static string s_ApiVersion = XBMC_AE_DSP_API_VERSION;
-  return s_ApiVersion.c_str();
+  return KODI_AE_DSP_API_VERSION;
 }
 
 const char* GetMinimumAudioDSPAPIVersion(void)
 {
-  static string s_MinApiVersion = XBMC_AE_DSP_MIN_API_VERSION;
-  return s_MinApiVersion.c_str();
+  return KODI_AE_DSP_MIN_API_VERSION;
 }
 
 const char* GetGUIAPIVersion(void)
 {
-  static string s_GuiApiVersion = XBMC_GUI_API_VERSION;
-  return s_GuiApiVersion.c_str();
+  return KODI_GUILIB_API_VERSION;
 }
 
 const char* GetMinimumGUIAPIVersion(void)
 {
-  static string s_MinGuiApiVersion = XBMC_GUI_MIN_API_VERSION;
-  return s_MinGuiApiVersion.c_str();
+  return KODI_GUILIB_MIN_API_VERSION;
 }
 
 AE_DSP_ERROR GetAddonCapabilities(AE_DSP_ADDON_CAPABILITIES* pCapabilities)
@@ -242,12 +239,12 @@ AE_DSP_ERROR GetAddonCapabilities(AE_DSP_ADDON_CAPABILITIES* pCapabilities)
 		return AE_DSP_ERROR_FAILED;
 	}
 
-	pCapabilities->bSupportsInputProcess		= g_AddonHandler.SupportsInputProcess();
-	pCapabilities->bSupportsPreProcess			= g_AddonHandler.SupportsPreProcess();
-	pCapabilities->bSupportsMasterProcess		= g_AddonHandler.SupportsMasterProcess();
-	pCapabilities->bSupportsPostProcess			= g_AddonHandler.SupportsPostProcess();
-	pCapabilities->bSupportsInputResample		= g_AddonHandler.SupportsInputResample();
-	pCapabilities->bSupportsOutputResample		= g_AddonHandler.SupportsOutputResample();
+	pCapabilities->bSupportsInputProcess    = g_AddonHandler.SupportsInputProcess();
+	pCapabilities->bSupportsPreProcess      = g_AddonHandler.SupportsPreProcess();
+	pCapabilities->bSupportsMasterProcess   = g_AddonHandler.SupportsMasterProcess();
+	pCapabilities->bSupportsPostProcess     = g_AddonHandler.SupportsPostProcess();
+	pCapabilities->bSupportsInputResample   = g_AddonHandler.SupportsInputResample();
+	pCapabilities->bSupportsOutputResample  = g_AddonHandler.SupportsOutputResample();
 
 	return AE_DSP_ERROR_NO_ERROR;
 }
@@ -291,7 +288,7 @@ AE_DSP_ERROR StreamInitialize(const ADDON_HANDLE handle, const AE_DSP_SETTINGS *
 {
 	if( !AddonSettings )
 	{
-		XBMC->Log(LOG_ERROR, "Null pointer were given!");
+		KODI->Log(LOG_ERROR, "Null pointer were given!");
 		return AE_DSP_ERROR_UNKNOWN;
 	}
 
@@ -311,7 +308,7 @@ unsigned int PreProcessNeededSamplesize(const ADDON_HANDLE handle, unsigned int 
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "PreProcessNeededSamplesize(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "PreProcessNeededSamplesize(...): uninitialized Stream was requested!");
 		return 0;
 	}
 }
@@ -325,7 +322,7 @@ float PreProcessGetDelay(const ADDON_HANDLE handle, unsigned int Mode_id)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "PreProcessGetDelay(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "PreProcessGetDelay(...): uninitialized Stream was requested!");
 		return 0.0f;
 	}
 }
@@ -343,7 +340,7 @@ unsigned int InputResampleProcessNeededSamplesize(const ADDON_HANDLE handle)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "InputResampleProcessNeededSamplesize(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "InputResampleProcessNeededSamplesize(...): uninitialized Stream was requested!");
 		return 0;
 	}
 }
@@ -357,7 +354,7 @@ int InputResampleSampleRate(const ADDON_HANDLE handle)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "InputResampleSampleRate(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "InputResampleSampleRate(...): uninitialized Stream was requested!");
 		return 0;
 	}
 }
@@ -371,7 +368,7 @@ float InputResampleGetDelay(const ADDON_HANDLE handle)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "InputResampleGetDelay(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "InputResampleGetDelay(...): uninitialized Stream was requested!");
 		return 0;
 	}
 }
@@ -389,7 +386,7 @@ AE_DSP_ERROR MasterProcessSetMode(const ADDON_HANDLE handle, AE_DSP_STREAMTYPE T
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "MasterProcessSetMode(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "MasterProcessSetMode(...): uninitialized Stream was requested!");
 		return AE_DSP_ERROR_UNKNOWN;
 	}
 }
@@ -403,7 +400,7 @@ unsigned int MasterProcessNeededSamplesize(const ADDON_HANDLE handle)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "MasterProcessNeededSamplesize(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "MasterProcessNeededSamplesize(...): uninitialized Stream was requested!");
 		return 0;
 	}
 }
@@ -417,7 +414,7 @@ float MasterProcessGetDelay(const ADDON_HANDLE handle)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "MasterProcessGetDelay(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "MasterProcessGetDelay(...): uninitialized Stream was requested!");
 		return 0.0f;
 	}
 }
@@ -431,7 +428,7 @@ int MasterProcessGetOutChannels(const ADDON_HANDLE handle, unsigned long &Out_ch
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "MasterProcessGetOutChannels(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "MasterProcessGetOutChannels(...): uninitialized Stream was requested!");
 		return 0;
 	}
 }
@@ -445,7 +442,7 @@ const char *MasterProcessGetStreamInfoString(const ADDON_HANDLE handle)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "MasterProcessGetStreamInfoString(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "MasterProcessGetStreamInfoString(...): uninitialized Stream was requested!");
 		return "";
 	}
 }
@@ -464,7 +461,7 @@ unsigned int PostProcessNeededSamplesize(const ADDON_HANDLE handle, unsigned int
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "PostProcessNeededSamplesize(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "PostProcessNeededSamplesize(...): uninitialized Stream was requested!");
 		return 0;
 	}
 }
@@ -478,7 +475,7 @@ float PostProcessGetDelay(const ADDON_HANDLE handle, unsigned int Mode_id)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "PostProcessGetDelay(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "PostProcessGetDelay(...): uninitialized Stream was requested!");
 		return 0.0f;
 	}
 }
@@ -496,7 +493,7 @@ unsigned int OutputResampleProcessNeededSamplesize(const ADDON_HANDLE handle)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "OutputResampleProcessNeededSamplesize(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "OutputResampleProcessNeededSamplesize(...): uninitialized Stream was requested!");
 		return 0;
 	}
 }
@@ -510,7 +507,7 @@ int OutputResampleSampleRate(const ADDON_HANDLE handle)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "OutputResampleSampleRate(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "OutputResampleSampleRate(...): uninitialized Stream was requested!");
 		return 0;
 	}
 }
@@ -524,7 +521,7 @@ float OutputResampleGetDelay(const ADDON_HANDLE handle)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "OutputResampleGetDelay(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "OutputResampleGetDelay(...): uninitialized Stream was requested!");
 		return 0.0f;
 	}
 }
@@ -542,7 +539,7 @@ bool InputProcess(const ADDON_HANDLE handle, const float **Array_in, unsigned in
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "InputProcess(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "InputProcess(...): uninitialized Stream was requested!");
 		return false;
 	}
 #else
@@ -560,7 +557,7 @@ unsigned int InputResampleProcess(const ADDON_HANDLE handle, float **Array_in, f
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "InputResampleProcess(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "InputResampleProcess(...): uninitialized Stream was requested!");
 		return 0;
 	}
 #else
@@ -578,7 +575,7 @@ unsigned int PreProcess(const ADDON_HANDLE handle, unsigned int Mode_id, float *
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "PreProcess(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "PreProcess(...): uninitialized Stream was requested!");
 		return 0;
 	}
 #else
@@ -596,7 +593,7 @@ unsigned int MasterProcess(const ADDON_HANDLE handle, float **Array_in, float **
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "MasterProcess(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "MasterProcess(...): uninitialized Stream was requested!");
 		return 0;
 	}
 #else
@@ -614,7 +611,7 @@ unsigned int PostProcess(const ADDON_HANDLE handle, unsigned int Mode_id, float 
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "PostProcess(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "PostProcess(...): uninitialized Stream was requested!");
 		return 0;
 	}
 #else
@@ -632,7 +629,7 @@ unsigned int OutputResampleProcess(const ADDON_HANDLE handle, float **array_in, 
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "OutputResampleProcess(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "OutputResampleProcess(...): uninitialized Stream was requested!");
 		return 0;
 	}
 #else
@@ -649,7 +646,7 @@ AE_DSP_ERROR StreamIsModeSupported(const ADDON_HANDLE handle, AE_DSP_MODE_TYPE T
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "StreamIsModeSupported(...): uninitialized Stream was requested!");
+		KODI->Log(LOG_ERROR, "StreamIsModeSupported(...): uninitialized Stream was requested!");
 		return AE_DSP_ERROR_UNKNOWN;
 	}
 }

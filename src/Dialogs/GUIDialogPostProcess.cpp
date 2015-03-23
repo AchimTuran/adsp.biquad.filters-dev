@@ -85,14 +85,14 @@ bool CGUIDialogPostProcess::OnInit()
     m_Sliders[ii] = GUI->Control_getSlider(m_window, SLIDER_PREAMP + ii);
     if(!m_Sliders[ii])
     {
-      XBMC->Log(ADDON::LOG_ERROR, "Slider with ID: %i not found!", ii);
+      KODI->Log(ADDON::LOG_ERROR, "Slider with ID: %i not found!", ii);
       return false;
     }
 
     m_Sliders[ii]->SetFloatRange(-24.0f, 24.f);
     m_Sliders[ii]->SetFloatInterval(2.0f);
     m_Sliders[ii]->SetFloatValue(0.0f);
-    m_window->SetControlLabel(SLIDER_PREAMP_LABEL + ii, XBMC->GetLocalizedString(30150 + ii));
+    m_window->SetControlLabel(SLIDER_PREAMP_LABEL + ii, KODI->GetLocalizedString(30150 + ii));
     m_window->SetControlLabel(SLIDER_PREAMP_VALUE + ii, float_dB_toString(m_Gains[ii]).c_str());
   }
 

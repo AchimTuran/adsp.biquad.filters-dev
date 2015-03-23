@@ -18,7 +18,7 @@ CGUIDialogBase::CGUIDialogBase( std::string xmlFilename, bool ForceFallback, boo
 	}
 	else
 	{
-		XBMC->Log( LOG_ERROR, "Couldn't create m_window! Not enough free memory?" );
+		KODI->Log( LOG_ERROR, "Couldn't create m_window! Not enough free memory?" );
 	}
 }
 

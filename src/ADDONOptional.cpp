@@ -79,7 +79,7 @@ AE_DSP_ERROR CADDONOptional::CallMenuHook(const AE_DSP_MENUHOOK& Menuhook, const
 	  break;
 
 	  default:
-		  XBMC->Log(LOG_ERROR, "called unknown menu hook!" );
+		  KODI->Log(LOG_ERROR, "called unknown menu hook!" );
 		  return AE_DSP_ERROR_FAILED;
 	  break;
 	};

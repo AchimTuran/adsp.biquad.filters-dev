@@ -211,7 +211,7 @@ AE_DSP_ERROR CADSPAddonHandler::StreamCreate(const AE_DSP_SETTINGS *addonSetting
   const unsigned int iStreamID = addonSettings->iStreamID;
   if(iStreamID >= AE_DSP_STREAM_MAX_STREAMS)
   {
-    XBMC->Log(LOG_ERROR, "StreamID was equal or greater than AE_DSP_STREAM_MAX_STREAMS!");
+    KODI->Log(LOG_ERROR, "StreamID was equal or greater than AE_DSP_STREAM_MAX_STREAMS!");
     return AE_DSP_ERROR_UNKNOWN;
   }
 
@@ -233,7 +233,7 @@ AE_DSP_ERROR CADSPAddonHandler::StreamCreate(const AE_DSP_SETTINGS *addonSetting
   }
   else
   {
-    XBMC->Log(LOG_ERROR, "Couldn't create new ADSP-Stream! Not enough free memory?");
+    KODI->Log(LOG_ERROR, "Couldn't create new ADSP-Stream! Not enough free memory?");
     return AE_DSP_ERROR_FAILED;
   }
 }
@@ -243,7 +243,7 @@ AE_DSP_ERROR CADSPAddonHandler::StreamDestroy(unsigned int Id)
 {
 	if(Id >= AE_DSP_STREAM_MAX_STREAMS)
 	{
-		XBMC->Log(LOG_ERROR, "StreamID was equal or greater than AE_DSP_STREAM_MAX_STREAMS!");
+		KODI->Log(LOG_ERROR, "StreamID was equal or greater than AE_DSP_STREAM_MAX_STREAMS!");
 		return AE_DSP_ERROR_UNKNOWN;
 	}
 
@@ -254,7 +254,7 @@ AE_DSP_ERROR CADSPAddonHandler::StreamDestroy(unsigned int Id)
 	}
 	else
 	{
-		XBMC->Log(LOG_ERROR, "Couldn't destroy Stream: %i! It was not created!", Id);
+		KODI->Log(LOG_ERROR, "Couldn't destroy Stream: %i! It was not created!", Id);
 		return AE_DSP_ERROR_UNKNOWN;
 	}
 
@@ -265,7 +265,7 @@ CADSPProcessorHandle *CADSPAddonHandler::GetStream(AE_DSP_STREAM_ID Id)
 {
 	if(Id >= AE_DSP_STREAM_MAX_STREAMS)
 	{
-		XBMC->Log(LOG_ERROR, "StreamID was equal or greater than AE_DSP_STREAM_MAX_STREAMS!");
+		KODI->Log(LOG_ERROR, "StreamID was equal or greater than AE_DSP_STREAM_MAX_STREAMS!");
 		return NULL;
 	}
 
