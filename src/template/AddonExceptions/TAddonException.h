@@ -21,22 +21,22 @@
 
 
 
-#include "IAddonException.h"
 #include <string>
+#include "IAddonException.h"
 
-template<class C>
-class TAddonException : public IAddonException<C>
+template<class T>
+class TAddonException : public IAddonException<T>
 {
   public:
-    TAddonException(C Exception, std::string Function="", std::string Filename="", int Line=-1, std::string Module="")
-      : IAddonException<C>(Function, Filename, Line, Module)
+    TAddonException(T Exception, std::string Function="", std::string Filename="", int Line=-1, std::string Module="")
+      : IAddonException<T>(Function, Filename, Line, Module)
     {
-      m_Exception = Exception;
+      IAddonException<T>::m_Exception = Exception;
     }
 
-    ~TAddonException() {}
+    virtual ~TAddonException() {}
 
-    virtual C &what() { return m_Exception; }
+    virtual T &what() { return IAddonException<T>::m_Exception; }
 };
 
 // type definitions

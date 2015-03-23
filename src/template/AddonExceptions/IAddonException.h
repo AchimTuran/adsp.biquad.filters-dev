@@ -36,7 +36,7 @@ class IAddonException
       m_Line        = Line;
     }
 
-    ~IAddonException() {}
+    virtual ~IAddonException() {}
 
     virtual T &what() = 0;
 
