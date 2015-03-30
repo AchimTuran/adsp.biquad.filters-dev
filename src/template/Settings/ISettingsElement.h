@@ -27,7 +27,7 @@ class ISettingsElement
 public:
   typedef enum
   {
-      MIN_SETTING = -1,
+      MIN_UNKNOWN = -1,
       STRING_SETTING,
       UNSIGNED_INT_SETTING,
       INT_SETTING,
