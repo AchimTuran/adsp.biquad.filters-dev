@@ -20,7 +20,7 @@
 
 
 
-#include "Settings/CSettingsHelpers.h"
+#include <Settings/SettingsHelpers.h>
 
 using namespace std;
 
