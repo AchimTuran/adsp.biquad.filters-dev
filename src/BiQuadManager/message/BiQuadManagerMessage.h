@@ -25,9 +25,11 @@
 #include "BiQuadMessage.h"
 #include <iostream>
 
+// prototypes
 template<class T> class TBiQuadManagerMessage;
 class CBiQuadManagerMessage_Gain;
 
+// typedefs
 typedef TBiQuadManagerMessage<CBiQuadManagerMessage_Gain> BiQuadManagerMessage_Gain;
 typedef TBiQuadManagerMessage<uint> BiQuadManagerMessage_Quantity;
 
