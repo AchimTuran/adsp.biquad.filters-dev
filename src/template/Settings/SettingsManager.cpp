@@ -20,9 +20,9 @@
 
 
 
+#include "SettingsHelpers.h"
 #include <iterator>
 #include "SettingsManager.h"
-
 #include "../AddonExceptions/TAddonException.h"
 using namespace std;
 
@@ -80,16 +80,219 @@ void CSettingsManager::parse_SettingsXML()
   // No  --> do nothing
 }
 
-void CSettingsManager::add_Setting(std::string Key, std::string Value)
+bool CSettingsManager::add_Setting( std::string MainCategory, std::string SubCategory,
+                                    std::string Element, std::string Key,
+                                    ISettingsElement::SettingsTypes Type, void *Value)
 {
-  SettingsMap::iterator iter = m_Settings.find(Key);
+  if(!Value)
+  {
+    // ToDo: add some error log text to kodi.log
+    return false;
+  }
+
+  bool retVal = true;
+  string settingsStr = MainCategory + "." + SubCategory + "." + Element;
+  SettingsMap::iterator iter = m_Settings.find(settingsStr);
+  if(iter != m_Settings.end())
+  { // try to replace the current value with the new value
+
+    // first we have to search if the settings element is present in the founded Main- and Subcategory
+    CSettingsList::iterator settingsIter = iter->second.front();
+    while(settingsIter != iter->second.end() && (*settingsIter)->m_Key != Key)
+    {
+      settingsIter++;
+    }
+
+    if(settingsIter != iter->second.end())
+    {
+      // now we have to check if the type is the same
+      if(Type != (*settingsIter)->m_Type)
+      {
+        // ToDo: add some warning message to kodi.log
+        return false;
+      }
+
+      // ToDo call set function of setting element
+      //STRING_SETTINGS(iter->second)->set_Setting(Value);
+      return retVal;
+    }
+  }
+
+  // No element with the requested Main- and Subcategory, Type exists
+  // so we create a new one
+  ISettingsElement *element = CreateElement(Key, Type, Value);
+  if(!element)
+  {
+    //throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
+    // ToDo: add a error message to kodi.log
+    return false;
+  }
+
+  m_Settings[Key].push_back(element);
+
+  return retVal;
+}
+
+ISettingsElement *CSettingsManager::CreateElement(std::string Key, ISettingsElement::SettingsTypes Type, void *Value)
+{
+  ISettingsElement *element = NULL;
+
+  switch(Type)
+  {
+    case ISettingsElement::STRING_SETTING:
+    {
+      string *pVal = dynamic_cast<string*>(Value);
+      CStringSetting *p = new CStringSetting(*pVal, Key, Type);
+
+      if(pVal && p)
+      {
+        element = dynamic_cast<ISettingsElement*>(p);
+      }
+      else
+      {
+        if(p)
+        {
+          delete p;
+          p = NULL;
+        }
+      }
+    }
+    break;
+
+    case ISettingsElement::UNSIGNED_INT_SETTING:
+    {
+      unsigned int *pVal = (unsigned int*)(Value);
+      CUnsignedIntSetting *p = new CUnsignedIntSetting(*pVal, Key, Type);
+
+      if(p)
+      {
+        element = dynamic_cast<ISettingsElement*>(p);
+      }
+    }
+    break;
+
+    case ISettingsElement::INT_SETTING:
+    {
+      int *pVal = (unsigned int*)(Value);
+      CIntSetting *p = new CIntSetting(*pVal, Key, Type);
+
+      if(p)
+      {
+        element = dynamic_cast<ISettingsElement*>(p);
+      }
+    }
+    break;
+
+    case ISettingsElement::FLOAT_SETTING:
+    {
+      float *pVal = (float*)(Value);
+      CFloatSetting *p = new CFloatSetting(*pVal, Key, Type);
+
+      if(p)
+      {
+        element = dynamic_cast<ISettingsElement*>(p);
+      }
+    }
+    break;
+
+    case ISettingsElement::DOUBLE_SETTING:
+    {
+      double *pVal = (double*)(Value);
+      CDoubleSetting *p = new CDoubleSetting(*pVal, Key, Type);
+
+      if(p)
+      {
+        element = dynamic_cast<ISettingsElement*>(p);
+      }
+    }
+    break;
+
+    case ISettingsElement::BOOL_SETTING:
+    {
+      bool *pVal = (bool*)(Value);
+      CBoolSetting *p = new CBoolSetting(*pVal, Key, Type);
+
+      if(p)
+      {
+        element = dynamic_cast<ISettingsElement*>(p);
+      }
+    }
+    break;
+
+    default:
+      element = NULL;
+    break;
+  }
+
+  return element;
+}
+
+bool SetNewElementValue(ISettingsElement *Element)
+{
+  bool retVal = false;
+
+  switch(Element->m_Type)
+  {
+    case ISettingsElement::STRING_SETTING:
+    break;
+
+    case ISettingsElement::UNSIGNED_INT_SETTING:
+    break;
+
+    case ISettingsElement::INT_SETTING:
+    break;
+
+    case ISettingsElement::FLOAT_SETTING:
+    break;
+
+    case ISettingsElement::DOUBLE_SETTING:
+    break;
+
+    case ISettingsElement::BOOL_SETTING:
+    break;
+
+    default:
+      retVal = false;
+    break;
+  }
+
+  return retVal;
+}
+
+void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, std::string Value)
+{
+  string settingsStr = MainCategory + "." + SubCategory + "." + Element;
+  SettingsMap::iterator iter = m_Settings.find(settingsStr);
   if(iter != m_Settings.end())
   { // replace current value with the new value
-    STRING_SETTINGS(iter->second)->set_Setting(Value);
+    CSettingsList::iterator settingsIter = iter->second.front();
+    while(settingsIter != iter->second.end() && (*settingsIter)->m_Key != Key)
+    {
+      settingsIter++;
+    }
+
+    if(settingsIter != iter->second.end())
+    {
+      if(ISettingsElement::STRING_SETTING != (*settingsIter)->m_Type)
+      {
+        // ToDo: show some warning and return false!
+        return;
+      }
+      else
+      {
+        STRING_SETTINGS(iter->second)->set_Setting(Value);
+      }
+    }
+    else
+    {
+      // ToDo: create new element!
+    }
   }
   else
   { // generate a new Element
-    ISettingsElement *element = new CStringSetting(Value, Key, ISettingsElement::STRING_SETTING);
+
+
+    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CStringSetting(Value, Key, ISettingsElement::STRING_SETTING));
     if(!element)
     {
       throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
@@ -99,7 +302,7 @@ void CSettingsManager::add_Setting(std::string Key, std::string Value)
   }
 }
 
-void CSettingsManager::add_Setting(std::string Key, unsigned int Value)
+void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, unsigned int Value)
 {
   SettingsMap::iterator iter = m_Settings.find(Key);
   if(iter != m_Settings.end())
@@ -108,7 +311,7 @@ void CSettingsManager::add_Setting(std::string Key, unsigned int Value)
   }
   else
   { // generate a new Element
-    ISettingsElement *element = new CUnsignedIntSetting(Value, Key, ISettingsElement::UNSIGNED_INT_SETTING);
+    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CUnsignedIntSetting(Value, Key, ISettingsElement::UNSIGNED_INT_SETTING));
     if(!element)
     {
       throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
@@ -118,7 +321,7 @@ void CSettingsManager::add_Setting(std::string Key, unsigned int Value)
   }
 }
 
-void CSettingsManager::add_Setting(std::string Key, int Value)
+void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, int Value)
 {
   SettingsMap::iterator iter = m_Settings.find(Key);
   if(iter != m_Settings.end())
@@ -127,7 +330,7 @@ void CSettingsManager::add_Setting(std::string Key, int Value)
   }
   else
   { // generate a new Element
-    ISettingsElement *element = new CIntSetting(Value, Key, ISettingsElement::INT_SETTING);
+    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CIntSetting(Value, Key, ISettingsElement::INT_SETTING));
     if(!element)
     {
       throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
@@ -137,7 +340,7 @@ void CSettingsManager::add_Setting(std::string Key, int Value)
   }
 }
 
-void CSettingsManager::add_Setting(std::string Key, float Value)
+void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, float Value)
 {
   SettingsMap::iterator iter = m_Settings.find(Key);
   if(iter != m_Settings.end())
@@ -146,7 +349,7 @@ void CSettingsManager::add_Setting(std::string Key, float Value)
   }
   else
   { // generate a new Element
-    ISettingsElement *element = new CFloatSetting(Value, Key, ISettingsElement::FLOAT_SETTING);
+    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CFloatSetting(Value, Key, ISettingsElement::FLOAT_SETTING));
     if(!element)
     {
       throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
@@ -156,7 +359,7 @@ void CSettingsManager::add_Setting(std::string Key, float Value)
   }
 }
 
-void CSettingsManager::add_Setting(std::string Key, double Value)
+void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, double Value)
 {
   SettingsMap::iterator iter = m_Settings.find(Key);
   if(iter != m_Settings.end())
@@ -165,7 +368,7 @@ void CSettingsManager::add_Setting(std::string Key, double Value)
   }
   else
   { // generate a new Element
-    ISettingsElement *element = new CDoubleSetting(Value, Key, ISettingsElement::DOUBLE_SETTING);
+    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CDoubleSetting(Value, Key, ISettingsElement::DOUBLE_SETTING));
     if(!element)
     {
       throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
@@ -175,16 +378,16 @@ void CSettingsManager::add_Setting(std::string Key, double Value)
   }
 }
 
-void CSettingsManager::add_Setting(std::string Key, bool Value)
+void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, bool Value)
 {
-  SettingsMap::iterator iter = m_Settings.find(Key);
+  SettingsMap::iterator iter = m_Settings.find(MainCategory + "." + SubCategory + "." + Element);
   if(iter != m_Settings.end())
   { // replace current value with the new value
     BOOL_SETTINGS(iter->second)->set_Setting(Value);
   }
   else
   { // generate a new Element
-    ISettingsElement *element = (ISettingsElement*)new CBoolSetting(Value, Key, ISettingsElement::BOOL_SETTING);
+    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CBoolSetting(Value, Key, ISettingsElement::BOOL_SETTING));
     if(!element)
     {
       throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");

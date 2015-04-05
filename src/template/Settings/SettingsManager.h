@@ -22,6 +22,7 @@
 
 
 #include <map>
+#include <list>
 #include <string>
 
 #include "TSettingsElement.h"
@@ -33,6 +34,7 @@ typedef TSettingsElement<int>           CIntSetting;
 typedef TSettingsElement<float>         CFloatSetting;
 typedef TSettingsElement<double>        CDoubleSetting;
 typedef TSettingsElement<bool>          CBoolSetting;
+typedef std::list<ISettingsElement*>    CSettingsList;
 
 // Settings macro helpers
 #define STRING_SETTINGS(X)        dynamic_cast<CStringSetting*>(X)
@@ -42,7 +44,7 @@ typedef TSettingsElement<bool>          CBoolSetting;
 #define DOUBLE_SETTINGS(X)        dynamic_cast<CDoubleSetting*>(X)
 #define BOOL_SETTINGS(X)          dynamic_cast<CBoolSetting*>(X)
 
-typedef std::map<std::string, ISettingsElement*> SettingsMap;
+typedef std::map<std::string, CSettingsList> SettingsMap;
 
 class CSettingsManager
 {
@@ -50,18 +52,23 @@ class CSettingsManager
     CSettingsManager(std::string XMLFilename);
     ~CSettingsManager();
 
-    void add_Setting(std::string Key, std::string Value);
-    void add_Setting(std::string Key, unsigned int Value);
-    void add_Setting(std::string Key, int Value);
-    void add_Setting(std::string Key, float Value);
-    void add_Setting(std::string Key, double Value);
-    void add_Setting(std::string Key, bool Value);
+    bool add_Setting( std::string MainCategory, std::string SubCategory,
+                      std::string Element, std::string Key,
+                      ISettingsElement::SettingsTypes Type, void *Value);
+    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, std::string Value);
+    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, unsigned int Value);
+    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, int Value);
+    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, float Value);
+    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, double Value);
+    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, bool Value);
 
     void destroy_Setting(std::string Key);
 
     ISettingsElement *find_Setting(std::string Key);
 
   protected:
+    ISettingsElement *CreateElement(std::string Key, ISettingsElement::SettingsTypes Type, void *Value);
+    bool              SetNewElementValue(ISettingsElement *Element);
     void destroy();
     //SettingsMap m_Settings;
     SettingsMap m_Settings;
