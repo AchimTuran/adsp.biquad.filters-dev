@@ -27,7 +27,7 @@ class ISettingsElement
 public:
   typedef enum
   {
-      MIN_UNKNOWN = -1,
+      UNKNOWN_SETTING = -1,
       STRING_SETTING,
       UNSIGNED_INT_SETTING,
       INT_SETTING,
@@ -39,7 +39,7 @@ public:
 
   ISettingsElement(std::string Key, SettingsTypes Type)
   {
-    if(Type <= MIN_SETTING || Type >= MAX_SETTING)
+    if(Type <= UNKNOWN_SETTING || Type >= MAX_SETTING)
     {
       throw ADDON_STRING_EXCEPTION_HANDLER("Requested unsupported settings type!");
     }

@@ -20,7 +20,7 @@
 
 
 
-#include <Settings/SettingsHelpers.h>
+#include "SettingsHelpers.h"
 
 using namespace std;
 
@@ -73,7 +73,7 @@ string CSettingsHelpers::TranslateTypeToStr(ISettingsElement::SettingsTypes eTyp
 
 ISettingsElement::SettingsTypes CSettingsHelpers::TranslateTypeToEnum(string strType)
 {
-  ISettingsElement::SettingsTypes eType = ISettingsElement::MIN_UNKNOWN;
+  ISettingsElement::SettingsTypes eType = ISettingsElement::UNKNOWN_SETTING;
 
   if(strType == "string")
   {
