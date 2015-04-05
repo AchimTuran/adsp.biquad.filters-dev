@@ -42,8 +42,11 @@ class TAddonException : public IAddonException<T>
 // type definitions
 typedef TAddonException<std::string> CAddonStringException;
 
-// ToDo: Add Linux and Windows compiler flags for __FUNCTION__
-#define __FUNCTION__ ""
+#if defined (TARGET_WINDOWS)
+  #ifndef __func__
+    #define __func__ __FUNCTION__
+  #endif
+#endif
 
-#define ADDON_STRING_EXCEPTION_HANDLER(ErrorStr)  CAddonStringException(ErrorStr, __FUNCTION__, __FILE__, __LINE__)
-#define ADDON_STRING_MODULE_EXCEPTION_HANDLER(ErrorStr, Module)  CAddonStringException(ErrorStr, __FUNCTION__, __FILE__, __LINE__, Module)
+#define ADDON_STRING_EXCEPTION_HANDLER(ErrorStr)  CAddonStringException(ErrorStr, __func__, __FILE__, __LINE__)
+#define ADDON_STRING_MODULE_EXCEPTION_HANDLER(ErrorStr, Module)  CAddonStringException(ErrorStr, __func__, __FILE__, __LINE__, Module)
