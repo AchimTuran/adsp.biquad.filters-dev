@@ -251,14 +251,12 @@ AE_DSP_ERROR GetAddonCapabilities(AE_DSP_ADDON_CAPABILITIES* pCapabilities)
 
 const char* GetDSPName(void)
 {
-	static string s_DSPName(ADSP_ADDON_NAME);
-	return s_DSPName.c_str();
+  return ADSP_ADDON_NAME;
 }
 
 const char* GetDSPVersion(void)
 {
-	static string s_ADSPVersion(ADSP_ADDON_VERSION);
-	return s_ADSPVersion.c_str();
+  return ADSP_ADDON_VERSION;
 }
 
 AE_DSP_ERROR CallMenuHook(const AE_DSP_MENUHOOK& Menuhook, const AE_DSP_MENUHOOK_DATA &Item)
