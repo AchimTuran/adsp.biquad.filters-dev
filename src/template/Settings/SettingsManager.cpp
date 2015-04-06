@@ -24,6 +24,7 @@
 #include <iterator>
 #include "SettingsManager.h"
 #include "../AddonExceptions/TAddonException.h"
+
 using namespace std;
 
 CSettingsManager::CSettingsManager(string XMLFilename)
@@ -34,9 +35,9 @@ CSettingsManager::CSettingsManager(string XMLFilename)
   }
   m_XMLFilename = XMLFilename;
 
-  m_Settings.clear();
+  m_IsSettingsXMLLoaded = false;
 
-  parse_SettingsXML();
+  m_Settings.clear();
 }
 
 CSettingsManager::~CSettingsManager()
@@ -44,26 +45,38 @@ CSettingsManager::~CSettingsManager()
   destroy();
 }
 
-void CSettingsManager::destroy()
+void CSettingsManager::Init()
 {
-  save_CurrentSettings();
-
-  // delete settings map and its elements
-  for(SettingsMap::iterator iter = m_Settings.begin(); iter != m_Settings.end(); iter++)
+  if(!m_IsSettingsXMLLoaded)
   {
-    string key = iter->first;
-    ISettingsElement *settingsElement = iter->second;
-
-    if(settingsElement)
-    {
-      delete settingsElement;
-      iter->second = NULL;
-    }
-
-    m_Settings.erase(iter);
+    m_IsSettingsXMLLoaded = true;
+    read_SettingsXML();
   }
 }
-void CSettingsManager::save_CurrentSettings()
+
+void CSettingsManager::destroy()
+{
+  write_SettingsXML();
+
+  // delete settings map and its elements
+  for(SettingsMap::iterator mapIter = m_Settings.begin(); mapIter != m_Settings.end(); mapIter++)
+  {
+    //string key = iter->first;
+    for(CSettingsList::iterator listIter = mapIter->second.begin(); listIter != mapIter->second.end(); listIter++)
+    {
+      ISettingsElement *settingsElement = *listIter;
+      if(settingsElement)
+      {
+        delete settingsElement;
+        *listIter = NULL;
+      }
+    }
+  }
+
+  // all dynamic memory is deallocated, so we can delete the settings map
+  m_Settings.clear();
+}
+void CSettingsManager::write_SettingsXML()
 {
   // ToDo: implement xml stuff
   // isXMLFilePresent?
@@ -71,7 +84,7 @@ void CSettingsManager::save_CurrentSettings()
   // No  --> create XML file and store XML data
 }
 
-void CSettingsManager::parse_SettingsXML()
+void CSettingsManager::read_SettingsXML()
 {
   // ToDo: implement xml stuff
   // isXMLFilePresent?
@@ -80,8 +93,8 @@ void CSettingsManager::parse_SettingsXML()
   // No  --> do nothing
 }
 
-bool CSettingsManager::add_Setting( std::string MainCategory, std::string SubCategory,
-                                    std::string Element, std::string Key,
+bool CSettingsManager::add_Setting( string MainCategory, string SubCategory,
+                                    string Element, string Key,
                                     ISettingsElement::SettingsTypes Type, void *Value)
 {
   if(!Value)
@@ -90,58 +103,63 @@ bool CSettingsManager::add_Setting( std::string MainCategory, std::string SubCat
     return false;
   }
 
-  bool retVal = true;
   string settingsStr = MainCategory + "." + SubCategory + "." + Element;
-  SettingsMap::iterator iter = m_Settings.find(settingsStr);
-  if(iter != m_Settings.end())
-  { // try to replace the current value with the new value
-
-    // first we have to search if the settings element is present in the founded Main- and Subcategory
-    CSettingsList::iterator settingsIter = iter->second.front();
-    while(settingsIter != iter->second.end() && (*settingsIter)->m_Key != Key)
+  SettingsMap::iterator mapIter = m_Settings.find(settingsStr);
+  if(mapIter != m_Settings.end())
+  { // first we have to search, if the settings element is present in the founded Main- and Subcategory
+    CSettingsList::iterator settingsIter = mapIter->second.begin();
+    while(settingsIter != mapIter->second.end() && (*settingsIter)->get_Key() != Key)
     {
       settingsIter++;
     }
 
-    if(settingsIter != iter->second.end())
-    {
-      // now we have to check if the type is the same
-      if(Type != (*settingsIter)->m_Type)
-      {
-        // ToDo: add some warning message to kodi.log
-        return false;
-      }
+    if(settingsIter != mapIter->second.end() && (*settingsIter)->get_Key() == Key && Type == (*settingsIter)->get_Type())
+    { // if the Type and Key are the same, we override the current setting with the new value
+      // ToDo: add some warning to kodi.log
+      // current setting is overwritten!
 
-      // ToDo call set function of setting element
-      //STRING_SETTINGS(iter->second)->set_Setting(Value);
-      return retVal;
+      // call set function of setting element
+      return SetNewElementValue(*settingsIter, Value);
     }
   }
 
-  // No element with the requested Main- and Subcategory, Type exists
+  // No element with the requested Main- and Subcategory and Type exists
   // so we create a new one
-  ISettingsElement *element = CreateElement(Key, Type, Value);
-  if(!element)
+  ISettingsElement *settingsElement = CreateElement(Key, Type, Value);
+  if(!settingsElement)
   {
-    //throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
     // ToDo: add a error message to kodi.log
     return false;
   }
 
-  m_Settings[Key].push_back(element);
+  if(mapIter != m_Settings.end())
+  {
+    mapIter->second.push_back(settingsElement);
+  }
+  else
+  {
+    CSettingsList settingsList;
+    settingsList.push_back(settingsElement);
+    m_Settings[settingsStr] = settingsList;
+  }
 
-  return retVal;
+  return true;
 }
 
-ISettingsElement *CSettingsManager::CreateElement(std::string Key, ISettingsElement::SettingsTypes Type, void *Value)
+ISettingsElement *CSettingsManager::CreateElement(string Key, ISettingsElement::SettingsTypes Type, void *Value)
 {
-  ISettingsElement *element = NULL;
+  if(!Value)
+  {
+    // ToDo: add some warning message to kodi.log
+    return NULL;
+  }
 
+  ISettingsElement *element = NULL;
   switch(Type)
   {
     case ISettingsElement::STRING_SETTING:
     {
-      string *pVal = dynamic_cast<string*>(Value);
+      string *pVal = static_cast<string*>(Value);
       CStringSetting *p = new CStringSetting(*pVal, Key, Type);
 
       if(pVal && p)
@@ -173,7 +191,7 @@ ISettingsElement *CSettingsManager::CreateElement(std::string Key, ISettingsElem
 
     case ISettingsElement::INT_SETTING:
     {
-      int *pVal = (unsigned int*)(Value);
+      int *pVal = (int*)(Value);
       CIntSetting *p = new CIntSetting(*pVal, Key, Type);
 
       if(p)
@@ -227,197 +245,112 @@ ISettingsElement *CSettingsManager::CreateElement(std::string Key, ISettingsElem
   return element;
 }
 
-bool SetNewElementValue(ISettingsElement *Element)
+bool CSettingsManager::SetNewElementValue(ISettingsElement *Element, void *Value)
 {
-  bool retVal = false;
+  if(!Element || !Value)
+  {
+    // ToDo: add some warning message to kodi.log
+    return false;
+  }
 
-  switch(Element->m_Type)
+  switch(Element->get_Type())
   {
     case ISettingsElement::STRING_SETTING:
+      STRING_SETTINGS(Element)->set_Setting(*static_cast<string*>(Value));
     break;
 
     case ISettingsElement::UNSIGNED_INT_SETTING:
+      UNSIGNED_INT_SETTINGS(Element)->set_Setting(*((unsigned int*)Value));
     break;
 
     case ISettingsElement::INT_SETTING:
+      INT_SETTINGS(Element)->set_Setting(*((int*)Value));
     break;
 
     case ISettingsElement::FLOAT_SETTING:
+      FLOAT_SETTINGS(Element)->set_Setting(*((float*)Value));
     break;
 
     case ISettingsElement::DOUBLE_SETTING:
+      DOUBLE_SETTINGS(Element)->set_Setting(*((double*)Value));
     break;
 
     case ISettingsElement::BOOL_SETTING:
+      BOOL_SETTINGS(Element)->set_Setting(*((bool*)Value));
     break;
 
     default:
-      retVal = false;
+      return false;
     break;
   }
 
-  return retVal;
+  return true;
 }
 
-void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, std::string Value)
+void CSettingsManager::destroy_Setting(string MainCategory, string SubCategory, string Element, string Key)
 {
   string settingsStr = MainCategory + "." + SubCategory + "." + Element;
-  SettingsMap::iterator iter = m_Settings.find(settingsStr);
-  if(iter != m_Settings.end())
-  { // replace current value with the new value
-    CSettingsList::iterator settingsIter = iter->second.front();
-    while(settingsIter != iter->second.end() && (*settingsIter)->m_Key != Key)
+  SettingsMap::iterator mapIter = m_Settings.find(settingsStr);
+  if(mapIter != m_Settings.end())
+  {
+    CSettingsList::iterator listIter = mapIter->second.begin();
+
+    // search for the correct key
+    while(listIter != mapIter->second.end() && (*listIter)->get_Key() != Key)
     {
-      settingsIter++;
+      listIter++;
     }
 
-    if(settingsIter != iter->second.end())
+    // if the key was found, delete this setting
+    if(listIter != mapIter->second.end() && (*listIter)->get_Key() != Key)
     {
-      if(ISettingsElement::STRING_SETTING != (*settingsIter)->m_Type)
+      if(*listIter)
       {
-        // ToDo: show some warning and return false!
-        return;
+        delete *listIter;
+        *listIter = NULL;
       }
-      else
-      {
-        STRING_SETTINGS(iter->second)->set_Setting(Value);
-      }
+
+      // erase this setting from the list
+      mapIter->second.erase(listIter);
     }
-    else
+
+    // check if there are other settings, else delete this Main- and Subcategory
+    if(mapIter->second.size() <= 0)
     {
-      // ToDo: create new element!
+      m_Settings.erase(mapIter);
     }
-  }
-  else
-  { // generate a new Element
 
-
-    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CStringSetting(Value, Key, ISettingsElement::STRING_SETTING));
-    if(!element)
+    if(listIter == mapIter->second.end())
     {
-      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
+      // ToDo: show some warning log message
     }
-
-    m_Settings[Key] = element;
-  }
-}
-
-void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, unsigned int Value)
-{
-  SettingsMap::iterator iter = m_Settings.find(Key);
-  if(iter != m_Settings.end())
-  { // replace current value with the new value
-    UNSIGNED_INT_SETTINGS(iter->second)->set_Setting(Value);
-  }
-  else
-  { // generate a new Element
-    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CUnsignedIntSetting(Value, Key, ISettingsElement::UNSIGNED_INT_SETTING));
-    if(!element)
-    {
-      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
-    }
-
-    m_Settings[Key] = element;
-  }
-}
-
-void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, int Value)
-{
-  SettingsMap::iterator iter = m_Settings.find(Key);
-  if(iter != m_Settings.end())
-  { // replace current value with the new value
-    INT_SETTINGS(iter->second)->set_Setting(Value);
-  }
-  else
-  { // generate a new Element
-    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CIntSetting(Value, Key, ISettingsElement::INT_SETTING));
-    if(!element)
-    {
-      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
-    }
-
-    m_Settings[Key] = element;
-  }
-}
-
-void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, float Value)
-{
-  SettingsMap::iterator iter = m_Settings.find(Key);
-  if(iter != m_Settings.end())
-  { // replace current value with the new value
-    FLOAT_SETTINGS(iter->second)->set_Setting(Value);
-  }
-  else
-  { // generate a new Element
-    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CFloatSetting(Value, Key, ISettingsElement::FLOAT_SETTING));
-    if(!element)
-    {
-      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
-    }
-
-    m_Settings[Key] = element;
-  }
-}
-
-void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, double Value)
-{
-  SettingsMap::iterator iter = m_Settings.find(Key);
-  if(iter != m_Settings.end())
-  { // replace current value with the new value
-    DOUBLE_SETTINGS(iter->second)->set_Setting(Value);
-  }
-  else
-  { // generate a new Element
-    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CDoubleSetting(Value, Key, ISettingsElement::DOUBLE_SETTING));
-    if(!element)
-    {
-      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
-    }
-
-    m_Settings[Key] = element;
-  }
-}
-
-void CSettingsManager::add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, bool Value)
-{
-  SettingsMap::iterator iter = m_Settings.find(MainCategory + "." + SubCategory + "." + Element);
-  if(iter != m_Settings.end())
-  { // replace current value with the new value
-    BOOL_SETTINGS(iter->second)->set_Setting(Value);
-  }
-  else
-  { // generate a new Element
-    ISettingsElement *element = dynamic_cast<ISettingsElement*>(new CBoolSetting(Value, Key, ISettingsElement::BOOL_SETTING));
-    if(!element)
-    {
-      throw ADDON_STRING_EXCEPTION_HANDLER("Couldn't create settings element! Not enough free dynamic memory?");
-    }
-
-    m_Settings[Key] = element;
-  }
-}
-
-void CSettingsManager::destroy_Setting(std::string Key)
-{
-  SettingsMap::iterator iter = m_Settings.find(Key);
-  if(iter != m_Settings.end())
-  {
-    delete iter->second;
-    iter->second = NULL;
-    m_Settings.erase(iter);
-  }
-}
-
-ISettingsElement *CSettingsManager::find_Setting(std::string Key)
-{
-  SettingsMap::iterator iter = m_Settings.find(Key);
-
-  if(iter != m_Settings.end())
-  {
-    return iter->second;
   }
   else
   {
-    return NULL;
+    // ToDo: show some warning log message
   }
+}
+
+ISettingsElement *CSettingsManager::find_Setting(string MainCategory, string SubCategory, string Element, string Key)
+{
+  string settingsStr = MainCategory + "." + SubCategory + "." + Element;
+  SettingsMap::iterator mapIter = m_Settings.find(settingsStr);
+  if(mapIter != m_Settings.end())
+  {
+    CSettingsList::iterator listIter = mapIter->second.begin();
+
+    // search for the correct key
+    while(listIter != mapIter->second.end() && (*listIter)->get_Key() != Key)
+    {
+      listIter++;
+    }
+
+    if(listIter != mapIter->second.end() && (*listIter)->get_Key() != Key)
+    {
+      return *listIter;
+    }
+  }
+
+  // ToDo: show some warning log message
+  return NULL;
 }

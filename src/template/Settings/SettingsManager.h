@@ -51,30 +51,29 @@ class CSettingsManager
   public:
     CSettingsManager(std::string XMLFilename);
     ~CSettingsManager();
-
+    // This method loads settings from an XML-File, this method can only called once during the lifetime of this object
+    void Init();
+    // This method can create or override settings elements
     bool add_Setting( std::string MainCategory, std::string SubCategory,
                       std::string Element, std::string Key,
                       ISettingsElement::SettingsTypes Type, void *Value);
-    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, std::string Value);
-    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, unsigned int Value);
-    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, int Value);
-    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, float Value);
-    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, double Value);
-    void add_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key, bool Value);
-
-    void destroy_Setting(std::string Key);
-
-    ISettingsElement *find_Setting(std::string Key);
-
+    void destroy_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key);
+    ISettingsElement *find_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key);
+        
   protected:
     ISettingsElement *CreateElement(std::string Key, ISettingsElement::SettingsTypes Type, void *Value);
-    bool              SetNewElementValue(ISettingsElement *Element);
+    bool              SetNewElementValue(ISettingsElement *Element, void *Value);
     void destroy();
     //SettingsMap m_Settings;
     SettingsMap m_Settings;
     std::string m_XMLFilename;
 
-  //private:
-    void save_CurrentSettings();
-    void parse_SettingsXML();
+    // This method writes settings into the XML-File
+    void write_SettingsXML();
+    // This method reads settings from the XML-File
+    void read_SettingsXML();
+
+  private:
+    bool m_IsSettingsXMLLoaded;
+    
 };
