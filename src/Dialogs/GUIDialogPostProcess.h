@@ -21,7 +21,8 @@
 
 #include "template/include/GUIDialogBase.h"
 
-#define MAX_FREQ_BANDS 10
+#define MAX_FREQ_BANDS  10
+#define ABS_MAX_GAIN    24.0f
 
 class CGUIDialogPostProcess : public CGUIDialogBase
 {
@@ -37,5 +38,6 @@ private:
   virtual void OnClose();
 
   CAddonGUISliderControl *m_Sliders[MAX_FREQ_BANDS +1];
-  float m_Gains[MAX_FREQ_BANDS +1];
+  float m_Gains[AE_DSP_CH_MAX][MAX_FREQ_BANDS +1];
+  float m_InitialGains[AE_DSP_CH_MAX][MAX_FREQ_BANDS +1];
 };

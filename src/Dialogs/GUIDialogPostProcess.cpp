@@ -22,6 +22,7 @@
 
 #include "GUIDialogPostProcess.h"
 #include "utils/stdStringUtils.h"
+#include "BiQuadFiltersSettings.h"
 #include <math.h>
 using namespace std;
 
@@ -67,10 +68,14 @@ std::string float_dB_toString(float dB);
 CGUIDialogPostProcess::CGUIDialogPostProcess() :
 	CGUIDialogBase(	"DialogParametricEQ.xml", false, true )
 {
-  for(int ii = 0; ii < MAX_FREQ_BANDS +1; ii++)
+  for(int band = 0; band < MAX_FREQ_BANDS +1; band++)
   {
-    m_Sliders[ii] = NULL;
-    m_Gains[ii] = 0.0f;
+    m_Sliders[band] = NULL;
+    for(int ch = AE_DSP_CH_FL; ch < AE_DSP_CH_MAX; ch++)
+    {
+      m_Gains[ch][band] = 0.0f;
+      m_InitialGains[ch][band] = 0.0f;
+    }
   }
 }
 
@@ -80,20 +85,41 @@ CGUIDialogPostProcess::~CGUIDialogPostProcess()
 
 bool CGUIDialogPostProcess::OnInit()
 {
-  for(int ii = 0; ii < MAX_FREQ_BANDS +1; ii++)
+  // get current gain settings from BiQuadFiltersSettings Manager
+  CBiQuadFiltersSettings &settingsManager = CBiQuadFiltersSettings::Get();
+
+  for(int band = 0; band < MAX_FREQ_BANDS +1; band++)
   {
-    m_Sliders[ii] = GUI->Control_getSlider(m_window, SLIDER_PREAMP + ii);
-    if(!m_Sliders[ii])
+    m_Sliders[band] = GUI->Control_getSlider(m_window, SLIDER_PREAMP + band);
+    if(!m_Sliders[band])
     {
-      KODI->Log(ADDON::LOG_ERROR, "Slider with ID: %i not found!", ii);
+      KODI->Log(ADDON::LOG_ERROR, "Slider with ID: %i (%s) not found!", SLIDER_PREAMP + band, KODI->GetLocalizedString(30150 + band));
       return false;
     }
 
-    m_Sliders[ii]->SetFloatRange(-24.0f, 24.f);
-    m_Sliders[ii]->SetFloatInterval(2.0f);
-    m_Sliders[ii]->SetFloatValue(0.0f);
-    m_window->SetControlLabel(SLIDER_PREAMP_LABEL + ii, KODI->GetLocalizedString(30150 + ii));
-    m_window->SetControlLabel(SLIDER_PREAMP_VALUE + ii, float_dB_toString(m_Gains[ii]).c_str());
+    for(int ch = AE_DSP_CH_FL; ch < AE_DSP_CH_MAX; ch++)
+    {
+      if(!settingsManager.get_Parametric10BandEQGain((AE_DSP_CHANNEL)ch, (CBiQuadFiltersSettings::PARAMETRIC_10BAND_EQ_BANDS)band, &m_InitialGains[AE_DSP_CH_FL][band]))
+      {
+        m_InitialGains[AE_DSP_CH_FL][band] = 0.0f;
+      }
+
+      // clamp value
+      if(m_InitialGains[AE_DSP_CH_FL][band] > ABS_MAX_GAIN)
+      {
+        m_InitialGains[AE_DSP_CH_FL][band] = ABS_MAX_GAIN;
+      }
+      else if(m_InitialGains[AE_DSP_CH_FL][band] < -ABS_MAX_GAIN)
+      {
+        m_InitialGains[AE_DSP_CH_FL][band] = -ABS_MAX_GAIN;
+      }
+      m_Gains[AE_DSP_CH_FL][band] = m_InitialGains[AE_DSP_CH_FL][band];
+    }
+
+    m_Sliders[band]->SetFloatRange(-ABS_MAX_GAIN, ABS_MAX_GAIN);
+    m_Sliders[band]->SetFloatValue(m_InitialGains[AE_DSP_CH_FL][band]);
+    m_window->SetControlLabel(SLIDER_PREAMP_LABEL + band, KODI->GetLocalizedString(30150 + band));
+    m_window->SetControlLabel(SLIDER_PREAMP_VALUE + band, float_dB_toString(m_InitialGains[AE_DSP_CH_FL][band]).c_str());
   }
 
 	return true;
@@ -103,17 +129,41 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
 {
   switch(controlId)
   {
-    case BUTTON_CANCEL:
+    case BUTTON_OK:
     {
+      CBiQuadFiltersSettings &settingsManager = CBiQuadFiltersSettings::Get();
+      for(int ch = AE_DSP_CH_FL; ch < AE_DSP_CH_MAX; ch++)
+      {
+        for(int band = 0; band < MAX_FREQ_BANDS +1; band++)
+        {
+          if(m_Gains[ch][band] != m_InitialGains[ch][band])
+          {
+            settingsManager.set_Parametric10BandEQGain((AE_DSP_CHANNEL)ch, (CBiQuadFiltersSettings::PARAMETRIC_10BAND_EQ_BANDS)band, m_Gains[ch][band]);
+          }
+        }
+      }
       this->Close();
     }
     break;
-  
-    case BUTTON_OK:
+
+    case BUTTON_CANCEL:
     {
+      // ToDo: Restore old EQ gains
       this->Close();
-      //GUI->Control_releaseSpin(m_spinSpeakerGainTest);
-      //GUI->Control_releaseRadioButton(m_radioSpeakerContinuesTest);  
+    }
+    break;
+
+    case BUTTON_DEFAULT:
+    {
+      for(int band = 0; band < MAX_FREQ_BANDS +1; band++)
+      {
+        for(int ch = AE_DSP_CH_FL; ch < AE_DSP_CH_MAX; ch++)
+        {
+          m_Gains[ch][band] = 0.0f;
+        }
+        m_Sliders[band]->SetFloatValue(m_Gains[AE_DSP_CH_FL][band]);
+        m_window->SetControlLabel(SLIDER_PREAMP_VALUE + band, float_dB_toString(m_Gains[AE_DSP_CH_FL][band]).c_str());
+      }
     }
     break;
 
@@ -128,8 +178,12 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
     case SLIDER_4kHz:
     case SLIDER_8kHz:
     case SLIDER_16kHz:
-      m_Gains[controlId - SLIDER_PREAMP] = m_Sliders[controlId - SLIDER_PREAMP]->GetFloatValue();
-      m_window->SetControlLabel(controlId + 200, float_dB_toString(m_Gains[controlId - SLIDER_PREAMP]).c_str());
+      m_Gains[AE_DSP_CH_FL][controlId - SLIDER_PREAMP] = m_Sliders[controlId - SLIDER_PREAMP]->GetFloatValue();
+      for(int ch = AE_DSP_CH_FR; ch < AE_DSP_CH_MAX; ch++)
+      {
+        m_Gains[ch][controlId - SLIDER_PREAMP] = m_Gains[AE_DSP_CH_FL][controlId - SLIDER_PREAMP];
+      }
+      m_window->SetControlLabel(controlId + 200, float_dB_toString(m_Gains[AE_DSP_CH_FL][controlId - SLIDER_PREAMP]).c_str());
     break;
 
     default:
@@ -161,12 +215,12 @@ bool CGUIDialogPostProcess::OnAction(int actionId)
 
 void CGUIDialogPostProcess::OnClose()
 {
-  for(int ii = 0; ii < MAX_FREQ_BANDS +1; ii++)
+  for(int band = 0; band < MAX_FREQ_BANDS +1; band++)
   {
-    if(m_Sliders[ii])
+    if(m_Sliders[band])
     {
-      GUI->Control_releaseSlider(m_Sliders[ii]);
-      m_Sliders[ii] = NULL;
+      GUI->Control_releaseSlider(m_Sliders[band]);
+      m_Sliders[band] = NULL;
     }
   }
 }
