@@ -31,7 +31,7 @@ msgstr ""
 
 # template configuration: src/template/configuration/templateConfiguration.cpp
 msgctxt "#30002"
-msgid "ToDo: description for parametric EQ"
+msgid "10 frequency bands + post gain"
 msgstr ""
 
 # template configuration: src/template/configuration/templateConfiguration.cpp
