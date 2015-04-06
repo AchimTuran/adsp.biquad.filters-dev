@@ -25,8 +25,8 @@
 #include <math.h>
 using namespace std;
 
-#define BUTTON_CANCEL         10050
-#define BUTTON_OK             10051
+#define BUTTON_OK             10050
+#define BUTTON_CANCEL         10051
 #define BUTTON_DEFAULT        10052
 #define SLIDER_PREAMP         8000
 #define SLIDER_PREAMP_LABEL   8100
