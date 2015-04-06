@@ -36,165 +36,166 @@ using namespace ADDON;
 
 extern std::string adspImageUserPath;
 
-
 //Helper function prototypes
 string GetSettingsFile();
 
 CADSPAddonHandler::CADSPAddonHandler()
 {
-	for( unsigned int ii = 0; ii < AE_DSP_STREAM_MAX_STREAMS; ii++ )
-	{
-		m_ADSPProcessor[ii] = NULL;
-	}
+  for( unsigned int ii = 0; ii < AE_DSP_STREAM_MAX_STREAMS; ii++ )
+  {
+    m_ADSPProcessor[ii] = NULL;
+  }
 }
 
 CADSPAddonHandler::~CADSPAddonHandler()
 {
-	for( unsigned int ii = 0; ii < AE_DSP_STREAM_MAX_STREAMS; ii++ )
-	{
-		if(m_ADSPProcessor[ii])
-		{
-			delete m_ADSPProcessor[ii];
-		}
-	}
+  for( unsigned int ii = 0; ii < AE_DSP_STREAM_MAX_STREAMS; ii++ )
+  {
+    if(m_ADSPProcessor[ii])
+    {
+      delete m_ADSPProcessor[ii];
+    }
+  }
 }
-
 
 bool CADSPAddonHandler::Init()
 {
-	AE_DSP_MODES::AE_DSP_MODE modeSettings;
-	string imagePath = g_strUserPath + "\\" + adspImageUserPath + "\\";
-	string temp;
+  AE_DSP_MODES::AE_DSP_MODE modeSettings;
+  string imagePath = g_strAddonPath + "\\";
+  if(adspImageUserPath != "" || !adspImageUserPath.empty())
+  {
+    imagePath += adspImageUserPath + "\\";
+  }
+  string temp;
 
 #ifdef ADSP_ADDON_USE_INPUTRESAMPLE
-	//for(unsigned int ii = 0; ii < ADSP_MAX_INRES_MODES; ii++)
-	//{
-		modeSettings.iUniqueDBModeId = adspInResampleUniqueDdId;
-		modeSettings.iModeType = AE_DSP_MODE_TYPE_INPUT_RESAMPLE;
-		strcpy(modeSettings.strModeName, adspInResampleStrNames);
+  modeSettings.iUniqueDBModeId = adspInResampleUniqueDdId;
+  modeSettings.iModeType = AE_DSP_MODE_TYPE_INPUT_RESAMPLE;
+  strcpy(modeSettings.strModeName, adspInResampleStrNames);
 
-		modeSettings.iModeNumber = adspInResampleModeNum;
-		modeSettings.iModeSupportTypeFlags = adspInResampleTypeFlags;
-		modeSettings.bHasSettingsDialog = adspInResampleSettings;
-		modeSettings.bIsDisabled = adspInResampleDisabled;
+  modeSettings.iModeNumber = adspInResampleModeNum;
+  modeSettings.iModeSupportTypeFlags = adspInResampleTypeFlags;
+  modeSettings.bHasSettingsDialog = adspInResampleSettings;
+  modeSettings.bIsDisabled = adspInResampleDisabled;
 
-		modeSettings.iModeName = adspInResampleName;
-		modeSettings.iModeSetupName = adspInResampleSetupName;
-		modeSettings.iModeDescription = adspInResampleDescription;
-		modeSettings.iModeHelp = adspInResampleHelp;
+  modeSettings.iModeName = adspInResampleName;
+  modeSettings.iModeSetupName = adspInResampleSetupName;
+  modeSettings.iModeDescription = adspInResampleDescription;
+  modeSettings.iModeHelp = adspInResampleHelp;
 
-		temp = imagePath + adspInResampleOwnImage;
-		strcpy(modeSettings.strOwnModeImage, temp.c_str());
-		strcpy(modeSettings.strOverrideModeImage, "");//adspInResampleOverrideImage[ii]);
+  temp = imagePath + adspInResampleOwnImage;
+  strcpy(modeSettings.strOwnModeImage, temp.c_str());
+  temp = imagePath + adspInResampleOverrideImage;
+  strcpy(modeSettings.strOverrideModeImage, temp.c_str());
 
-		ADSP->RegisterMode(&modeSettings);
-	//}
+  ADSP->RegisterMode(&modeSettings);
 #endif
 
 #ifdef ADSP_ADDON_USE_PREPROCESSING
-	for(unsigned int ii = 0; ii < ADSP_MAX_PRE_MODES; ii++)
-	{
-		modeSettings.iUniqueDBModeId = adspPreUniqueDbId[ii];
-		modeSettings.iModeType = AE_DSP_MODE_TYPE_PRE_PROCESS;
-		strcpy_s(modeSettings.strModeName, AE_DSP_ADDON_STRING_LENGTH, adspPreStrNames[ii]);
+  for(unsigned int ii = 0; ii < ADSP_MAX_PRE_MODES; ii++)
+  {
+    modeSettings.iUniqueDBModeId = adspPreUniqueDbId[ii];
+    modeSettings.iModeType = AE_DSP_MODE_TYPE_PRE_PROCESS;
+    strcpy_s(modeSettings.strModeName, AE_DSP_ADDON_STRING_LENGTH, adspPreStrNames[ii]);
 
-		modeSettings.iModeNumber = adspPreModeNum[ii];
-		modeSettings.iModeSupportTypeFlags = adspPreTypeFlags[ii];
-		modeSettings.bHasSettingsDialog = adspPreSettings[ii];
-		modeSettings.bIsDisabled = adspPreDisabled[ii];
+    modeSettings.iModeNumber = adspPreModeNum[ii];
+    modeSettings.iModeSupportTypeFlags = adspPreTypeFlags[ii];
+    modeSettings.bHasSettingsDialog = adspPreSettings[ii];
+    modeSettings.bIsDisabled = adspPreDisabled[ii];
 
-		modeSettings.iModeName = adspPreName[ii];
-		modeSettings.iModeSetupName = adspPreSetupName[ii];
-		modeSettings.iModeDescription = adspPreDescription[ii];
-		modeSettings.iModeHelp = adspPreHelp[ii];
+    modeSettings.iModeName = adspPreName[ii];
+    modeSettings.iModeSetupName = adspPreSetupName[ii];
+    modeSettings.iModeDescription = adspPreDescription[ii];
+    modeSettings.iModeHelp = adspPreHelp[ii];
 
-		temp = imagePath + adspPreOwnImage[ii];
-		strcpy_s(modeSettings.strOwnModeImage, AE_DSP_ADDON_STRING_LENGTH, temp.c_str());
-		strcpy_s(modeSettings.strOverrideModeImage, AE_DSP_ADDON_STRING_LENGTH, "");//adspPreOverrideImage[ii]);
+    temp = imagePath + adspPreOwnImage[ii];
+    strcpy_s(modeSettings.strOwnModeImage, AE_DSP_ADDON_STRING_LENGTH, temp.c_str());
+    strcpy_s(modeSettings.strOverrideModeImage, AE_DSP_ADDON_STRING_LENGTH, "");//adspPreOverrideImage[ii]);
 
-		ADSP->RegisterMode(&modeSettings);
-	}
+    ADSP->RegisterMode(&modeSettings);
+  }
 #endif
 
 #ifdef ADSP_ADDON_USE_MASTERPROCESS
-	for(unsigned int ii = 0; ii < ADSP_MAX_MASTER_MODES; ii++)
-	{
-		modeSettings.iUniqueDBModeId = adspMaUniqueDdId[ii];
-		modeSettings.iModeType = AE_DSP_MODE_TYPE_MASTER_PROCESS;
-		strcpy_s(modeSettings.strModeName, AE_DSP_ADDON_STRING_LENGTH, adspMaStrNames[ii]);
+  for(unsigned int ii = 0; ii < ADSP_MAX_MASTER_MODES; ii++)
+  {
+    modeSettings.iUniqueDBModeId = adspMaUniqueDdId[ii];
+    modeSettings.iModeType = AE_DSP_MODE_TYPE_MASTER_PROCESS;
+    strcpy_s(modeSettings.strModeName, AE_DSP_ADDON_STRING_LENGTH, adspMaStrNames[ii]);
 
-		modeSettings.iModeNumber = adspMaModeNum[ii];
-		modeSettings.iModeSupportTypeFlags = adspMaTypeFlags[ii];
-		modeSettings.bHasSettingsDialog = adspMasterSettings[ii];
-		modeSettings.bIsDisabled = adspMaDisabled[ii];
+    modeSettings.iModeNumber = adspMaModeNum[ii];
+    modeSettings.iModeSupportTypeFlags = adspMaTypeFlags[ii];
+    modeSettings.bHasSettingsDialog = adspMasterSettings[ii];
+    modeSettings.bIsDisabled = adspMaDisabled[ii];
 
-		modeSettings.iModeName = adspMaName[ii];
-		modeSettings.iModeSetupName = adspMaSetupName[ii];
-		modeSettings.iModeDescription = adspMaDescription[ii];
-		modeSettings.iModeHelp = adspMaHelp[ii];
+    modeSettings.iModeName = adspMaName[ii];
+    modeSettings.iModeSetupName = adspMaSetupName[ii];
+    modeSettings.iModeDescription = adspMaDescription[ii];
+    modeSettings.iModeHelp = adspMaHelp[ii];
 
-		temp = imagePath + adspMaOwnImage[ii];
-		strcpy_s(modeSettings.strOwnModeImage, AE_DSP_ADDON_STRING_LENGTH, temp.c_str());
-		temp = imagePath + adspMaOverrideImage[ii];
-		strcpy_s(modeSettings.strOverrideModeImage, AE_DSP_ADDON_STRING_LENGTH, temp.c_str());
+    temp = imagePath + adspMaOwnImage[ii];
+    strcpy_s(modeSettings.strOwnModeImage, AE_DSP_ADDON_STRING_LENGTH, temp.c_str());
+    temp = imagePath + adspMaOverrideImage[ii];
+    strcpy_s(modeSettings.strOverrideModeImage, AE_DSP_ADDON_STRING_LENGTH, temp.c_str());
 
-		ADSP->RegisterMode(&modeSettings);
-	}
+    ADSP->RegisterMode(&modeSettings);
+  }
 #endif
 
 #ifdef ADSP_ADDON_USE_POSTPROCESS
-	for(unsigned int ii = 0; ii < ADSP_MAX_POST_MODES; ii++)
-	{
-		modeSettings.iUniqueDBModeId = adspPostUniqueDbId[ii];
-		modeSettings.iModeType = AE_DSP_MODE_TYPE_POST_PROCESS;
-		strcpy_s(modeSettings.strModeName, AE_DSP_ADDON_STRING_LENGTH, adspPostStrNames[ii]);
+  for(unsigned int ii = 0; ii < ADSP_MAX_POST_MODES; ii++)
+  {
+    modeSettings.iUniqueDBModeId = adspPostUniqueDbId[ii];
+    modeSettings.iModeType = AE_DSP_MODE_TYPE_POST_PROCESS;
+    strcpy_s(modeSettings.strModeName, AE_DSP_ADDON_STRING_LENGTH, adspPostStrNames[ii]);
 
-		modeSettings.iModeNumber = adspPostModeNum[ii];
-		modeSettings.iModeSupportTypeFlags = adspPostTypeFlags[ii];
-		modeSettings.bHasSettingsDialog = adspPostSettings[ii];
-		modeSettings.bIsDisabled = adspPostDisabled[ii];
+    modeSettings.iModeNumber = adspPostModeNum[ii];
+    modeSettings.iModeSupportTypeFlags = adspPostTypeFlags[ii];
+    modeSettings.bHasSettingsDialog = adspPostSettings[ii];
+    modeSettings.bIsDisabled = adspPostDisabled[ii];
 
-		modeSettings.iModeName = adspPostName[ii];
-		modeSettings.iModeSetupName = adspPostSetupName[ii];
-		modeSettings.iModeDescription = adspPostDescription[ii];
-		modeSettings.iModeHelp = adspPostHelp[ii];
+    modeSettings.iModeName = adspPostName[ii];
+    modeSettings.iModeSetupName = adspPostSetupName[ii];
+    modeSettings.iModeDescription = adspPostDescription[ii];
+    modeSettings.iModeHelp = adspPostHelp[ii];
 
-		strcpy_s(modeSettings.strOwnModeImage, AE_DSP_ADDON_STRING_LENGTH, adspPostOwnImage[ii]);
-		strcpy_s(modeSettings.strOverrideModeImage, AE_DSP_ADDON_STRING_LENGTH, "");//adspPostOverrideImage[ii]);
+    temp = imagePath + adspPostOwnImage[ii];
+    strcpy_s(modeSettings.strOwnModeImage, AE_DSP_ADDON_STRING_LENGTH, temp.c_str());
+    temp = imagePath + adspPostOverrideImage[ii];
+    strcpy_s(modeSettings.strOverrideModeImage, AE_DSP_ADDON_STRING_LENGTH, temp.c_str());
 
-		ADSP->RegisterMode(&modeSettings);
-	}
+    ADSP->RegisterMode(&modeSettings);
+  }
 #endif
 
 #ifdef ADSP_ADDON_USE_OUTPUTRESAMPLE
-	//for(unsigned int ii = 0; ii < ADSP_MAX_OUTRES_MODES; ii++)
-	//{
-		modeSettings.iUniqueDBModeId = adspOutResampleUniqueDdId;
-		modeSettings.iModeType = AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE;
-		strcpy_s(modeSettings.strModeName, AE_DSP_ADDON_STRING_LENGTH, adspOutResampleStrNames);
+  modeSettings.iUniqueDBModeId = adspOutResampleUniqueDdId;
+  modeSettings.iModeType = AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE;
+  strcpy_s(modeSettings.strModeName, AE_DSP_ADDON_STRING_LENGTH, adspOutResampleStrNames);
 
-		modeSettings.iModeNumber = adspOutResampleModeNum;
-		modeSettings.iModeSupportTypeFlags = adspOutResampleTypeFlags;
-		modeSettings.bHasSettingsDialog = adspOutResampleSettings;
-		modeSettings.bIsDisabled = adspOutResampleDisabled;
+  modeSettings.iModeNumber = adspOutResampleModeNum;
+  modeSettings.iModeSupportTypeFlags = adspOutResampleTypeFlags;
+  modeSettings.bHasSettingsDialog = adspOutResampleSettings;
+  modeSettings.bIsDisabled = adspOutResampleDisabled;
 
-		modeSettings.iModeName = adspOutResampleName;
-		modeSettings.iModeSetupName = adspOutResampleSetupName;
-		modeSettings.iModeDescription = adspOutResampleDescription;
-		modeSettings.iModeHelp = adspOutResampleHelp;
+  modeSettings.iModeName = adspOutResampleName;
+  modeSettings.iModeSetupName = adspOutResampleSetupName;
+  modeSettings.iModeDescription = adspOutResampleDescription;
+  modeSettings.iModeHelp = adspOutResampleHelp;
 
-		strcpy_s(modeSettings.strOwnModeImage, AE_DSP_ADDON_STRING_LENGTH, adspOutResampleOwnImage);
-		strcpy_s(modeSettings.strOverrideModeImage, AE_DSP_ADDON_STRING_LENGTH, "");//adspOutResampleOverrideImage[ii]);
+  temp = imagePath + adspOutResampleOwnImage;
+  strcpy_s(modeSettings.strOwnModeImage, AE_DSP_ADDON_STRING_LENGTH, temp.c_str());
+  temp = imagePath + adspOutResampleOverrideImage;
+  strcpy_s(modeSettings.strOverrideModeImage, AE_DSP_ADDON_STRING_LENGTH, temp.c_str());
 
-		ADSP->RegisterMode(&modeSettings);
-	//}
+  ADSP->RegisterMode(&modeSettings);
 #endif
 
-	//now we try to initialize the addon processor class
+  //now we try to initialize the addon processor class
 #ifdef ADSP_ADDON_USE_OPTIONAL_INIT
-	return OptionalInit();
+  return OptionalInit();
 #else
-	return true;
+  return true;
 #endif
 }
 
@@ -202,7 +203,9 @@ bool CADSPAddonHandler::Init()
 void CADSPAddonHandler::Destroy()
 {
   for(int ii = 0; ii < AE_DSP_STREAM_MAX_STREAMS; ii++)
+  {
     SAFE_DELETE(m_ADSPProcessor[ii]);
+  }
 
   Stop();
 }
@@ -265,18 +268,18 @@ AE_DSP_ERROR CADSPAddonHandler::StreamDestroy(unsigned int Id)
 
 CADSPProcessorHandle *CADSPAddonHandler::GetStream(AE_DSP_STREAM_ID Id)
 {
-	if(Id >= AE_DSP_STREAM_MAX_STREAMS)
-	{
-		KODI->Log(LOG_ERROR, "StreamID was equal or greater than AE_DSP_STREAM_MAX_STREAMS!");
-		return NULL;
-	}
+  if(Id >= AE_DSP_STREAM_MAX_STREAMS)
+  {
+    KODI->Log(LOG_ERROR, "StreamID was equal or greater than AE_DSP_STREAM_MAX_STREAMS!");
+    return NULL;
+  }
 
-	return m_ADSPProcessor[Id];
+  return m_ADSPProcessor[Id];
 }
 
 AE_DSP_ERROR CADSPAddonHandler::StreamInitialize(const ADDON_HANDLE handle, const AE_DSP_SETTINGS *Settings)
 {
-	return AE_DSP_ERROR_NO_ERROR;
+  return AE_DSP_ERROR_NO_ERROR;
 }
 
 /*
@@ -285,54 +288,54 @@ AE_DSP_ERROR CADSPAddonHandler::StreamInitialize(const ADDON_HANDLE handle, cons
 bool CADSPAddonHandler::SupportsInputProcess()
 {
 #ifdef ADSP_ADDON_USE_INPUTPROCESS
-	return true;
+  return true;
 #else
-	return false;
+  return false;
 #endif
 }
 
 bool CADSPAddonHandler::SupportsPreProcess()
 {
 #ifdef ADSP_ADDON_USE_PREPROCESSING
-	return true;
+  return true;
 #else
-	return false;
+  return false;
 #endif
 }
 
 bool CADSPAddonHandler::SupportsMasterProcess()
 {
 #ifdef ADSP_ADDON_USE_MASTERPROCESS
-	return true;
+  return true;
 #else
-	return false;
+  return false;
 #endif
 }
 
 bool CADSPAddonHandler::SupportsPostProcess()
 {
 #ifdef ADSP_ADDON_USE_POSTPROCESS
-	return true;
+  return true;
 #else
-	return false;
+  return false;
 #endif
 }
 
 bool CADSPAddonHandler::SupportsInputResample()
 {
 #ifdef ADSP_ADDON_USE_INPUTRESAMPLE
-	return true;
+  return true;
 #else
-	return false;
+  return false;
 #endif
 }
 
 bool CADSPAddonHandler::SupportsOutputResample()
 {
 #ifdef ADSP_ADDON_USE_OUTPUTRESAMPLE
-	return true;
+  return true;
 #else
-	return false;
+  return false;
 #endif
 }
 
