@@ -65,7 +65,27 @@ CBiQuadFiltersSettings &CBiQuadFiltersSettings::Get()
 // returns false --> invalid value
 bool CBiQuadFiltersSettings::get_Parametric10BandEQGain(AE_DSP_CHANNEL AudioChannel, PARAMETRIC_10BAND_EQ_BANDS Band, float *Gain)
 {
+  if(Band <= EQ_10BAND_UNKNOWN || Band >= EQ_10BAND_MAX || !Gain)
+  {
+    return false;
+  }
+  
+  ISettingsElement *setting = m_10BandEQSettings->find_Setting( "parametric_eq_settings", "gain_10_bands", 
+                                                                CADSPHelpers::Translate_ChID_TO_String(AudioChannel), stat_str10BandEQGains[Band]);
+  if(!setting)
+  {
+    return false;
+  }
+  *Gain = FLOAT_SETTINGS(setting)->get_Setting();
+  
   return true;
+}
+
+bool CBiQuadFiltersSettings::set_Parametric10BandEQGain(AE_DSP_CHANNEL AudioChannel, PARAMETRIC_10BAND_EQ_BANDS Band, float Gain)
+{
+  return m_10BandEQSettings->add_Setting( "parametric_eq_settings", "gain_10_bands",
+                                          CADSPHelpers::Translate_ChID_TO_String(AudioChannel), stat_str10BandEQGains[Band], 
+                                          ISettingsElement::FLOAT_SETTING, &Gain);
 }
 
 void CBiQuadFiltersSettings::Init_Parametric10BandEQSettings()

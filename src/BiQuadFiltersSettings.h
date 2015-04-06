@@ -55,6 +55,7 @@ public:
   // returns true --> valid value
   // returns false --> invalid value
   bool get_Parametric10BandEQGain(AE_DSP_CHANNEL AudioChannel, PARAMETRIC_10BAND_EQ_BANDS Band, float *Gain);
+  bool set_Parametric10BandEQGain(AE_DSP_CHANNEL AudioChannel, PARAMETRIC_10BAND_EQ_BANDS Band, float Gain);
   
   protected:
     CSettingsManager *m_10BandEQSettings;
