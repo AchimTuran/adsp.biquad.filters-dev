@@ -28,9 +28,10 @@
 #include "template/include/client.h"
 using namespace ADDON;
 
+#include "BiQuadFiltersSettings.h"
 #include "ADDONOptional.h"
-
 #include "Dialogs/GUIDialogPostProcess.h"
+#include "BiQuadFiltersSettings.h"
 
 CADDONOptional::CADDONOptional()
 {
@@ -53,6 +54,7 @@ unsigned int CADDONOptional::GetSettings(ADDON_StructSetting ***sSet)
 
 void CADDONOptional::Stop()
 {
+  
 }
 
 void CADDONOptional::FreeSettings()
@@ -118,6 +120,9 @@ bool CADDONOptional::OptionalInit()
   hook.iRelevantModeId      = POST_MODE_PARAMETRIC_EQ_ID;
   hook.bNeedPlayback        = false;
   ADSP->AddMenuHook(&hook);
+
+  // Create BiQuad Filter Settings
+  CBiQuadFiltersSettings::Get();
 
 	return true;
 }
