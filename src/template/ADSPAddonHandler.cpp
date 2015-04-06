@@ -203,6 +203,8 @@ void CADSPAddonHandler::Destroy()
 {
   for(int ii = 0; ii < AE_DSP_STREAM_MAX_STREAMS; ii++)
     SAFE_DELETE(m_ADSPProcessor[ii]);
+
+  Stop();
 }
 
 
