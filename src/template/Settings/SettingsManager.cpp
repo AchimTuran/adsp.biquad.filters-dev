@@ -345,7 +345,7 @@ ISettingsElement *CSettingsManager::find_Setting(string MainCategory, string Sub
       listIter++;
     }
 
-    if(listIter != mapIter->second.end() && (*listIter)->get_Key() != Key)
+    if(listIter != mapIter->second.end() && (*listIter)->get_Key() == Key)
     {
       return *listIter;
     }
