@@ -30,7 +30,7 @@
 #include <string>
 
 // image user path
-std::string adspImageUserPath = "";
+std::string adspImageUserPath = "resources//skins//media";
 
 //// configuration for input resample
 //ADSP_INRESMOD_UNIQUEDBID adspInResampleUniqueDdId = -1;
@@ -46,8 +46,8 @@ std::string adspImageUserPath = "";
 //ADSP_INRESMOD_DESCRIPTION adspInResampleDescription = {30002};
 //ADSP_INRESMOD_HELP adspInResampleHelp = {30003};
 //
-//ADSP_INRESMOD_OWN_IMAGE adspInResampleOwnImage[AE_DSP_ADDON_STRING_LENGTH] = {"img1.jpg"};
-////ADSP_INRESMOD_OVERRIDE_IMAGE adspInResampleOverrideImage[ADSP_MAX_INRES_MODES][AE_DSP_ADDON_STRING_LENGTH] = {"img1.jpg"};
+//ADSP_INRESMOD_OWN_IMAGE adspInResampleOwnImage[AE_DSP_ADDON_STRING_LENGTH] = {""};
+////ADSP_INRESMOD_OVERRIDE_IMAGE adspInResampleOverrideImage[ADSP_MAX_INRES_MODES][AE_DSP_ADDON_STRING_LENGTH] = {""};
 
 
 //// configuration for preprocessing modes
@@ -64,8 +64,8 @@ std::string adspImageUserPath = "";
 //ADSP_PREMOD_DESCRIPTION adspPreDescription[ADSP_MAX_PRE_MODES] = {30006};
 //ADSP_PREMOD_HELP adspPreHelp[ADSP_MAX_PRE_MODES] = {30007};
 //
-//ADSP_PREMOD_OWN_IMAGE adspPreOwnImage[ADSP_MAX_PRE_MODES][AE_DSP_ADDON_STRING_LENGTH] = {"img1.jpg"};
-////ADSP_PREMOD_OVERRIDE_IMAGE adspPreOverrideImage[ADSP_MAX_PRE_MODES][AE_DSP_ADDON_STRING_LENGTH] = {"img1.jpg"};
+//ADSP_PREMOD_OWN_IMAGE adspPreOwnImage[ADSP_MAX_PRE_MODES][AE_DSP_ADDON_STRING_LENGTH] = {""};
+////ADSP_PREMOD_OVERRIDE_IMAGE adspPreOverrideImage[ADSP_MAX_PRE_MODES][AE_DSP_ADDON_STRING_LENGTH] = {""};
 
 
 //// configuration for master modes
@@ -82,8 +82,8 @@ std::string adspImageUserPath = "";
 //ADSP_MAMOD_DESCRIPTION adspMaDescription[ADSP_MAX_MASTER_MODES] = {30010};
 //ADSP_MAMOD_HELP adspMaHelp[ADSP_MAX_MASTER_MODES] = {30011};
 //
-//ADSP_MAMOD_OWN_IMAGE adspMaOwnImage[ADSP_MAX_MASTER_MODES][AE_DSP_ADDON_STRING_LENGTH] = {"kodi audioDSP template_master.png"};
-//ADSP_MAMOD_OVERRIDE_IMAGE adspMaOverrideImage[ADSP_MAX_MASTER_MODES][AE_DSP_ADDON_STRING_LENGTH] = {"kodi audioDSP template.png"};
+//ADSP_MAMOD_OWN_IMAGE adspMaOwnImage[ADSP_MAX_MASTER_MODES][AE_DSP_ADDON_STRING_LENGTH] = {""};
+//ADSP_MAMOD_OVERRIDE_IMAGE adspMaOverrideImage[ADSP_MAX_MASTER_MODES][AE_DSP_ADDON_STRING_LENGTH] = {""};
 
 
 // configuration for postprocess modes
@@ -101,7 +101,7 @@ ADSP_POSTMOD_DESCRIPTION adspPostDescription[ADSP_MAX_POST_MODES] = {30002};
 ADSP_POSTMOD_HELP adspPostHelp[ADSP_MAX_POST_MODES] = {30003};
 
 ADSP_POSTMOD_OWN_IMAGE adspPostOwnImage[ADSP_MAX_POST_MODES][AE_DSP_ADDON_STRING_LENGTH] = {"adsp.parametric.eq_modeLogo.png"};
-//ADSP_POSTMOD_OVERRIDE_IMAGE adspPostOverrideImage[ADSP_MAX_POST_MODES][AE_DSP_ADDON_STRING_LENGTH] = {"img1.jpg"};
+ADSP_POSTMOD_OVERRIDE_IMAGE adspPostOverrideImage[ADSP_MAX_POST_MODES][AE_DSP_ADDON_STRING_LENGTH] = {""};
 
 
 //// configuration for output resample
@@ -118,5 +118,5 @@ ADSP_POSTMOD_OWN_IMAGE adspPostOwnImage[ADSP_MAX_POST_MODES][AE_DSP_ADDON_STRING
 //ADSP_OUTRESMOD_DESCRIPTION adspOutResampleDescription = {30018};
 //ADSP_OUTRESMOD_HELP adspOutResampleHelp = {30019};
 //
-//ADSP_OUTRESMOD_OWN_IMAGE adspOutResampleOwnImage[AE_DSP_ADDON_STRING_LENGTH] = {"img1.jpg"};
-////ADSP_OUTRESMOD_OVERRIDE_IMAGE adspOutResampleOverrideImage[ADSP_MAX_OUTRES_MODES][AE_DSP_ADDON_STRING_LENGTH] = {"img1.jpg"};
+//ADSP_OUTRESMOD_OWN_IMAGE adspOutResampleOwnImage[AE_DSP_ADDON_STRING_LENGTH] = {""};
+//ADSP_OUTRESMOD_OVERRIDE_IMAGE adspOutResampleOverrideImage[ADSP_MAX_OUTRES_MODES][AE_DSP_ADDON_STRING_LENGTH] = {""};

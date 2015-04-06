@@ -28,27 +28,27 @@
 #include "../include/typedefs.h"
 
 //! Here you mus define the name of your processing class.
-#define ADSP_PROCESSOR_CLASS_NAME		CDSPProcessor
+#define ADSP_PROCESSOR_CLASS_NAME   CDSPProcessor
 //! Here you must define the name of the header file from your processing class.
-#define ADSP_PROCESSOR_HEADER_FILE		"DSPProcessor.h"
+#define ADSP_PROCESSOR_HEADER_FILE  "DSPProcessor.h"
 //! Here you must define the name of your ADSP addon.
-#define ADSP_ADDON_NAME					"AudioDSP parametric EQ Addon"
+#define ADSP_ADDON_NAME             "BiQuad Filters"
 //! Here you must define the version of your ADSP addon.
-#define ADSP_ADDON_VERSION				"0.0.1"
+#define ADSP_ADDON_VERSION          "0.0.1"
 //#define ADSP_ADDON_ID
 
 //optional calling methods
 //! Here you can define the name of the header file for optional ADSP addon functions.
 //! If you define this, then your ADSP addon can use optional functions for example 
 //! a settings GUI.
-#define	ADSP_ADDON_OPTIONAL_HEADER_FILE	"ADDONOptional.h"
+#define	ADSP_ADDON_OPTIONAL_HEADER_FILE "ADDONOptional.h"
 //! If have defined a optional header file, then you must define the name of your 
 //! optional class.
-#define ADSP_ADDON_OPTIONAL_CLASS_NAME	CADDONOptional
+#define ADSP_ADDON_OPTIONAL_CLASS_NAME  CADDONOptional
 //! If you define this, then your ADSP addon can use settings.
 #define ADSP_ADDON_USE_SETTINGS
 //! This is optional and can be used to have configuration file.
-#define ADSP_SETTINGS_FILE				"adsp.parametric.eq__Settings.xml"
+#define ADSP_SETTINGS_FILE              "adsp.biquad.filters__GlobalSettings.xml"
 //! If you define this, then your ADSP addon can read the saved settings.
 #define ADSP_ADDON_USE_READSETTINGS
 //! If you define this, then your ADSP addon can get settings from xbmc.
@@ -118,17 +118,17 @@
 //#define ADSP_ADDON_USE_OUTPUTRESAMPLE
 
 // max processing methods
-//#define ADSP_MAX_INRES_MODES	1
+//#define ADSP_MAX_INRES_MODES  1
 //! If you have defined ADSP_ADDON_USE_MASTERPROCESS, then you must define the amount 
 //! of available masterprocess modes of your ADSP addon.
-//#define ADSP_MAX_MASTER_MODES	1
+//#define ADSP_MAX_MASTER_MODES 1
 //! If you have defined ADSP_ADDON_USE_MASTERPROCESS, then you must define the amount 
 //! of available preprocess modes of your ADSP addon.
-//#define ADSP_MAX_PRE_MODES		1
+//#define ADSP_MAX_PRE_MODES    1
 //! If you have defined ADSP_ADDON_USE_POSTPROCESS, then you must define the amount 
 //! of available postprocess modes of your ADSP addon.
-#define ADSP_MAX_POST_MODES		1
-//#define ADSP_MAX_OUTRES_MODES	1
+#define ADSP_MAX_POST_MODES     1
+//#define ADSP_MAX_OUTRES_MODES 1
 
 //--------------general settings--------------------------------------------
 /**
