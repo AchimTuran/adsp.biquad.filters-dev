@@ -1,27 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-	<gain channel="">
-		<setting id="gain_32Hz"  type="float" label="" default="0.0"/>
-		<setting id="gain_64Hz"  type="float" label="" default="0.0"/>
-		<setting id="gain_128Hz" type="float" label="" default="0.0"/>
-		<setting id="gain_256Hz" type="float" label="" default="0.0"/>
-		<setting id="gain_512Hz" type="float" label="" default="0.0"/>
-		<setting id="gain_1kHz"  type="float" label="" default="0.0"/>
-		<setting id="gain_2kHz"  type="float" label="" default="0.0"/>
-		<setting id="gain_4kHz"  type="float" label="" default="0.0"/>
-		<setting id="gain_8kHz"  type="float" label="" default="0.0"/>
-		<setting id="gain_16kHz" type="float" label="" default="0.0"/>
-	</gain>
-	<gain>
-		<setting id="gain_32Hz"  type="float" label="" default="0.0"/>
-		<setting id="gain_64Hz"  type="float" label="" default="0.0"/>
-		<setting id="gain_128Hz" type="float" label="" default="0.0"/>
-		<setting id="gain_256Hz" type="float" label="" default="0.0"/>
-		<setting id="gain_512Hz" type="float" label="" default="0.0"/>
-		<setting id="gain_1kHz"  type="float" label="" default="0.0"/>
-		<setting id="gain_2kHz"  type="float" label="" default="0.0"/>
-		<setting id="gain_4kHz"  type="float" label="" default="0.0"/>
-		<setting id="gain_8kHz"  type="float" label="" default="0.0"/>
-		<setting id="gain_16kHz" type="float" label="" default="0.0"/>
-	</gain>
-</settings>
+<!-- THIS IS A AUTO GENERTATED FILE. DO NOT EDIT! -->
+<parametric_eq_settings> <!-- Main Category -->
+	<settings_group subcategory="gain 10 bands" group_name="front left"> <!-- Subcategory gain -->
+		<setting key="gain_post" type="float" value="0.0"/>
+		<setting key="gain_32" type="float"	value="0.0"/>
+	</settings_group>
+	<settings_group subcategory="gain 10 bands" group_name="front right"> <!-- Subcategory gain -->
+		<setting key="gain_pre" type="float" value="0.0"/>
+	</settings_group>
+</parametric_eq_settings>
