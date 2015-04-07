@@ -13,7 +13,6 @@ CADSPProcessorHandle::~CADSPProcessorHandle()
 
 AE_DSP_ERROR CADSPProcessorHandle::StreamInitialize(const AE_DSP_SETTINGS *Settings)
 {
-	AE_DSP_ERROR err = AE_DSP_ERROR_NO_ERROR;
 	memcpy(&m_StreamSettings, Settings, sizeof(AE_DSP_SETTINGS));
 
 	return AE_DSP_ERROR_NO_ERROR;
