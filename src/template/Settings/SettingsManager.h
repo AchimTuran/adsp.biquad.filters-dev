@@ -44,6 +44,8 @@ typedef std::list<ISettingsElement*>    CSettingsList;
 #define DOUBLE_SETTINGS(X)        dynamic_cast<CDoubleSetting*>(X)
 #define BOOL_SETTINGS(X)          dynamic_cast<CBoolSetting*>(X)
 
+#define SETTINGS_SEPERATOR_STR "::"
+
 typedef std::map<std::string, CSettingsList> SettingsMap;
 
 class CSettingsManager
@@ -55,10 +57,10 @@ class CSettingsManager
     void Init();
     // This method can create or override settings elements
     bool add_Setting( std::string MainCategory, std::string SubCategory,
-                      std::string Element, std::string Key,
+                      std::string GroupName, std::string Key,
                       ISettingsElement::SettingsTypes Type, void *Value);
-    void destroy_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key);
-    ISettingsElement *find_Setting(std::string MainCategory, std::string SubCategory, std::string Element, std::string Key);
+    void destroy_Setting(std::string MainCategory, std::string SubCategory, std::string GroupName, std::string Key);
+    ISettingsElement *find_Setting(std::string MainCategory, std::string SubCategory, std::string GroupName, std::string Key);
         
   protected:
     ISettingsElement *CreateElement(std::string Key, ISettingsElement::SettingsTypes Type, void *Value);

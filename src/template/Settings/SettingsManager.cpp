@@ -94,7 +94,7 @@ void CSettingsManager::read_SettingsXML()
 }
 
 bool CSettingsManager::add_Setting( string MainCategory, string SubCategory,
-                                    string Element, string Key,
+                                    string GroupName, string Key,
                                     ISettingsElement::SettingsTypes Type, void *Value)
 {
   if(!Value)
@@ -103,7 +103,7 @@ bool CSettingsManager::add_Setting( string MainCategory, string SubCategory,
     return false;
   }
 
-  string settingsStr = MainCategory + "." + SubCategory + "." + Element;
+  string settingsStr = MainCategory + SETTINGS_SEPERATOR_STR + SubCategory + SETTINGS_SEPERATOR_STR + GroupName;
   SettingsMap::iterator mapIter = m_Settings.find(settingsStr);
   if(mapIter != m_Settings.end())
   { // first we have to search, if the settings element is present in the founded Main- and Subcategory
@@ -287,9 +287,9 @@ bool CSettingsManager::SetNewElementValue(ISettingsElement *Element, void *Value
   return true;
 }
 
-void CSettingsManager::destroy_Setting(string MainCategory, string SubCategory, string Element, string Key)
+void CSettingsManager::destroy_Setting(string MainCategory, string SubCategory, string GroupName, string Key)
 {
-  string settingsStr = MainCategory + "." + SubCategory + "." + Element;
+  string settingsStr = MainCategory + SETTINGS_SEPERATOR_STR + SubCategory + SETTINGS_SEPERATOR_STR + GroupName;
   SettingsMap::iterator mapIter = m_Settings.find(settingsStr);
   if(mapIter != m_Settings.end())
   {
@@ -331,9 +331,9 @@ void CSettingsManager::destroy_Setting(string MainCategory, string SubCategory, 
   }
 }
 
-ISettingsElement *CSettingsManager::find_Setting(string MainCategory, string SubCategory, string Element, string Key)
+ISettingsElement *CSettingsManager::find_Setting(string MainCategory, string SubCategory, string GroupName, string Key)
 {
-  string settingsStr = MainCategory + "." + SubCategory + "." + Element;
+  string settingsStr = MainCategory + SETTINGS_SEPERATOR_STR + SubCategory + SETTINGS_SEPERATOR_STR + GroupName;
   SettingsMap::iterator mapIter = m_Settings.find(settingsStr);
   if(mapIter != m_Settings.end())
   {
