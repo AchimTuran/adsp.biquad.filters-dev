@@ -23,7 +23,7 @@
 
 
 #include "../../template/configuration/templateConfiguration.h"
-#include <kodi/xbmc_adsp_types.h>
+#include <kodi/kodi_adsp_types.h>
 
 class CBiQuadMessageBase
 {

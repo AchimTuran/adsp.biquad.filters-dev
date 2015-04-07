@@ -20,7 +20,7 @@
  */
 
 #include <string>
-#include <kodi/xbmc_adsp_types.h>
+#include <kodi/kodi_adsp_types.h>
 
 #include "../configuration/templateConfiguration.h"
 #include "ADSPProcessorHandle.h"
