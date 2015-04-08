@@ -142,6 +142,7 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
           }
         }
       }
+      settingsManager.save_Parametric10BandEQSettings();
       this->Close();
     }
     break;
