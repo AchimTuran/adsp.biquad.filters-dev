@@ -88,6 +88,11 @@ bool CBiQuadFiltersSettings::set_Parametric10BandEQGain(AE_DSP_CHANNEL AudioChan
                                           ISettingsElement::FLOAT_SETTING, &Gain);
 }
 
+void CBiQuadFiltersSettings::save_Parametric10BandEQSettings()
+{
+  m_10BandEQSettings->write_SettingsXML();
+}
+
 void CBiQuadFiltersSettings::Init_Parametric10BandEQSettings()
 {
   m_10BandEQSettings = new CSettingsManager("parametricEQSettings.xml");
