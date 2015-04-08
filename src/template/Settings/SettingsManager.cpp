@@ -126,7 +126,7 @@ void CSettingsManager::write_SettingsXML()
         TiXmlElement *settingsGroup = new TiXmlElement("settings_group");
         settingsGroup->SetAttribute("sub_category", tokens[1].c_str());
         settingsGroup->SetAttribute("group_name", tokens[2].c_str());
-        mainCategory->LinkEndChild(mainCategory);
+        mainCategory->LinkEndChild(settingsGroup);
 
         for(CSettingsList::iterator setIter=mapIter->second.begin(); setIter != mapIter->second.end(); setIter++)
         {
