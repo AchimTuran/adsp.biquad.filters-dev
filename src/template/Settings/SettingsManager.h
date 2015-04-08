@@ -24,6 +24,7 @@
 #include <map>
 #include <list>
 #include <string>
+#include <template/include/client.h>
 
 #include "TSettingsElement.h"
 
@@ -51,7 +52,7 @@ typedef std::map<std::string, CSettingsList> SettingsMap;
 class CSettingsManager
 {
   public:
-    CSettingsManager(std::string XMLFilename);
+    CSettingsManager(std::string XMLFilename, std::string Path=g_strUserPath);
     ~CSettingsManager();
     // This method loads settings from an XML-File, this method can only called once during the lifetime of this object
     void Init();
@@ -61,6 +62,9 @@ class CSettingsManager
                       ISettingsElement::SettingsTypes Type, void *Value);
     void destroy_Setting(std::string MainCategory, std::string SubCategory, std::string GroupName, std::string Key);
     ISettingsElement *find_Setting(std::string MainCategory, std::string SubCategory, std::string GroupName, std::string Key);
+
+    // This method writes settings into the XML-File
+    void write_SettingsXML();
         
   protected:
     ISettingsElement *CreateElement(std::string Key, ISettingsElement::SettingsTypes Type, void *Value);
@@ -70,8 +74,6 @@ class CSettingsManager
     SettingsMap m_Settings;
     std::string m_XMLFilename;
 
-    // This method writes settings into the XML-File
-    void write_SettingsXML();
     // This method reads settings from the XML-File
     void read_SettingsXML();
 

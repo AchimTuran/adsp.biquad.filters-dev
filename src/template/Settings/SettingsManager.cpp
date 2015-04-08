@@ -20,20 +20,25 @@
 
 
 
-#include "SettingsHelpers.h"
 #include <iterator>
+#include <tinyxml/tinyxml.h>
+#include "utils/stdStringUtils.h"
+#include "SettingsHelpers.h"
 #include "SettingsManager.h"
 #include "../AddonExceptions/TAddonException.h"
+#include "kodi/libXBMC_addon.h"
+#include "exception"
 
+using namespace ADDON;
 using namespace std;
 
-CSettingsManager::CSettingsManager(string XMLFilename)
+CSettingsManager::CSettingsManager(string XMLFilename, string Path)
 {
   if(XMLFilename == "" || XMLFilename.empty())
   {
     throw ADDON_STRING_EXCEPTION_HANDLER("Invalid XML filename!");
   }
-  m_XMLFilename = XMLFilename;
+  m_XMLFilename = generateFilePath(Path, XMLFilename);
 
   m_IsSettingsXMLLoaded = false;
 
@@ -76,12 +81,113 @@ void CSettingsManager::destroy()
   // all dynamic memory is deallocated, so we can delete the settings map
   m_Settings.clear();
 }
+
 void CSettingsManager::write_SettingsXML()
 {
-  // ToDo: implement xml stuff
-  // isXMLFilePresent?
-  // Yes --> update XML data and store it in the corresponding XML file
-  // No  --> create XML file and store XML data
+  try
+  {
+    if(m_Settings.size() > 0)
+    {
+      TiXmlDocument doc;
+      // ToDo: check all TiXml* generations!
+      TiXmlDeclaration *declaration = new TiXmlDeclaration("1.0", "", "");
+      doc.LinkEndChild(declaration);
+      TiXmlComment *autoGenComment = new TiXmlComment();
+      autoGenComment->SetValue(" THIS IS A AUTO GENERTATED FILE. DO NOT EDIT! ");
+      doc.LinkEndChild(autoGenComment);
+
+      for(SettingsMap::iterator mapIter = m_Settings.begin(); mapIter != m_Settings.end(); mapIter++)
+      {
+        vector<string> tokens;
+        strTokenizer(mapIter->first, SETTINGS_SEPERATOR_STR, tokens);
+        if(tokens.size() != 3)
+        {
+          doc.Clear();
+          KODI->Log(LOG_ERROR, "Line: %i func: %s, Saving XML-File failed! Wrong SettingsMap string! Please call contact Addon author!\n", __LINE__, __func__, m_XMLFilename.c_str());
+          return;
+        }
+
+        TiXmlElement *mainCategory = NULL;
+        // check if this main category is already available
+        for(TiXmlNode *element = doc.FirstChild(); element && !mainCategory; element = element->NextSiblingElement())
+        {
+          if(element->Value() == tokens[0])
+          {
+            mainCategory = static_cast<TiXmlElement*>(element);
+          }
+        }
+
+        if(!mainCategory)
+        { // create new main category
+          mainCategory = new TiXmlElement(tokens[0]);
+          doc.LinkEndChild(mainCategory);
+        }
+
+        TiXmlElement *settingsGroup = new TiXmlElement("settings_group");
+        settingsGroup->SetAttribute("sub_category", tokens[1].c_str());
+        settingsGroup->SetAttribute("group_name", tokens[2].c_str());
+        mainCategory->LinkEndChild(mainCategory);
+
+        for(CSettingsList::iterator setIter=mapIter->second.begin(); setIter != mapIter->second.end(); setIter++)
+        {
+          if(!*setIter)
+          {
+            KODI->Log(LOG_ERROR, "Line: %i func: %s, invalid settings element! Please call contact Addon author!\n", __LINE__, __func__);
+            return;
+          }
+          TiXmlElement *setting = new TiXmlElement("setting");
+          setting->SetAttribute("key", (*setIter)->get_Key().c_str());
+
+          switch((*setIter)->get_Type())
+          {
+            case ISettingsElement::STRING_SETTING:
+              setting->SetAttribute("string", STRING_SETTINGS(*setIter)->get_Setting().c_str());
+            break;
+
+            case ISettingsElement::UNSIGNED_INT_SETTING:
+              setting->SetAttribute("unsigned_int", toString(UNSIGNED_INT_SETTINGS(*setIter)->get_Setting()).c_str());
+            break;
+
+            case ISettingsElement::INT_SETTING:
+              setting->SetAttribute("int", INT_SETTINGS(*setIter)->get_Setting());
+            break;
+
+            case ISettingsElement::FLOAT_SETTING:
+              setting->SetDoubleAttribute("float", (double)FLOAT_SETTINGS(*setIter)->get_Setting());
+            break;
+
+            case ISettingsElement::DOUBLE_SETTING:
+              setting->SetDoubleAttribute("double", DOUBLE_SETTINGS(*setIter)->get_Setting());
+            break;
+
+            case ISettingsElement::BOOL_SETTING:
+              if(BOOL_SETTINGS(*setIter)->get_Setting())
+              {
+                setting->SetAttribute("bool", "true");
+              }
+              else
+              {
+                setting->SetAttribute("bool", "false");
+              }
+            break;
+
+            default:
+              KODI->Log(LOG_ERROR, "Line: %i func: %s, invalid settings type! Please call contact Addon author!\n", __LINE__, __func__);
+              return;
+            break;
+          }
+
+          settingsGroup->LinkEndChild(setting);
+        }
+      }
+
+      doc.SaveFile(m_XMLFilename.c_str());
+    }
+  }
+  catch(bad_alloc &e)
+  {
+    KODI->Log(LOG_ERROR, "In function: %s a invalid memory allocation accured! Not enough free memory? Exception message: %s\n", __func__, e.what());
+  }
 }
 
 void CSettingsManager::read_SettingsXML()
