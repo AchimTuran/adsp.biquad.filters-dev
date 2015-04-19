@@ -37,6 +37,7 @@ CDSPProcessor::CDSPProcessor()
   m_MaxProcessingChannels = 0;
   m_BiQuads = NULL;
   m_TempBiQuad = NULL;
+  m_PostGain = NULL;
   m_NewMessage = false;
 }
 
@@ -56,6 +57,12 @@ CDSPProcessor::~CDSPProcessor()
     delete[] m_BiQuads;
     m_BiQuads = NULL;
   } 
+
+  if(m_PostGain)
+  {
+    delete [] m_PostGain;
+    m_PostGain = NULL;
+  }
 }
 
 AE_DSP_ERROR CDSPProcessor::Create()
@@ -67,6 +74,12 @@ AE_DSP_ERROR CDSPProcessor::Create()
     // ToDo: throw error message!
   }
 
+  m_PostGain = new float[m_MaxProcessingChannels];
+  if(m_PostGain)
+  {
+    KODI->Log(ADDON::LOG_ERROR, "%s line %i: Post gain array not created! Not enough free memory?", __func__, __LINE__);
+    return AE_DSP_ERROR_FAILED;
+  }
   int lastAudioChannel = 0;
   for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
   {
@@ -110,6 +123,13 @@ unsigned int CDSPProcessor::PostProcess(unsigned int Mode_id, float **Array_in, 
                                                         Array_in[m_BiQuads[ii].AudioChannel],
                                                         Array_out[m_BiQuads[ii].AudioChannel],
                                                         Samples);
+      if(m_PostGain[ch] != 1.0f)
+      {
+        for(uint ii = 0; ii < Samples; ii++)
+        {
+          Array_out[ch][ii] *= m_PostGain[ii];
+        }
+      }
     if(err != ASPLIB_ERR_NO_ERROR)
     {
       // ToDo: throw some error message!

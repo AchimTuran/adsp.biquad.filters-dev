@@ -75,6 +75,7 @@ private:
 
   ADSP_BiQuad                  *m_BiQuads;
   ADSP_BiQuad                  *m_TempBiQuad;
+  float                        *m_PostGain;
   volatile bool                 m_NewMessage;
   int                           m_MaxProcessingChannels;
   uint                          m_MaxFreqBands;
