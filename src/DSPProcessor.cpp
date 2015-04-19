@@ -39,6 +39,8 @@ CDSPProcessor::CDSPProcessor()
   m_TempBiQuad = NULL;
   m_PostGain = NULL;
   m_NewMessage = false;
+  m_BiQuadCoefficientsMessage = NULL;
+  m_BiQuadHandleMessage = NULL;
 }
 
 // delete your buffers here
@@ -147,48 +149,61 @@ CBiQuadMessageBase::BIQUAD_MESSAGE_RET CDSPProcessor::send_Message(CBiQuadMessag
     return CBiQuadMessage::BiQuadMessage_InvalidInput;
   }
 
-  // ToDo: check if AudioChannel is present
+  int biquadHandleIdx = -1;
+  for(int ch = 0; ch < m_MaxProcessingChannels; ch++)
+  {
+    if(!(CADSPHelpers::Translate_ChID_TO_ChFlag(Message->get_AudioChannelID()) & m_BiQuads[ch].ChannelFlag))
+    {
+      biquadHandleIdx = ch;
+    }
+  }
 
-  while(m_NewMessage); // wait for old message
+  if(biquadHandleIdx < 0)
+  {
+    return CBiQuadMessage::BiQuadMessage_AudioChannelNotPresent;
+  }
 
+  // wait for old message to be processed
+  while(m_NewMessage);
+
+  // process biquad message
   switch(Message->get_MessageType())
   {
     case CBiQuadMessage::BIQUAD_MESSAGE_SEND_BIQUAD_HANDLE:
     {
       m_BiQuadHandleMessage = dynamic_cast<CBiQuadMessage_BiQuadHandle*>(Message);
 
+      if(!m_BiQuadHandleMessage)
+      {
+        KODI->Log(ADDON::LOG_ERROR, "%s line %i: Invalid CBiQuadMessage_BiQuadHandle object pointer! Please contact Addon author.", __func__, __LINE__);
+        return CBiQuadMessage::BiQuadMessage_InvalidInput;
+      }
+
       m_NewMessage = true;
-      while(m_NewMessage); // wait for message to be processed
+      while(m_NewMessage);  // wait until message is processed
     }
     break;
 
-    //not needed message!
-    //case CBiQuadMessage::BIQUAD_MESSAGE_DESTROY_BIQUAD_HANDLE:
-    //break;
-
-    case CBiQuadMessage::BIQUAD_MESSAGE_GET_BIQUAD_CONFIG_CHANNEL:
-    {
-      m_BiQuadHandleMessage = dynamic_cast<CBiQuadMessage_BiQuadHandle*>(Message);
-
-      m_NewMessage = true;
-      while(m_NewMessage); // wait for message to be processed
-    }
-    break;
-
-    case CBiQuadMessage::BIQAUD_MESSAGE_SEND_COEFFICIENTS:
-    {
-      m_BiQuadCoefficientsMessage = (CBiQuadMessage_Coefficients*)Message;
-
-      m_NewMessage = true;
-      while(m_NewMessage); // wait for message to be processed
-    }
-    break;
+//    case CBiQuadMessage::BIQAUD_MESSAGE_SEND_COEFFICIENTS:
+//    {
+//      m_BiQuadCoefficientsMessage = (CBiQuadMessage_Coefficients*)Message;
+//
+//      m_NewMessage = true;
+//      while(m_NewMessage); // wait for message to be processed
+//    }
+//    break;
 
     case CBiQuadMessage::BIQAUD_MESSAGE_SEND_COEFFIECIENTS_IDX:
     {
-      CBiQuadMessage_Coefficients *p = dynamic_cast<CBiQuadMessage_Coefficients*>(Message);
-      // ToDo: send coe to correct BiQuadIdx!
-      // wait einbauen, bis thread alles übernommen hat
+      m_BiQuadCoefficientsMessage = dynamic_cast<CBiQuadMessage_Coefficients*>(Message);
+
+      if(!m_BiQuadCoefficientsMessage)
+      {
+        KODI->Log(ADDON::LOG_ERROR, "%s line %i: Invalid CBiQuadMessage_Coefficients object pointer! Please contact Addon author.", __func__, __LINE__);
+        return CBiQuadMessage::BiQuadMessage_InvalidInput;
+      }
+
+      m_NewMessage = true;
     }
     break;
 
@@ -206,4 +221,55 @@ CBiQuadMessageBase::BIQUAD_MESSAGE_RET CDSPProcessor::send_Message(CBiQuadMessag
 
 void CDSPProcessor::process_NewMessage()
 {
+  if(m_BiQuadCoefficientsMessage)
+  {
+    if(CADSPHelpers::IsChannelID_Present(m_StreamSettings.lOutChannelPresentFlags, m_BiQuadCoefficientsMessage->AudioChannel))
+    {
+      ADSP_BiQuad *p = NULL;
+      for(uint ch = 0; ch < m_MaxFreqBands; ch++)
+      {
+        if(m_BiQuads[ch].AudioChannel == m_BiQuadCoefficientsMessage->AudioChannel)
+        {
+          p = &m_BiQuads[ch];
+        }
+      }
+      if(!p)
+      {
+        return;
+      }
+
+      ASPLIB_ERR err = CBiQuadFactory::set_BiQuadCoefficients(p->BiQuadHandle,
+                                                              &m_BiQuadCoefficientsMessage->Coefficients,
+                                                              m_BiQuadCoefficientsMessage->BiQuadIndex,
+                                                              m_BiQuadCoefficientsMessage->c0,
+                                                              m_BiQuadCoefficientsMessage->d0);
+      if(err != ASPLIB_ERR_NO_ERROR)
+      {
+        KODI->Log(ADDON::LOG_ERROR, "During setting new biquad coefficients an error occurred!");
+      }
+    }
+  }
+
+  if(m_BiQuadHandleMessage)
+  {
+    ADSP_BiQuad *p = NULL;
+    for(uint ch = 0; ch < m_MaxFreqBands; ch++)
+    {
+      if(m_BiQuads[ch].AudioChannel == m_BiQuadHandleMessage->AudioChannel)
+      {
+        p = &m_BiQuads[ch];
+      }
+    }
+    if(!p)
+    {
+      return;
+    }
+
+    ASPLIB_BIQUAD_HANDLE biquadHandle;
+    biquadHandle.BiQuads = p->BiQuadHandle->BiQuads;
+
+    // change pointers to return biquad handle
+    p->BiQuadHandle->BiQuads = m_BiQuadHandleMessage->BiQuadHandle->BiQuadHandle->BiQuads;
+    m_BiQuadHandleMessage->BiQuadHandle->BiQuadHandle->BiQuads = biquadHandle.BiQuads;
+  }
 }
