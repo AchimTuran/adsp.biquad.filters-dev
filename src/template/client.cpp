@@ -29,7 +29,6 @@
 
 // include kodi platform header files
 #include <kodi/kodi_adsp_dll.h>
-//#include <kodi/kodi_adsp_types.h>
 #include <kodi/util/util.h>
 
 // include adsp template specific header files

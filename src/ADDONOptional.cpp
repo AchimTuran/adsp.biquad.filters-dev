@@ -85,26 +85,7 @@ AE_DSP_ERROR CADDONOptional::CallMenuHook(const AE_DSP_MENUHOOK& Menuhook, const
 		  return AE_DSP_ERROR_FAILED;
 	  break;
 	};
-	//if (menuhook.iHookId == ID_MENU_PRE_PROCESS)
-	//{
-	//	CGUIDialogSpeakerGain settings(item.data.iStreamId);
-	//	settings.DoModal();
-	//}
-	//else if (menuhook.iHookId == ID_MENU_SPEAKER_DISTANCE_SETUP)
-	//{
-	//	CGUIDialogSpeakerDistance settings(item.data.iStreamId);
-	//	settings.DoModal();
-	//}
-	//else if (menuhook.iHookId == ID_MASTER_PROCESS_FREE_SURROUND)
-	//{
-	//	CGUIDialogFreeSurround settings(item.data.iStreamId);
-	//	settings.DoModal();
-	//}
-	//else if (menuhook.iHookId == ID_MENU_EXTENDED_SETTINGS)
-	//{
-	//	CGUIDialogSpeakerDistance settings(0);
-	//	settings.DoModal();
-	//}
+
 	return AE_DSP_ERROR_NO_ERROR;
 }
 
