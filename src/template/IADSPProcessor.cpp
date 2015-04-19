@@ -62,3 +62,26 @@ AE_DSP_ERROR IADSPProcessor::StreamIsModeSupported(AE_DSP_MODE_TYPE Type, unsign
 {
 	return AE_DSP_ERROR_NO_ERROR;
 }
+
+AE_DSP_ERROR IADSPProcessor::GetStreamInfos(const AE_DSP_SETTINGS *pSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, void *CustomStreamInfos)
+{
+  if(!pSettings || !pProperties)
+  {
+    return AE_DSP_ERROR_INVALID_PARAMETERS;
+  }
+
+  memcpy((void*)pSettings, &m_StreamSettings, sizeof(AE_DSP_SETTINGS));
+  memcpy((void*)pProperties, &m_StreamProperties, sizeof(AE_DSP_STREAM_PROPERTIES));
+
+  if(CustomStreamInfos)
+  {
+    return GetCustomStreamInfos(CustomStreamInfos);
+  }
+
+  return AE_DSP_ERROR_NO_ERROR;
+}
+
+AE_DSP_ERROR IADSPProcessor::GetCustomStreamInfos(void *CustomStreamSettings)
+{
+  return AE_DSP_ERROR_NO_ERROR;
+}

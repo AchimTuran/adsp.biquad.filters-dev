@@ -275,8 +275,29 @@ public:
    * @remarks ToDo!
    */
   virtual AE_DSP_ERROR Create() = 0;
+  
+  //!	This gets the current stream settings and properties. 
+  /*!
+   * Get stream settings and properties. For details see  and AE_DSP_STREAM_PROPERTIES structures.
+   * If the add-on operate with buffered arrays and the output size can be higher as 
+   * the input it becomes asked about needed size before any PostProcess call.
+   * @param pSettings Stream settings for details see AE_DSP_SETTINGS.
+   * @param pProperties Stream properties for details see AE_DSP_STREAM_PROPERTIES.
+   * @return AE_DSP_ERROR_INVALID_PARAMETERS: if your input parameters were invalid.
+   * AE_DSP_ERROR_NO_ERROR: if all was ok.
+   */
+  AE_DSP_ERROR GetStreamInfos(const AE_DSP_SETTINGS *pSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, void *CustomStreamInfos=NULL);
+
 
 protected:
+  //! ToDo: description.
+  /*!
+   * Returns ToDo!
+   * @return ToDo!
+   * @remarks ToDo!
+   */
+  virtual AE_DSP_ERROR GetCustomStreamInfos(void *CustomStreamSettings);
+
 	//! Used stream settings for details see AE_DSP_SETTINGS.
 	AE_DSP_SETTINGS m_StreamSettings;
 	//! Used stream properties for details see AE_DSP_STREAM_PROPERTIES.

@@ -73,6 +73,22 @@ public:
 	 * Get Stream
 	*/
 	CADSPProcessorHandle *GetStream(AE_DSP_STREAM_ID Id);
+  //!	This gets the current stream Id settings and properties. 
+  /*!
+  * Get stream settings and properties. For details see  and AE_DSP_STREAM_PROPERTIES structures.
+  * If the add-on operate with buffered arrays and the output size can be higher as
+  * the input it becomes asked about needed size before any PostProcess call.
+  * @param Id The requested stream id. Never use a Id equal or greater than AE_DSP_STREAM_MAX_STREAMS.
+  * @param pSettings Stream settings for details see AE_DSP_SETTINGS.
+  * @param pProperties Stream properties for details see AE_DSP_STREAM_PROPERTIES.
+  * @return AE_DSP_ERROR_INVALID_PARAMETERS: if your input parameters were invalid.
+  * AE_DSP_ERROR_REJECTED: when the requested Stream Id is not active.
+  * AE_DSP_ERROR_NO_ERROR: if all was ok.
+  */
+  AE_DSP_ERROR GetStreamInfos(AE_DSP_STREAM_ID Id, const AE_DSP_SETTINGS *pSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, void *CustomStreamInfos=NULL);
+
+  CADSPModeMessage::BIQUAD_MESSAGE_RET SendMessage(AE_DSP_STREAM_ID Id, unsigned int Mode_id, AE_DSP_MODE_TYPE ModeType, CADSPModeMessage &Message);
+
   /*!
    * Mutex for safe access to processing modes
    */

@@ -289,6 +289,22 @@ CADSPProcessorHandle *CADSPAddonHandler::GetStream(AE_DSP_STREAM_ID Id)
   return m_ADSPProcessor[Id];
 }
 
+AE_DSP_ERROR CADSPAddonHandler::GetStreamInfos(AE_DSP_STREAM_ID Id, const AE_DSP_SETTINGS *pSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, void *CustomStreamInfos)
+{
+  if(!pSettings || !pProperties || Id >= AE_DSP_STREAM_MAX_STREAMS)
+  {
+    return AE_DSP_ERROR_INVALID_PARAMETERS;
+  }
+
+  PLATFORM::CLockObject modeLock(m_ADSPModeLock);
+  if(!m_ADSPProcessor[Id])
+  {
+    return AE_DSP_ERROR_REJECTED;
+  }
+
+  return m_ADSPProcessor[Id]->GetStreamInfos(pSettings, pProperties, CustomStreamInfos);
+}
+
 AE_DSP_ERROR CADSPAddonHandler::StreamInitialize(const ADDON_HANDLE handle, const AE_DSP_SETTINGS *Settings)
 {
   return AE_DSP_ERROR_NO_ERROR;
