@@ -21,6 +21,7 @@
 
 #include <string>
 #include <kodi/kodi_adsp_types.h>
+#include <kodi/threads/mutex.h>
 
 #include "../configuration/templateConfiguration.h"
 #include "ADSPProcessorHandle.h"
@@ -72,6 +73,10 @@ public:
 	 * Get Stream
 	*/
 	CADSPProcessorHandle *GetStream(AE_DSP_STREAM_ID Id);
+  /*!
+   * Mutex for safe access to processing modes
+   */
+   PLATFORM::CMutex m_ADSPModeLock;
 
 private:
 	//AE_DSP_SETTINGS           m_Settings;           /*!< @brief (required) the active XBMC audio settings */

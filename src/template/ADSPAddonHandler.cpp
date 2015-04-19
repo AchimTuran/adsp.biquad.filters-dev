@@ -49,6 +49,8 @@ CADSPAddonHandler::CADSPAddonHandler()
 
 CADSPAddonHandler::~CADSPAddonHandler()
 {
+  PLATFORM::CLockObject modeLock(m_ADSPModeLock);
+
   for( unsigned int ii = 0; ii < AE_DSP_STREAM_MAX_STREAMS; ii++ )
   {
     if(m_ADSPProcessor[ii])
@@ -202,6 +204,8 @@ bool CADSPAddonHandler::Init()
 
 void CADSPAddonHandler::Destroy()
 {
+  PLATFORM::CLockObject modeLock(m_ADSPModeLock);
+
   for(int ii = 0; ii < AE_DSP_STREAM_MAX_STREAMS; ii++)
   {
     SAFE_DELETE(m_ADSPProcessor[ii]);
@@ -220,6 +224,7 @@ AE_DSP_ERROR CADSPAddonHandler::StreamCreate(const AE_DSP_SETTINGS *addonSetting
     return AE_DSP_ERROR_UNKNOWN;
   }
 
+  PLATFORM::CLockObject modeLock(m_ADSPModeLock);
   if(m_ADSPProcessor[iStreamID])
   {
     delete m_ADSPProcessor[iStreamID];
@@ -252,6 +257,7 @@ AE_DSP_ERROR CADSPAddonHandler::StreamDestroy(unsigned int Id)
 		return AE_DSP_ERROR_UNKNOWN;
 	}
 
+  PLATFORM::CLockObject modeLock(m_ADSPModeLock);
 	if(m_ADSPProcessor[Id])
 	{
 		delete m_ADSPProcessor[Id];
@@ -266,6 +272,12 @@ AE_DSP_ERROR CADSPAddonHandler::StreamDestroy(unsigned int Id)
 	return AE_DSP_ERROR_NO_ERROR;
 }
 
+// ToDo: Reimplement mode handling with AddonHandler. 
+// Add methods: register/deregister mode (type, Id)
+//              process modes
+//              add base mode class
+//              add std::map for each processing mode
+//              prevent access to this std::map with a CLockObject
 CADSPProcessorHandle *CADSPAddonHandler::GetStream(AE_DSP_STREAM_ID Id)
 {
   if(Id >= AE_DSP_STREAM_MAX_STREAMS)
