@@ -23,7 +23,12 @@
 #include "GUIDialogPostProcess.h"
 #include "utils/stdStringUtils.h"
 #include "BiQuadFiltersSettings.h"
+#include "BiQuadManager/BiQuadManager_types.h"
+#include "template/include/ADSPAddonHandler.h"
+#include <asplib/BiQuads/apslib_BiQuadFactory.h>
 #include <math.h>
+
+using namespace asplib;
 using namespace std;
 
 #define BUTTON_OK             10050
@@ -179,12 +184,28 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
     case SLIDER_4kHz:
     case SLIDER_8kHz:
     case SLIDER_16kHz:
+      // ToDo: Add spin control to control each audio channel
       m_Gains[AE_DSP_CH_FL][controlId - SLIDER_PREAMP] = m_Sliders[controlId - SLIDER_PREAMP]->GetFloatValue();
       for(int ch = AE_DSP_CH_FR; ch < AE_DSP_CH_MAX; ch++)
       {
         m_Gains[ch][controlId - SLIDER_PREAMP] = m_Gains[AE_DSP_CH_FL][controlId - SLIDER_PREAMP];
       }
       m_window->SetControlLabel(controlId + 200, float_dB_toString(m_Gains[AE_DSP_CH_FL][controlId - SLIDER_PREAMP]).c_str());
+
+      for(AE_DSP_STREAM_ID id = 0; id < AE_DSP_STREAM_MAX_STREAMS; id++)
+      {
+        AE_DSP_SETTINGS streamSettings;
+        AE_DSP_STREAM_PROPERTIES streamProperties;
+        BIQUAD_INFOS BiquadInfos;
+        if(g_AddonHandler.GetStreamInfos(id, &streamSettings, &streamProperties, (void*)&BiquadInfos))
+        { // send new gain values to the biquad filter
+          // ToDo: calc biquad coefficients
+          //CBiQuadFactory::get_constQPeakingBiQuadCoes();
+        }
+      }
+
+      
+      
     break;
 
     default:
