@@ -25,10 +25,13 @@
  * ToDo: detailed description!
  */
 #include <string.h>
+#include <template/include/client.h>
 
 #include "DSPProcessor.h"
 #include "template/ADSPHelpers.h"
 using namespace asplib;
+
+#include "BiQuadFiltersSettings.h"
 
 // set addon properties here
 CDSPProcessor::CDSPProcessor()
@@ -50,7 +53,7 @@ CDSPProcessor::~CDSPProcessor()
   {
     for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
     {
-      ASPLIB_ERR err = CBiQuadFactory::destroy_BiQuads(&m_BiQuads->BiQuadHandle);
+      ASPLIB_ERR err = CBiQuadFactory::destroy_BiQuads(&m_BiQuads[ii].BiQuadHandle);
       if(err != ASPLIB_ERR_NO_ERROR)
       {
         // ToDo: show some error message!
@@ -73,6 +76,8 @@ AE_DSP_ERROR CDSPProcessor::Create()
   m_BiQuads = new ADSP_BiQuad[m_MaxProcessingChannels];
   if(!m_BiQuads)
   {
+    KODI->Log(ADDON::LOG_ERROR, "%s line %i: Biquads not created! Not enough free memory?", __func__, __LINE__);
+    return AE_DSP_ERROR_FAILED;
     // ToDo: throw error message!
   }
 
@@ -82,30 +87,54 @@ AE_DSP_ERROR CDSPProcessor::Create()
     KODI->Log(ADDON::LOG_ERROR, "%s line %i: Post gain array not created! Not enough free memory?", __func__, __LINE__);
     return AE_DSP_ERROR_FAILED;
   }
+
+  CBiQuadFiltersSettings settingsManager = CBiQuadFiltersSettings::Get();
+
+  // ToDo: bypass audio channel LFE!
   int lastAudioChannel = 0;
-  for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
+  for(int ch = 0; ch < m_MaxProcessingChannels; ch++)
   {
-    // ToDo: add functions for opt modules and channel bypass!
-    m_BiQuads[ii].BiQuadHandle = CBiQuadFactory::get_BiQuads(m_MaxFreqBands, (float)m_StreamSettings.iProcessSamplerate, ASPLIB_OPT_NATIVE);
-    if(!m_BiQuads[ii].BiQuadHandle)
-    {
-      // ToDo: throw some error message!
-    }
-
-    // set all gain values to 0dB
-    CBiQuadFactory::set_constQPeakingParams(m_BiQuads[ii].BiQuadHandle, 0.0f);
-
-    // map next channel to BiQuad Filter
+    // map next channel to biquad filter
     unsigned long tempChannelFlag = 1<<lastAudioChannel;
-    m_BiQuads[ii].AudioChannel = CADSPHelpers::GetNextChID(m_StreamSettings.lOutChannelPresentFlags,
-                                                              CADSPHelpers::Translate_ChFlag_TO_ChID((AE_DSP_CHANNEL_PRESENT)tempChannelFlag));
-    m_BiQuads[ii].ChannelFlag = CADSPHelpers::Translate_ChID_TO_ChFlag((AE_DSP_CHANNEL)m_BiQuads[ii].AudioChannel);
-    if(m_BiQuads[ii].AudioChannel == AE_DSP_CH_INVALID)
+    m_BiQuads[ch].AudioChannel = CADSPHelpers::GetNextChID(m_StreamSettings.lOutChannelPresentFlags,
+                                                           CADSPHelpers::Translate_ChFlag_TO_ChID((AE_DSP_CHANNEL_PRESENT)tempChannelFlag));
+    m_BiQuads[ch].ChannelFlag = CADSPHelpers::Translate_ChID_TO_ChFlag((AE_DSP_CHANNEL)m_BiQuads[ch].AudioChannel);
+    if(m_BiQuads[ch].AudioChannel == AE_DSP_CH_INVALID)
     {
-      // ToDo: throw some error message!
-      // no next channel found!
+      KODI->Log(ADDON::LOG_ERROR, "%s line %i: No audio channel is available!", __func__, __LINE__);
+      return AE_DSP_ERROR_FAILED;
     }
-    lastAudioChannel = m_BiQuads[ii].AudioChannel +1;
+    lastAudioChannel = m_BiQuads[ch].AudioChannel +1;
+
+    // create biquad for requested audio channel
+    // ToDo: add functions for opt modules
+    m_BiQuads[ch].BiQuadHandle = CBiQuadFactory::get_BiQuads(m_MaxFreqBands, (float)m_StreamSettings.iProcessSamplerate, ASPLIB_OPT_NATIVE);
+    if(!m_BiQuads[ch].BiQuadHandle)
+    {
+      KODI->Log(ADDON::LOG_ERROR, "%s line %i: Biquad for audio channel %s not created! Not enough free memory?", __func__, __LINE__, CADSPHelpers::Translate_ChID_TO_String(m_BiQuads[ch].AudioChannel).c_str());
+      return AE_DSP_ERROR_FAILED;
+    }
+
+    // set gain values
+    for(uint idx = 0; idx < m_MaxFreqBands; idx++)
+    {
+      float gain = 0.0f;
+      if(!settingsManager.get_Parametric10BandEQGain(m_BiQuads[ch].AudioChannel, (CBiQuadFiltersSettings::PARAMETRIC_10BAND_EQ_BANDS)idx, &gain))
+      {
+        KODI->Log(ADDON::LOG_NOTICE, "Biquad filter settings manager returned invalid gain for biquad audio channel \"%s\" with biquad index %i. Setting gain to 0dB.", CADSPHelpers::Translate_ChID_TO_String(m_BiQuads[ch].AudioChannel).c_str(), idx);
+        gain = 0.0f;
+      }
+
+      // ToDo: get gains from settings manager
+      CBiQuadFactory::set_constQPeakingParams(m_BiQuads[ch].BiQuadHandle, gain, idx);
+    }
+
+    // set post gain value
+    if(!settingsManager.get_Parametric10BandEQGain(m_BiQuads[ch].AudioChannel, CBiQuadFiltersSettings::EQ_10BAND_POST, &m_PostGain[ch]))
+    {
+      KODI->Log(ADDON::LOG_NOTICE, "Biquad filter settings manager returned invalid gain for for post gain on audio channel \"%s\". Setting gain to 0dB.", CADSPHelpers::Translate_ChID_TO_String(m_BiQuads[ch].AudioChannel).c_str());
+      m_PostGain[ch] = 1.0f;
+    }
   }
 
   return AE_DSP_ERROR_NO_ERROR;
@@ -119,12 +148,16 @@ unsigned int CDSPProcessor::PostProcess(unsigned int Mode_id, float **Array_in, 
     m_NewMessage = false;
   }
 
-  for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
+  for(uint ch = 0; ch < m_MaxProcessingChannels; ch++)
   {
-    ASPLIB_ERR err = CBiQuadFactory::calc_BiQuadSamples(m_BiQuads[ii].BiQuadHandle,
-                                                        Array_in[m_BiQuads[ii].AudioChannel],
-                                                        Array_out[m_BiQuads[ii].AudioChannel],
-                                                        Samples);
+    ASPLIB_ERR err = ASPLIB_ERR_NO_ERROR;
+    if(m_BiQuads[ch].AudioChannel != AE_DSP_CH_LFE)
+    {
+      err = CBiQuadFactory::calc_BiQuadSamples( m_BiQuads[ch].BiQuadHandle,
+                                                Array_in[m_BiQuads[ch].AudioChannel],
+                                                Array_out[m_BiQuads[ch].AudioChannel],
+                                                Samples);
+
       if(m_PostGain[ch] != 1.0f)
       {
         for(uint ii = 0; ii < Samples; ii++)
@@ -132,8 +165,15 @@ unsigned int CDSPProcessor::PostProcess(unsigned int Mode_id, float **Array_in, 
           Array_out[ch][ii] *= m_PostGain[ii];
         }
       }
+    }
+    else
+    { // we do net process LFE, this should be done by a other processing mode
+      memcpy(Array_out[m_BiQuads[ch].AudioChannel], Array_in[m_BiQuads[ch].AudioChannel], sizeof(float)*Samples);
+    }
+
     if(err != ASPLIB_ERR_NO_ERROR)
     {
+      KODI->Log(ADDON::LOG_ERROR, "Biquad sample calculation on audio channel \"%s\" failed!", CADSPHelpers::Translate_ChID_TO_String(m_BiQuads[ch].AudioChannel).c_str());
       // ToDo: throw some error message!
       return 0;
     }
