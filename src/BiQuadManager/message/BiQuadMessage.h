@@ -37,6 +37,13 @@ template<class T> class TBiQuadMessage;
 typedef TBiQuadMessage<CBiQuadMessage_BiQuadHandle> BiQuadMessage_BiQuadHandle;
 typedef TBiQuadMessage<CBiQuadMessage_Coefficients> BiQuadMessage_Coefficients;
 typedef TBiQuadMessage<float> BiQuadMessage_Float;
+typedef TBiQuadMessage<float> CBiQuadMessage_GainIdx;
+
+//class CBiQuadMessage_GainIdx
+//{
+//  public:
+//    
+//};
 
 class CBiQuadMessage_BiQuadHandle
 {
@@ -44,11 +51,13 @@ class CBiQuadMessage_BiQuadHandle
     CBiQuadMessage_BiQuadHandle()
     {
       BiQuadHandle = NULL;
+      AudioChannel = AE_DSP_CH_INVALID;
     }
 
     ~CBiQuadMessage_BiQuadHandle() {}
 
     ADSP_BiQuad *BiQuadHandle;
+    AE_DSP_CHANNEL AudioChannel;
 };
 
 class CBiQuadMessage_Coefficients
@@ -63,7 +72,11 @@ class CBiQuadMessage_Coefficients
       Coefficients.b1 = 0.0f;
       Coefficients.b2 = 0.0f;
 
+      c0 = 0.0f;
+      d0 = 0.0f;
+
       BiQuadIndex = -1;
+      AudioChannel = AE_DSP_CH_INVALID;
     }
 
     ~CBiQuadMessage_Coefficients() {}
@@ -71,6 +84,9 @@ class CBiQuadMessage_Coefficients
     uint BiQuadIndex;   // BiQuad index to address the correct BiQuad filter.
                         // Only for set messages: BiQuadIndex < 0 --> sets Gain for all filters
     ASPLIB_BIQUAD_COEFFICIENTS Coefficients;
+    float                      c0;
+    float                      d0;
+    AE_DSP_CHANNEL             AudioChannel;
 };
 
 class CBiQuadMessage : public CBiQuadMessageBase
@@ -81,11 +97,12 @@ class CBiQuadMessage : public CBiQuadMessageBase
 
     typedef enum
     {
-      BIQUAD_MESSAGE_UNKNOWN = -1,
-      BIQUAD_MESSAGE_SEND_BIQUAD_HANDLE,
-      BIQUAD_MESSAGE_DESTROY_BIQUAD_HANDLE,
-      BIQUAD_MESSAGE_GET_BIQUAD_CONFIG_CHANNEL,
-      BIQAUD_MESSAGE_SEND_COEFFICIENTS,
+      BIQUAD_MESSAGE_UNKNOWN = -1,                // Unknown Biquad message
+      BIQUAD_MESSAGE_SEND_BIQUAD_HANDLE,          // request current biquad handle to receive it
+      BIQUAD_MESSAGE_SEND_GAIN_IDX,
+      //BIQUAD_MESSAGE_DESTROY_BIQUAD_HANDLE,
+      //BIQUAD_MESSAGE_GET_BIQUAD_CONFIG_CHANNEL,
+      //BIQAUD_MESSAGE_SEND_COEFFICIENTS,
       BIQAUD_MESSAGE_SEND_COEFFIECIENTS_IDX,
       BIQUAD_MESSAGE_GET_SAMPLE_FREQUENCY,
       BIQUAD_MESSAGE_MAX

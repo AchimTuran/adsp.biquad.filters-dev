@@ -33,6 +33,7 @@ class CBiQuadMessageBase
       BiQuadMessage_UnknownError = -1000,
       BiQuadMessage_InvalidInput = -999,
       BiQuadMessage_UnsupportedMessageType = -998,
+      BiQuadMessage_AudioChannelNotPresent = -997,
       BiQuadMessage_Success = 0,
       BiQuadMessage_Busy
     }BIQUAD_MESSAGE_RET;

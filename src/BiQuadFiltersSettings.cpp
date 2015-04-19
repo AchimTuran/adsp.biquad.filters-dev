@@ -27,7 +27,6 @@ using namespace std;
 
 static string stat_str10BandEQGains[] =
 {
-  "gain_post",
   "gain_32Hz",
   "gain_64Hz",
   "gain_125Hz",
@@ -37,7 +36,8 @@ static string stat_str10BandEQGains[] =
   "gain_2kHz",
   "gain_4kHz",
   "gain_8kHz",
-  "gain_16kHz"
+  "gain_16kHz",
+  "gain_post"
 };
 
 CBiQuadFiltersSettings::CBiQuadFiltersSettings()
@@ -99,6 +99,7 @@ void CBiQuadFiltersSettings::Init_Parametric10BandEQSettings()
   if(!m_10BandEQSettings)
   {
     // ToDo: throw some exception!
+    return;
   }
 
   // set default values
@@ -112,6 +113,7 @@ void CBiQuadFiltersSettings::Init_Parametric10BandEQSettings()
                                           stat_str10BandEQGains[gainSet], ISettingsElement::FLOAT_SETTING, &gainVal))
       {
         // ToDo: throw some exception!
+        return;
       }
     }
   }

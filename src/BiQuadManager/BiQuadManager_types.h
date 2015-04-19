@@ -44,3 +44,10 @@ typedef struct
   unsigned int          Quantity;         // Stores the amount of used BiQuads
   ASPLIB_BIQUAD_HANDLE  *BiQuadHandle;    // store the BiQuad Filter and the used optimization module
 }ADSP_BiQuad;
+
+struct BIQUAD_INFOS
+{
+  unsigned int SampleFrequency;
+  unsigned int BiquadAmount;
+  BIQUAD_INFOS() { SampleFrequency=0; BiquadAmount=0; };
+};
