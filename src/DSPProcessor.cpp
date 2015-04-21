@@ -106,7 +106,10 @@ AE_DSP_ERROR CDSPProcessor::Create()
 
     // create biquad for requested audio channel
     // ToDo: add functions for opt modules
-    m_BiQuads[ch].BiQuadHandle = CBiQuadFactory::get_BiQuads(m_MaxFreqBands, (float)m_StreamSettings.iProcessSamplerate, ASPLIB_OPT_NATIVE);
+    m_BiQuads[ch].DesignMethod = BIQUAD_CONST_Q_EQ;
+    m_BiQuads[ch].Quantity = 10;
+    m_BiQuads[ch].SampleFrequency = m_StreamSettings.iProcessSamplerate;
+    m_BiQuads[ch].BiQuadHandle = CBiQuadFactory::get_BiQuads(m_MaxFreqBands, (float)m_BiQuads[ch].SampleFrequency, ASPLIB_OPT_NATIVE);
     if(!m_BiQuads[ch].BiQuadHandle)
     {
       KODI->Log(ADDON::LOG_ERROR, "%s line %i: Biquad for audio channel %s not created! Not enough free memory?", __func__, __LINE__, CADSPHelpers::Translate_ChID_TO_String(m_BiQuads[ch].AudioChannel).c_str());
