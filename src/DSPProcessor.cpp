@@ -86,7 +86,7 @@ AE_DSP_ERROR CDSPProcessor::Create()
     return AE_DSP_ERROR_FAILED;
   }
 
-  CBiQuadFiltersSettings settingsManager = CBiQuadFiltersSettings::Get();
+  CBiQuadFiltersSettings &settingsManager = CBiQuadFiltersSettings::Get();
 
   // ToDo: bypass audio channel LFE!
   int lastAudioChannel = 0;
