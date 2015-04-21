@@ -239,8 +239,7 @@ AE_DSP_ERROR CADSPAddonHandler::StreamCreate(const AE_DSP_SETTINGS *addonSetting
     handle->dataAddress     = NULL;
     handle->callerAddress   = m_ADSPProcessor[iStreamID];
 
-    m_ADSPProcessor[iStreamID]->Create();
-    return AE_DSP_ERROR_NO_ERROR;
+    return m_ADSPProcessor[iStreamID]->Create();
   }
   else
   {
