@@ -440,7 +440,11 @@ void CSettingsManager::destroy_Setting(string MainCategory, string SubCategory, 
 ISettingsElement *CSettingsManager::find_Setting(string MainCategory, string SubCategory, string GroupName, string Key)
 {
   string settingsStr = MainCategory + SETTINGS_SEPERATOR_STR + SubCategory + SETTINGS_SEPERATOR_STR + GroupName;
-  SettingsMap::iterator mapIter = m_Settings.find(settingsStr);
+  SettingsMap::iterator mapIter = m_Settings.end();
+  if(m_Settings.size() > 0)
+  {
+    mapIter = m_Settings.find(settingsStr);
+  }
   if(mapIter != m_Settings.end())
   {
     CSettingsList::iterator listIter = mapIter->second.begin();
