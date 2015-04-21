@@ -26,6 +26,7 @@
 #include "include/ADSPAddonHandler.h"
 #include "configuration/templateConfiguration.h"
 #include "template/include/MACROHelper.h"
+#include "template/AddonExceptions/TAddonException.h"
 
 #ifndef strcpy_s
 #define strcpy_s(dest, size, src) (strncpy((dest), (src), (size)))
@@ -303,6 +304,61 @@ AE_DSP_ERROR CADSPAddonHandler::GetStreamInfos(AE_DSP_STREAM_ID Id, const AE_DSP
   }
 
   return m_ADSPProcessor[Id]->GetStreamInfos(pSettings, pProperties, CustomStreamInfos);
+}
+
+AE_DSP_ERROR CADSPAddonHandler::SendMessageToStream(CADSPModeMessage &Message)
+{
+  if( Message.get_MessageDataSize() <= 0|| 
+      Message.get_AudioChannel() <= AE_DSP_CH_INVALID ||
+      Message.get_AudioChannel() > AE_DSP_CH_MAX ||
+      !Message.get_ProcessingModeId() ||
+      Message.get_StreamId() > AE_DSP_STREAM_MAX_STREAMS ||
+      !Message.get_MessageType())
+  {
+    return AE_DSP_ERROR_REJECTED;
+  }
+
+  if(Message.get_StreamId() == AE_DSP_STREAM_MAX_STREAMS)
+  {
+    uint failedMessages = 0;
+    for(uint stream = 0; stream < AE_DSP_STREAM_MAX_STREAMS; stream++)
+    {
+      PLATFORM::CLockObject modeLock(m_ADSPModeLock);
+      if(m_ADSPProcessor[stream])
+      {
+        AE_DSP_ERROR err = m_ADSPProcessor[stream]->send_Message(Message);
+        if(err != AE_DSP_ERROR_NO_ERROR)
+        {
+          KODI->Log(ADDON::LOG_ERROR, "%s line %i: ModeMessage in stream id: %i produced error code: %i. AudioChannel: %s, MessageSize: %i, MessageType: %i, ProcessingModeId: %i, StreamId: %i", 
+                    __func__, __LINE__, stream, err, CADSPHelpers::Translate_ChID_TO_String(Message.get_AudioChannel()).c_str(),
+                    Message.get_MessageDataSize(), Message.get_MessageType(), Message.get_ProcessingModeId(), Message.get_StreamId());
+          failedMessages++;
+        }
+      }
+    }
+
+    if(failedMessages >= AE_DSP_STREAM_MAX_STREAMS)
+    { // If all messages produced an error an AE_DSP_ERROR_FAILED error is returned
+      return AE_DSP_ERROR_FAILED;
+    }
+  }
+  else
+  {
+    if(Message.get_StreamId() > AE_DSP_STREAM_MAX_STREAMS)
+    {
+      return AE_DSP_ERROR_INVALID_PARAMETERS;
+    }
+
+    PLATFORM::CLockObject modeLock(m_ADSPModeLock);
+    if(!m_ADSPProcessor[Message.get_StreamId()])
+    {
+      return AE_DSP_ERROR_IGNORE_ME;
+    }
+
+    return m_ADSPProcessor[Message.get_StreamId()]->send_Message(Message);
+  }
+
+  return AE_DSP_ERROR_NO_ERROR;
 }
 
 AE_DSP_ERROR CADSPAddonHandler::StreamInitialize(const ADDON_HANDLE handle, const AE_DSP_SETTINGS *Settings)

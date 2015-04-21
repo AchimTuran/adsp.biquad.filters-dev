@@ -25,6 +25,7 @@
 
 #include "../configuration/templateConfiguration.h"
 #include "ADSPProcessorHandle.h"
+#include "template/include/ADSPModeMessage.h"
 
 #include ADSP_PROCESSOR_HEADER_FILE
 
@@ -87,7 +88,7 @@ public:
   */
   AE_DSP_ERROR GetStreamInfos(AE_DSP_STREAM_ID Id, const AE_DSP_SETTINGS *pSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, void *CustomStreamInfos=NULL);
 
-  CADSPModeMessage::BIQUAD_MESSAGE_RET SendMessage(AE_DSP_STREAM_ID Id, unsigned int Mode_id, AE_DSP_MODE_TYPE ModeType, CADSPModeMessage &Message);
+  AE_DSP_ERROR SendMessageToStream(CADSPModeMessage &Message);
 
   /*!
    * Mutex for safe access to processing modes
