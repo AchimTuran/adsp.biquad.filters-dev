@@ -30,6 +30,7 @@
 #include <asplib/BiQuads/apslib_BiQuadFactory.h>
 #include "BiQuadManager/message/BiQuadMessage.h"
 #include "BiQuadManager/BiQuadManager_types.h"
+#include "template/include/ADSPModeMessage.h"
 
 //typedef struct
 //{
@@ -38,6 +39,17 @@
 //  ASPLIB_BIQUAD_HANDLE *BiQuadHandle;
 //}ADSP_CHANNEL_HANDLE;
 
+struct  BIQUAD_COEFFICIENTS
+{
+  ASPLIB_BIQUAD_COEFFICIENTS coefficients;
+  float d0;
+  float c0;
+  uint biquadIndex;
+  BIQUAD_COEFFICIENTS(){  coefficients.a0=0.0f; coefficients.a1=0.0f; coefficients.a2=0.0f;
+                          coefficients.b1=0.0f; coefficients.b2=0.0f;
+                          d0=0.0f; c0=0.0f; biquadIndex=0;};
+};
+
 //!	In this class you can define your processing modes.
 /*! 
  * All processing modes can be enabled or disabled in the templateConfiguration.h.
@@ -45,6 +57,13 @@
 class CDSPProcessor : public IADSPProcessor
 {
 public:
+  typedef enum
+  {
+    EQ_MESSAGE_UNKNOWN = 0,
+    EQ_MESSAGE_BIQUAD_IDX_COEFFICIENTS,
+    EQ_MESSAGE_POST_GAIN,
+    EQ_MESSAGE_MAX
+  }EQ_MESSAGES;
   //! Here for example you can create global buffers of your Addon
   CDSPProcessor();
 
@@ -68,7 +87,7 @@ public:
 
   virtual AE_DSP_ERROR Create();
 
-  CBiQuadMessageBase::BIQUAD_MESSAGE_RET send_Message(CBiQuadMessage *Message);
+  AE_DSP_ERROR send_Message(CADSPModeMessage &Message);
 
 private:
   void process_NewMessage();
@@ -79,6 +98,7 @@ private:
   volatile bool                 m_NewMessage;
   int                           m_MaxProcessingChannels;
   uint                          m_MaxFreqBands;
-  CBiQuadMessage_BiQuadHandle  *m_BiQuadHandleMessage;
-  CBiQuadMessage_Coefficients  *m_BiQuadCoefficientsMessage;
+  int                           m_MessageType;
+  void                         *m_MessagePtr;
+  int                           m_MessageAudioChannel;
 };
