@@ -25,6 +25,7 @@
 #include "BiQuadFiltersSettings.h"
 #include "BiQuadManager/BiQuadManager_types.h"
 #include "template/include/ADSPAddonHandler.h"
+#include "DSPProcessor.h"
 #include <asplib/BiQuads/apslib_BiQuadFactory.h>
 #include <math.h>
 
@@ -174,6 +175,36 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
     break;
 
     case SLIDER_PREAMP:
+    {
+      // ToDo: Add spin control to control each audio channel
+      m_Gains[AE_DSP_CH_FL][0] = m_Sliders[0]->GetFloatValue();
+      for(int ch = AE_DSP_CH_FR; ch < AE_DSP_CH_MAX; ch++)
+      {
+        m_Gains[ch][0] = m_Gains[AE_DSP_CH_FL][0];
+      }
+      m_window->SetControlLabel(controlId + 200, float_dB_toString(m_Gains[AE_DSP_CH_FL][0]).c_str());
+      
+      CADSPModeMessage message;
+      message.set_AudioChannel(AE_DSP_CH_MAX);
+      message.set_ProcessingModeId(POST_MODE_PARAMETRIC_EQ_ID);
+      message.set_MessageData((void*)&m_Gains[AE_DSP_CH_FL][0], sizeof(float));
+      message.set_MessageType(CDSPProcessor::EQ_MESSAGE_POST_GAIN);
+      for(AE_DSP_STREAM_ID id = 0; id < AE_DSP_STREAM_MAX_STREAMS; id++)
+      {
+        AE_DSP_SETTINGS streamSettings;
+        AE_DSP_STREAM_PROPERTIES streamProperties;
+        BIQUAD_INFOS BiquadInfos;
+        if(g_AddonHandler.GetStreamInfos(id, &streamSettings, &streamProperties, (void*)&BiquadInfos) == AE_DSP_ERROR_NO_ERROR)
+        {
+          message.set_StreamId(id);
+          
+          // send mesage to AddonHandler
+          g_AddonHandler.SendMessageToStream(message);
+        }
+      } 
+    }
+    break;
+
     case SLIDER_32Hz:
     case SLIDER_64Hz:
     case SLIDER_125Hz:
@@ -184,28 +215,46 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
     case SLIDER_4kHz:
     case SLIDER_8kHz:
     case SLIDER_16kHz:
+    {
       // ToDo: Add spin control to control each audio channel
-      m_Gains[AE_DSP_CH_FL][controlId - SLIDER_PREAMP] = m_Sliders[controlId - SLIDER_PREAMP]->GetFloatValue();
+      uint freqBand = controlId - SLIDER_PREAMP;
+      m_Gains[AE_DSP_CH_FL][freqBand] = m_Sliders[freqBand]->GetFloatValue();
       for(int ch = AE_DSP_CH_FR; ch < AE_DSP_CH_MAX; ch++)
       {
-        m_Gains[ch][controlId - SLIDER_PREAMP] = m_Gains[AE_DSP_CH_FL][controlId - SLIDER_PREAMP];
+        m_Gains[ch][freqBand] = m_Gains[AE_DSP_CH_FL][freqBand];
       }
-      m_window->SetControlLabel(controlId + 200, float_dB_toString(m_Gains[AE_DSP_CH_FL][controlId - SLIDER_PREAMP]).c_str());
+      m_window->SetControlLabel(controlId + 200, float_dB_toString(m_Gains[AE_DSP_CH_FL][freqBand]).c_str());
 
+      CADSPModeMessage message;
+      message.set_AudioChannel(AE_DSP_CH_MAX);
+      message.set_ProcessingModeId(POST_MODE_PARAMETRIC_EQ_ID);
+      message.set_MessageDataSize(sizeof(BIQUAD_COEFFICIENTS));
+      message.set_MessageType(CDSPProcessor::EQ_MESSAGE_BIQUAD_IDX_COEFFICIENTS);
+      BIQUAD_COEFFICIENTS coefficients;
       for(AE_DSP_STREAM_ID id = 0; id < AE_DSP_STREAM_MAX_STREAMS; id++)
       {
         AE_DSP_SETTINGS streamSettings;
         AE_DSP_STREAM_PROPERTIES streamProperties;
         BIQUAD_INFOS BiquadInfos;
-        if(g_AddonHandler.GetStreamInfos(id, &streamSettings, &streamProperties, (void*)&BiquadInfos))
+        if(g_AddonHandler.GetStreamInfos(id, &streamSettings, &streamProperties, (void*)&BiquadInfos) == AE_DSP_ERROR_NO_ERROR)
         { // send new gain values to the biquad filter
-          // ToDo: calc biquad coefficients
-          //CBiQuadFactory::get_constQPeakingBiQuadCoes();
+          ASPLIB_BIQUAD_COEFFICIENTS tempCoefficients;
+          ASPLIB_ERR err = CBiQuadFactory::get_constQPeakingBiquadCoes(streamSettings.iProcessSamplerate, MAX_FREQ_BANDS, m_Gains[AE_DSP_CH_FL][freqBand], freqBand -1, &coefficients.coefficients);
+          if(err == ASPLIB_ERR_NO_ERROR)
+          {
+            coefficients.biquadIndex = freqBand -1;
+            coefficients.c0 = 1.0f;
+            coefficients.d0 = 0.0f;
+            memcpy(&coefficients.coefficients, &tempCoefficients, sizeof(ASPLIB_BIQUAD_COEFFICIENTS));
+            message.set_StreamId(id);
+            message.set_MessageData((void*)&coefficients);
+
+            // send message to AddonHandler
+            g_AddonHandler.SendMessageToStream(message);
+          }
         }
       }
-
-      
-      
+    } 
     break;
 
     default:
