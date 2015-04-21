@@ -80,7 +80,7 @@ AE_DSP_ERROR CDSPProcessor::Create()
   }
 
   m_PostGain = new float[m_MaxProcessingChannels];
-  if(m_PostGain)
+  if(!m_PostGain)
   {
     KODI->Log(ADDON::LOG_ERROR, "%s line %i: Post gain array not created! Not enough free memory?", __func__, __LINE__);
     return AE_DSP_ERROR_FAILED;
