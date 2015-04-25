@@ -66,7 +66,7 @@ unsigned int CADSPModeMessage::get_StreamId()
 
 AE_DSP_ERROR CADSPModeMessage::set_StreamId(unsigned int StreamId)
 {
-  if(!StreamId)
+  if(StreamId >= AE_DSP_STREAM_MAX_STREAMS)
   {
     return AE_DSP_ERROR_INVALID_PARAMETERS;
   }
