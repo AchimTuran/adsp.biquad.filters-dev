@@ -103,9 +103,9 @@ void CBiQuadFiltersSettings::Init_Parametric10BandEQSettings()
   }
 
   // set default values
-  float gainVal = 0.0f;
   for(int ii = AE_DSP_CH_FL; ii < AE_DSP_CH_MAX; ii++)
   {
+    float gainVal = 0.0f;
     for(int gainSet = 0; gainSet < EQ_10BAND_MAX; gainSet++)
     {
       if(!m_10BandEQSettings->add_Setting("parametric_eq_settings", "gain_10_bands",

@@ -92,8 +92,6 @@ CGUIDialogPostProcess::~CGUIDialogPostProcess()
 bool CGUIDialogPostProcess::OnInit()
 {
   // get current gain settings from BiQuadFiltersSettings Manager
-  CBiQuadFiltersSettings &settingsManager = CBiQuadFiltersSettings::Get();
-
   for(int band = 0; band < MAX_FREQ_BANDS +1; band++)
   {
     m_Sliders[band] = GUI->Control_getSlider(m_window, SLIDER_PREAMP + band);
@@ -105,7 +103,7 @@ bool CGUIDialogPostProcess::OnInit()
 
     for(int ch = AE_DSP_CH_FL; ch < AE_DSP_CH_MAX; ch++)
     {
-      if(!settingsManager.get_Parametric10BandEQGain((AE_DSP_CHANNEL)ch, (CBiQuadFiltersSettings::PARAMETRIC_10BAND_EQ_BANDS)band, &m_InitialGains[AE_DSP_CH_FL][band]))
+      if(!CBiQuadFiltersSettings::Get().get_Parametric10BandEQGain((AE_DSP_CHANNEL)ch, (CBiQuadFiltersSettings::PARAMETRIC_10BAND_EQ_BANDS)band, &m_InitialGains[AE_DSP_CH_FL][band]))
       {
         m_InitialGains[AE_DSP_CH_FL][band] = 0.0f;
       }
