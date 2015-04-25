@@ -277,7 +277,7 @@ void CDSPProcessor::process_NewMessage()
       {
         for(int audioCh = AE_DSP_CH_FL; audioCh < AE_DSP_CH_MAX; audioCh++)
         {
-          for(int biquadCh = 0; biquadCh < m_MaxProcessingChannels && m_BiQuads[biquadCh].AudioChannel != audioCh; biquadCh++)
+          for(int biquadCh = 0; biquadCh < m_MaxProcessingChannels; biquadCh++)
           { // Search the requested audio channel
             if(m_BiQuads[biquadCh].AudioChannel == audioCh)
             {

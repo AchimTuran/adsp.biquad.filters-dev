@@ -237,14 +237,12 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
         BIQUAD_INFOS BiquadInfos;
         if(g_AddonHandler.GetStreamInfos(id, &streamSettings, &streamProperties, (void*)&BiquadInfos) == AE_DSP_ERROR_NO_ERROR)
         { // send new gain values to the biquad filter
-          ASPLIB_BIQUAD_COEFFICIENTS tempCoefficients;
           ASPLIB_ERR err = CBiQuadFactory::get_constQPeakingBiquadCoes(streamSettings.iProcessSamplerate, MAX_FREQ_BANDS, m_Gains[AE_DSP_CH_FL][freqBand], freqBand -1, &coefficients.coefficients);
           if(err == ASPLIB_ERR_NO_ERROR)
           {
             coefficients.biquadIndex = freqBand -1;
             coefficients.c0 = 1.0f;
             coefficients.d0 = 0.0f;
-            memcpy(&coefficients.coefficients, &tempCoefficients, sizeof(ASPLIB_BIQUAD_COEFFICIENTS));
             message.set_StreamId(id);
             message.set_MessageData((void*)&coefficients);
 
