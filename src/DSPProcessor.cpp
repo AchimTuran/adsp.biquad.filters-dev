@@ -47,6 +47,12 @@ CDSPProcessor::CDSPProcessor()
 // delete your buffers here
 CDSPProcessor::~CDSPProcessor()
 {
+  if(m_NewMessage)
+  {
+    process_NewMessage();
+    m_NewMessage = false;
+  }
+  
   if(m_BiQuads)
   {
     for(int ii = 0; ii < m_MaxProcessingChannels; ii++)
@@ -131,7 +137,11 @@ AE_DSP_ERROR CDSPProcessor::Create()
     }
 
     // set post gain value
-    if(!settingsManager.get_Parametric10BandEQGain(m_BiQuads[ch].AudioChannel, CBiQuadFiltersSettings::EQ_10BAND_POST, &m_PostGain[ch]))
+    if(settingsManager.get_Parametric10BandEQGain(m_BiQuads[ch].AudioChannel, CBiQuadFiltersSettings::EQ_10BAND_POST, &m_PostGain[ch]))
+    {
+      m_PostGain[ch] = CADSPHelpers::Convert_dB_TO_Value(m_PostGain[ch]);
+    }
+    else
     {
       KODI->Log(ADDON::LOG_NOTICE, "Biquad filter settings manager returned invalid gain for for post gain on audio channel \"%s\". Setting gain to 0dB.", CADSPHelpers::Translate_ChID_TO_String(m_BiQuads[ch].AudioChannel).c_str());
       m_PostGain[ch] = 1.0f;
@@ -149,16 +159,12 @@ unsigned int CDSPProcessor::PostProcess(unsigned int Mode_id, float **Array_in, 
     m_NewMessage = false;
   }
 
-  for(uint ch = 0; ch < m_MaxProcessingChannels; ch++)
+  for(uint ch = 0; ch < (uint)m_MaxProcessingChannels; ch++)
   {
     ASPLIB_ERR err = ASPLIB_ERR_NO_ERROR;
     if(m_BiQuads[ch].AudioChannel != AE_DSP_CH_LFE)
     {
-      err = CBiQuadFactory::calc_BiQuadSamples( m_BiQuads[ch].BiQuadHandle,
-                                                Array_in[m_BiQuads[ch].AudioChannel],
-                                                Array_out[m_BiQuads[ch].AudioChannel],
-                                                Samples);
-
+      err = CBiQuadFactory::calc_BiQuadSamples( m_BiQuads[ch].BiQuadHandle, Array_in[m_BiQuads[ch].AudioChannel], Array_out[m_BiQuads[ch].AudioChannel], Samples);
       if(err != ASPLIB_ERR_NO_ERROR)
       {
         KODI->Log(ADDON::LOG_ERROR, "Biquad sample calculation on audio channel \"%s\" failed!", CADSPHelpers::Translate_ChID_TO_String(m_BiQuads[ch].AudioChannel).c_str());
@@ -170,7 +176,7 @@ unsigned int CDSPProcessor::PostProcess(unsigned int Mode_id, float **Array_in, 
       {
         for(uint ii = 0; ii < Samples; ii++)
         {
-          Array_out[ch][ii] *= m_PostGain[ii];
+          Array_out[m_BiQuads[ch].AudioChannel][ii] *= m_PostGain[ch];
         }
       }
     }
@@ -238,6 +244,7 @@ AE_DSP_ERROR CDSPProcessor::send_Message(CADSPModeMessage &Message)
       {
         return err;
       }
+      tempGain = CADSPHelpers::Convert_dB_TO_Value(tempGain);
 
       // create temporary Message Data
       m_MessagePtr = (void*)&tempGain;

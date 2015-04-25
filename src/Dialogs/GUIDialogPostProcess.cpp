@@ -103,21 +103,22 @@ bool CGUIDialogPostProcess::OnInit()
 
     for(int ch = AE_DSP_CH_FL; ch < AE_DSP_CH_MAX; ch++)
     {
-      if(!CBiQuadFiltersSettings::Get().get_Parametric10BandEQGain((AE_DSP_CHANNEL)ch, (CBiQuadFiltersSettings::PARAMETRIC_10BAND_EQ_BANDS)band, &m_InitialGains[AE_DSP_CH_FL][band]))
+      if(!CBiQuadFiltersSettings::Get().get_Parametric10BandEQGain((AE_DSP_CHANNEL)ch, (CBiQuadFiltersSettings::PARAMETRIC_10BAND_EQ_BANDS)band, &m_InitialGains[ch][band]))
       {
-        m_InitialGains[AE_DSP_CH_FL][band] = 0.0f;
+        m_InitialGains[ch][band] = 0.0f;
       }
 
       // clamp value
-      if(m_InitialGains[AE_DSP_CH_FL][band] > ABS_MAX_GAIN)
+      if(m_InitialGains[ch][band] > ABS_MAX_GAIN)
       {
-        m_InitialGains[AE_DSP_CH_FL][band] = ABS_MAX_GAIN;
+        m_InitialGains[ch][band] = ABS_MAX_GAIN;
       }
-      else if(m_InitialGains[AE_DSP_CH_FL][band] < -ABS_MAX_GAIN)
+      else if(m_InitialGains[ch][band] < -ABS_MAX_GAIN)
       {
-        m_InitialGains[AE_DSP_CH_FL][band] = -ABS_MAX_GAIN;
+        m_InitialGains[ch][band] = -ABS_MAX_GAIN;
       }
-      m_Gains[AE_DSP_CH_FL][band] = m_InitialGains[AE_DSP_CH_FL][band];
+
+      m_Gains[ch][band] = m_InitialGains[AE_DSP_CH_FL][band];
     }
 
     m_Sliders[band]->SetFloatRange(-ABS_MAX_GAIN, ABS_MAX_GAIN);
