@@ -1,4 +1,5 @@
 #include "include/IADSPProcessor.h"
+#include <memory.h>
 
 IADSPProcessor::IADSPProcessor()
 {

@@ -1,4 +1,3 @@
-#pragma once
 /*
  *      Copyright (C) 2014-2015 Team KODI
  *      http://kodi.tv
