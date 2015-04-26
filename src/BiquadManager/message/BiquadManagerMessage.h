@@ -22,36 +22,36 @@
 
 
 
-#include "BiQuadMessage.h"
+#include "BiquadMessage.h"
 #include <iostream>
 
 // prototypes
-template<class T> class TBiQuadManagerMessage;
-class CBiQuadManagerMessage_Gain;
+template<class T> class TBiquadManagerMessage;
+class CBiquadManagerMessage_Gain;
 
 // typedefs
-typedef TBiQuadManagerMessage<CBiQuadManagerMessage_Gain> BiQuadManagerMessage_Gain;
-typedef TBiQuadManagerMessage<uint> BiQuadManagerMessage_Quantity;
+typedef TBiquadManagerMessage<CBiquadManagerMessage_Gain> BiquadManagerMessage_Gain;
+typedef TBiquadManagerMessage<uint> BiquadManagerMessage_Quantity;
 
-class CBiQuadManagerMessage_Gain
+class CBiquadManagerMessage_Gain
 {
   public:
-    CBiQuadManagerMessage_Gain()
+    CBiquadManagerMessage_Gain()
     {
-      BiQuadIndex = -1;
+      BiquadIndex = -1;
       Gain = 0.0f;
     }
 
-    uint BiQuadIndex;   // BiQuad index to address the correct BiQuad filter.
-                        // Only for set messages: BiQuadIndex < 0 --> sets Gain for all filters
+    uint BiquadIndex;   // Biquad index to address the correct Biquad filter.
+                        // Only for set messages: BiquadIndex < 0 --> sets Gain for all filters
     float Gain;         // Gain in dB
 };
 
-class CBiQuadManagerMessage : public CBiQuadMessage
+class CBiquadManagerMessage : public CBiquadMessage
 {
   public:
-    CBiQuadManagerMessage();
-    ~CBiQuadManagerMessage();
+    CBiquadManagerMessage();
+    ~CBiquadManagerMessage();
 
     typedef enum
     {
@@ -72,15 +72,15 @@ class CBiQuadManagerMessage : public CBiQuadMessage
 };
 
 template<class T>
-class TBiQuadManagerMessage : public CBiQuadManagerMessage
+class TBiquadManagerMessage : public CBiquadManagerMessage
 {
   public:
-    TBiQuadManagerMessage()
+    TBiquadManagerMessage()
     {
       m_MessageObj = NULL;
     }
 
-    ~TBiQuadManagerMessage() {}
+    ~TBiquadManagerMessage() {}
 
     void set_MessageObj(T &MessageObj)
     {

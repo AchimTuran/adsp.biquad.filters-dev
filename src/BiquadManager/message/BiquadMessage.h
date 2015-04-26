@@ -23,47 +23,47 @@
 
 
 #include <iostream>
-#include "BiQuadMessageBase.h"
-#include "BiQuadManager/BiQuadManager_types.h"
+#include "BiquadMessageBase.h"
+#include "BiquadManager/BiquadManager_types.h"
 #include "asplib/constants_typedefs/asplib_typedefs.h"
 
 // prototypes
-class CBiQuadMessage_BiQuadHandle;
-class CBiQuadMessage_Coefficients;
-class CBiQuadMessage;
-template<class T> class TBiQuadMessage;
+class CBiquadMessage_BiquadHandle;
+class CBiquadMessage_Coefficients;
+class CBiquadMessage;
+template<class T> class TBiquadMessage;
 
 // typedefs
-typedef TBiQuadMessage<CBiQuadMessage_BiQuadHandle> BiQuadMessage_BiQuadHandle;
-typedef TBiQuadMessage<CBiQuadMessage_Coefficients> BiQuadMessage_Coefficients;
-typedef TBiQuadMessage<float> BiQuadMessage_Float;
-typedef TBiQuadMessage<float> CBiQuadMessage_GainIdx;
+typedef TBiquadMessage<CBiquadMessage_BiquadHandle> BiquadMessage_BiquadHandle;
+typedef TBiquadMessage<CBiquadMessage_Coefficients> BiquadMessage_Coefficients;
+typedef TBiquadMessage<float> BiquadMessage_Float;
+typedef TBiquadMessage<float> CBiquadMessage_GainIdx;
 
-//class CBiQuadMessage_GainIdx
+//class CBiquadMessage_GainIdx
 //{
 //  public:
 //    
 //};
 
-class CBiQuadMessage_BiQuadHandle
+class CBiquadMessage_BiquadHandle
 {
   public:
-    CBiQuadMessage_BiQuadHandle()
+    CBiquadMessage_BiquadHandle()
     {
-      BiQuadHandle = NULL;
+      BiquadHandle = NULL;
       AudioChannel = AE_DSP_CH_INVALID;
     }
 
-    ~CBiQuadMessage_BiQuadHandle() {}
+    ~CBiquadMessage_BiquadHandle() {}
 
-    ADSP_BiQuad *BiQuadHandle;
+    ADSP_Biquad *BiquadHandle;
     AE_DSP_CHANNEL AudioChannel;
 };
 
-class CBiQuadMessage_Coefficients
+class CBiquadMessage_Coefficients
 {
   public:
-    CBiQuadMessage_Coefficients()
+    CBiquadMessage_Coefficients()
     {
       Coefficients.a0 = 0.0f;
       Coefficients.a1 = 0.0f;
@@ -75,25 +75,25 @@ class CBiQuadMessage_Coefficients
       c0 = 0.0f;
       d0 = 0.0f;
 
-      BiQuadIndex = -1;
+      BiquadIndex = -1;
       AudioChannel = AE_DSP_CH_INVALID;
     }
 
-    ~CBiQuadMessage_Coefficients() {}
+    ~CBiquadMessage_Coefficients() {}
 
-    uint BiQuadIndex;   // BiQuad index to address the correct BiQuad filter.
-                        // Only for set messages: BiQuadIndex < 0 --> sets Gain for all filters
+    uint BiquadIndex;   // Biquad index to address the correct Biquad filter.
+                        // Only for set messages: BiquadIndex < 0 --> sets Gain for all filters
     ASPLIB_BIQUAD_COEFFICIENTS Coefficients;
     float                      c0;
     float                      d0;
     AE_DSP_CHANNEL             AudioChannel;
 };
 
-class CBiQuadMessage : public CBiQuadMessageBase
+class CBiquadMessage : public CBiquadMessageBase
 {
   public:
-    CBiQuadMessage();
-    ~CBiQuadMessage();
+    CBiquadMessage();
+    ~CBiquadMessage();
 
     typedef enum
     {
@@ -117,15 +117,15 @@ class CBiQuadMessage : public CBiQuadMessageBase
 
 
 template<class T>
-class TBiQuadMessage : public CBiQuadMessage
+class TBiquadMessage : public CBiquadMessage
 {
   public:
-    TBiQuadMessage()
+    TBiquadMessage()
     {
       m_MessageObj = NULL;
     }
 
-    ~TBiQuadMessage() {}
+    ~TBiquadMessage() {}
 
     void set_MessageObj(T &MessageObj)
     {

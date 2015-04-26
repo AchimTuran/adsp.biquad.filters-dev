@@ -27,16 +27,16 @@
  */
 #include <string>
 #include "template/include/IADSPProcessor.h"
-#include <asplib/BiQuads/apslib_BiQuadFactory.h>
-#include "BiQuadManager/message/BiQuadMessage.h"
-#include "BiQuadManager/BiQuadManager_types.h"
+#include <asplib/Biquads/apslib_BiquadFactory.h>
+#include "BiquadManager/message/BiquadMessage.h"
+#include "BiquadManager/BiquadManager_types.h"
 #include "template/include/ADSPModeMessage.h"
 
 //typedef struct
 //{
 //  unsigned long         ChannelFlag;
 //  unsigned int          ChannelID;
-//  ASPLIB_BIQUAD_HANDLE *BiQuadHandle;
+//  ASPLIB_BIQUAD_HANDLE *BiquadHandle;
 //}ADSP_CHANNEL_HANDLE;
 
 struct  BIQUAD_COEFFICIENTS
@@ -92,8 +92,8 @@ public:
 private:
   void process_NewMessage();
 
-  ADSP_BiQuad                  *m_BiQuads;
-  ADSP_BiQuad                  *m_TempBiQuad;
+  ADSP_Biquad                  *m_Biquads;
+  ADSP_Biquad                  *m_TempBiquad;
   float                        *m_PostGain;
   volatile bool                 m_NewMessage;
   int                           m_MaxProcessingChannels;

@@ -28,10 +28,10 @@
 #include "template/include/client.h"
 using namespace ADDON;
 
-#include "BiQuadFiltersSettings.h"
+#include "BiquadFiltersSettings.h"
 #include "ADDONOptional.h"
 #include "Dialogs/GUIDialogPostProcess.h"
-#include "BiQuadFiltersSettings.h"
+#include "BiquadFiltersSettings.h"
 
 CADDONOptional::CADDONOptional()
 {
@@ -102,8 +102,8 @@ bool CADDONOptional::OptionalInit()
   hook.bNeedPlayback        = false;
   ADSP->AddMenuHook(&hook);
 
-  // Create BiQuad Filter Settings
-  CBiQuadFiltersSettings::Get();
+  // Create Biquad Filter Settings
+  CBiquadFiltersSettings::Get();
 
 	return true;
 }

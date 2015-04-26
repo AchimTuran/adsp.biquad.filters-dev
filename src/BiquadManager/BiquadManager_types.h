@@ -21,7 +21,7 @@
  */
 
 
-#include <asplib/BiQuads/apslib_BiQuadFactory.h>
+#include <asplib/Biquads/apslib_BiquadFactory.h>
 #include <kodi/kodi_adsp_types.h>
 #include "template/ADSPHelpers.h"
 
@@ -33,17 +33,17 @@ typedef enum
   BIQUAD_BUTTERWORTH_LOW_PASS,
   BIQUAD_BUTTERWORTH_HIGH_PASS,
   BIQUAD_DESIGN_MAX
-}BiQuadDesignMethod;
+}BiquadDesignMethod;
 
 typedef struct
 {
-  BiQuadDesignMethod    DesignMethod;     // Stores the BiQuad Design method. For details see BiQuadDesignMethod
+  BiquadDesignMethod    DesignMethod;     // Stores the Biquad Design method. For details see BiquadDesignMethod
   AE_DSP_CHANNEL        AudioChannel;     // Stores the requested AudioChannel
   AE_DSP_CHANNEL_FLAGS  ChannelFlag;      // Stores the requested AudioChannelFlag
-  unsigned int          SampleFrequency;  // Stores the used sample frequency by the BiQuad.
-  unsigned int          Quantity;         // Stores the amount of used BiQuads
-  ASPLIB_BIQUAD_HANDLE  *BiQuadHandle;    // store the BiQuad Filter and the used optimization module
-}ADSP_BiQuad;
+  unsigned int          SampleFrequency;  // Stores the used sample frequency by the Biquad.
+  unsigned int          Quantity;         // Stores the amount of used Biquads
+  ASPLIB_BIQUAD_HANDLE  *BiquadHandle;    // store the Biquad Filter and the used optimization module
+}ADSP_Biquad;
 
 struct BIQUAD_INFOS
 {

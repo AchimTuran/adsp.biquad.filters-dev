@@ -1,3 +1,4 @@
+#pragma once
 /*
  *      Copyright (C) 2005-2014 Team XBMC
  *      http://xbmc.org
@@ -21,35 +22,32 @@
 
 
 
-#include "BiQuadManagerMessage.h"
+#include "../../template/configuration/templateConfiguration.h"
+#include <kodi/kodi_adsp_types.h>
 
-CBiQuadManagerMessage::CBiQuadManagerMessage()
+class CBiquadMessageBase
 {
-  m_MessageType = BIQUAD_MANAGER_MESSAGE_UNKNOWN;
-  set_ModeID(ADSP_MODE_ID_UNKNOWN);
-  set_AudioChannelID(AE_DSP_CH_INVALID);
-}
+  public:
+    typedef enum
+    {
+      BiquadMessage_UnknownError = -1000,
+      BiquadMessage_InvalidInput = -999,
+      BiquadMessage_UnsupportedMessageType = -998,
+      BiquadMessage_AudioChannelNotPresent = -997,
+      BiquadMessage_Success = 0,
+      BiquadMessage_Busy
+    }BIQUAD_MESSAGE_RET;
 
-CBiQuadManagerMessage::~CBiQuadManagerMessage()
-{
-}
+    CBiquadMessageBase();
+    virtual ~CBiquadMessageBase();
 
+    adspProcessingModeIDs get_ModeID();
+    adspProcessingModeIDs set_ModeID(adspProcessingModeIDs ModeID);
 
-CBiQuadManagerMessage::BIQUAD_MANAGER_MESSAGE CBiQuadManagerMessage::get_MessageType()
-{
-  return m_MessageType;
-}
+    AE_DSP_CHANNEL get_AudioChannelID();
+    AE_DSP_CHANNEL set_AudioChannelID(AE_DSP_CHANNEL ChannelID);
 
-CBiQuadManagerMessage::BIQUAD_MANAGER_MESSAGE CBiQuadManagerMessage::set_MessageType(BIQUAD_MANAGER_MESSAGE MessageType)
-{
-  if(MessageType > BIQUAD_MANAGER_MESSAGE_UNKNOWN && MessageType < BIQUAD_MANAGER_MESSAGE_MAX)
-  {
-    m_MessageType = MessageType;
-  }
-  else
-  {
-    return BIQUAD_MANAGER_MESSAGE_UNKNOWN;
-  }
-
-  return m_MessageType;
-}
+  private:
+    adspProcessingModeIDs m_ModeID;
+    AE_DSP_CHANNEL        m_ChannelID;
+};

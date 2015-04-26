@@ -21,7 +21,7 @@
 
 #include <template/Settings/SettingsManager.h>
 
-class CBiQuadFiltersSettings
+class CBiquadFiltersSettings
 {
 public:
   typedef enum
@@ -48,9 +48,9 @@ public:
     EQ_10BAND_MAX
   }PARAMETRIC_10BAND_EQ_BANDS;
 
-  CBiQuadFiltersSettings();
-  ~CBiQuadFiltersSettings();
-  static CBiQuadFiltersSettings &Get();
+  CBiquadFiltersSettings();
+  ~CBiquadFiltersSettings();
+  static CBiquadFiltersSettings &Get();
   // returns saved gain in dB for a 10 Band EQ
   // returns true --> valid value
   // returns false --> invalid value

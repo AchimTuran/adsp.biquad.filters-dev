@@ -21,34 +21,53 @@
 
 
 
-#include "BiQuadMessage.h"
+#include "BiquadMessageBase.h"
 
-CBiQuadMessage::CBiQuadMessage()
+CBiquadMessageBase::CBiquadMessageBase()
 {
-  m_MessageType = BIQUAD_MESSAGE_UNKNOWN;
-  set_ModeID(ADSP_MODE_ID_UNKNOWN);
-  set_AudioChannelID(AE_DSP_CH_INVALID);
+  m_ModeID = ADSP_MODE_ID_UNKNOWN;
+  m_ChannelID = AE_DSP_CH_INVALID;
 }
 
-CBiQuadMessage::~CBiQuadMessage()
+CBiquadMessageBase::~CBiquadMessageBase()
 {
 }
 
-CBiQuadMessage::BIQUAD_MESSAGE  CBiQuadMessage::get_MessageType()
+
+AE_DSP_CHANNEL CBiquadMessageBase::get_AudioChannelID()
 {
-  return m_MessageType;
+  return m_ChannelID;
 }
 
-CBiQuadMessage::BIQUAD_MESSAGE  CBiQuadMessage::set_MessageType(BIQUAD_MESSAGE MessageType)
+AE_DSP_CHANNEL CBiquadMessageBase::set_AudioChannelID(AE_DSP_CHANNEL ChannelID)
 {
-  if(MessageType > BIQUAD_MESSAGE_UNKNOWN && MessageType < BIQUAD_MESSAGE_MAX)
+  if(ChannelID > AE_DSP_CH_INVALID && ChannelID < AE_DSP_CH_MAX)
   {
-    m_MessageType = MessageType;
+    m_ChannelID = ChannelID;
   }
   else
   {
-    return BIQUAD_MESSAGE_UNKNOWN;
+    return AE_DSP_CH_INVALID;
   }
 
-  return m_MessageType;
+  return m_ChannelID;
+}
+
+adspProcessingModeIDs CBiquadMessageBase::get_ModeID()
+{
+  return m_ModeID;
+}
+
+adspProcessingModeIDs CBiquadMessageBase::set_ModeID(adspProcessingModeIDs ModeID)
+{
+  if(ModeID > ADSP_MODE_ID_UNKNOWN || ModeID < ADSP_MODE_ID_MAX)
+  {
+    m_ModeID = ModeID;
+  }
+  else
+  {
+    return ADSP_MODE_ID_UNKNOWN;
+  }
+
+  return m_ModeID;
 }

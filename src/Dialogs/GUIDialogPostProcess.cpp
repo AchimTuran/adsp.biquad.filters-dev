@@ -22,11 +22,11 @@
 
 #include "GUIDialogPostProcess.h"
 #include "utils/stdStringUtils.h"
-#include "BiQuadFiltersSettings.h"
-#include "BiQuadManager/BiQuadManager_types.h"
+#include "BiquadFiltersSettings.h"
+#include "BiquadManager/BiquadManager_types.h"
 #include "template/include/ADSPAddonHandler.h"
 #include "DSPProcessor.h"
-#include <asplib/BiQuads/apslib_BiQuadFactory.h>
+#include <asplib/Biquads/apslib_BiquadFactory.h>
 #include <math.h>
 
 using namespace asplib;
@@ -91,7 +91,7 @@ CGUIDialogPostProcess::~CGUIDialogPostProcess()
 
 bool CGUIDialogPostProcess::OnInit()
 {
-  // get current gain settings from BiQuadFiltersSettings Manager
+  // get current gain settings from BiquadFiltersSettings Manager
   for(int band = 0; band < MAX_FREQ_BANDS +1; band++)
   {
     m_Sliders[band] = GUI->Control_getSlider(m_window, SLIDER_PREAMP + band);
@@ -103,7 +103,7 @@ bool CGUIDialogPostProcess::OnInit()
 
     for(int ch = AE_DSP_CH_FL; ch < AE_DSP_CH_MAX; ch++)
     {
-      if(!CBiQuadFiltersSettings::Get().get_Parametric10BandEQGain((AE_DSP_CHANNEL)ch, (CBiQuadFiltersSettings::PARAMETRIC_10BAND_EQ_BANDS)band, &m_InitialGains[ch][band]))
+      if(!CBiquadFiltersSettings::Get().get_Parametric10BandEQGain((AE_DSP_CHANNEL)ch, (CBiquadFiltersSettings::PARAMETRIC_10BAND_EQ_BANDS)band, &m_InitialGains[ch][band]))
       {
         m_InitialGains[ch][band] = 0.0f;
       }
@@ -136,14 +136,14 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
   {
     case BUTTON_OK:
     {
-      CBiQuadFiltersSettings &settingsManager = CBiQuadFiltersSettings::Get();
+      CBiquadFiltersSettings &settingsManager = CBiquadFiltersSettings::Get();
       for(int ch = AE_DSP_CH_FL; ch < AE_DSP_CH_MAX; ch++)
       {
         for(int band = 0; band < MAX_FREQ_BANDS +1; band++)
         {
           if(m_Gains[ch][band] != m_InitialGains[ch][band])
           {
-            settingsManager.set_Parametric10BandEQGain((AE_DSP_CHANNEL)ch, (CBiQuadFiltersSettings::PARAMETRIC_10BAND_EQ_BANDS)band, m_Gains[ch][band]);
+            settingsManager.set_Parametric10BandEQGain((AE_DSP_CHANNEL)ch, (CBiquadFiltersSettings::PARAMETRIC_10BAND_EQ_BANDS)band, m_Gains[ch][band]);
           }
         }
       }
@@ -237,7 +237,7 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
         BIQUAD_INFOS BiquadInfos;
         if(g_AddonHandler.GetStreamInfos(id, &streamSettings, &streamProperties, (void*)&BiquadInfos) == AE_DSP_ERROR_NO_ERROR)
         { // send new gain values to the biquad filter
-          ASPLIB_ERR err = CBiQuadFactory::get_constQPeakingBiquadCoes(streamSettings.iProcessSamplerate, MAX_FREQ_BANDS, m_Gains[AE_DSP_CH_FL][freqBand], freqBand -1, &coefficients.coefficients);
+          ASPLIB_ERR err = CBiquadFactory::get_constQPeakingBiquadCoes(streamSettings.iProcessSamplerate, MAX_FREQ_BANDS, m_Gains[AE_DSP_CH_FL][freqBand], freqBand -1, &coefficients.coefficients);
           if(err == ASPLIB_ERR_NO_ERROR)
           {
             coefficients.biquadIndex = freqBand -1;
