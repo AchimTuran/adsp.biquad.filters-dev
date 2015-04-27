@@ -28,9 +28,8 @@
 #include <string>
 #include "template/include/IADSPProcessor.h"
 #include <asplib/Biquads/apslib_BiquadFactory.h>
-#include "BiquadManager/message/BiquadMessage.h"
-#include "BiquadManager/BiquadManager_types.h"
 #include "template/include/ADSPModeMessage.h"
+#include "Messages/BiquadMessage_types.h"
 
 //typedef struct
 //{

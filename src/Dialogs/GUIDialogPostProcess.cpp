@@ -23,7 +23,7 @@
 #include "GUIDialogPostProcess.h"
 #include "utils/stdStringUtils.h"
 #include "BiquadFiltersSettings.h"
-#include "BiquadManager/BiquadManager_types.h"
+#include "Messages/BiquadMessage_types.h"
 #include "template/include/ADSPAddonHandler.h"
 #include "DSPProcessor.h"
 #include <asplib/Biquads/apslib_BiquadFactory.h>
