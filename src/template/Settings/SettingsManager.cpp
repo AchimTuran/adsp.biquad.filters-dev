@@ -32,6 +32,15 @@
 using namespace ADDON;
 using namespace std;
 
+// helpers for XML-Files
+#include <string>
+#include <list>
+typedef std::pair<std::string, std::string> ATTRIBUTE_PAIR;
+typedef std::list<ATTRIBUTE_PAIR> ATTRIBUTES_LIST;
+
+int getAttributesAsList(TiXmlElement* pElement, ATTRIBUTES_LIST &AttributesList);
+
+
 CSettingsManager::CSettingsManager(string XMLFilename, string Path)
 {
   if(XMLFilename == "" || XMLFilename.empty())
@@ -192,11 +201,142 @@ void CSettingsManager::write_SettingsXML()
 
 void CSettingsManager::read_SettingsXML()
 {
-  // ToDo: implement xml stuff
-  // isXMLFilePresent?
-  // generate XML data
-  // Yes --> read XML data
-  // No  --> do nothing
+  TiXmlDocument xmlDoc;
+  if(!xmlDoc.LoadFile(m_XMLFilename))
+  {
+    KODI->Log(LOG_NOTICE, "No initial settings XML file found.");
+    return;
+  }
+
+  TiXmlElement *pRootElement = xmlDoc.RootElement();
+  if(!pRootElement)
+  {
+    KODI->Log(LOG_NOTICE, "Settings XML file is empty.");
+    return;
+  }
+
+  string mainCategory = pRootElement->Value();
+  for(TiXmlNode *pGroupNode = pRootElement->FirstChild(); pGroupNode != NULL; pGroupNode = pRootElement->IterateChildren(pGroupNode))
+  {
+    if(pGroupNode->ValueStr() == "settings_group")
+    {
+    //for(TiXmlNode *pGroupNode = pCategoryNode->FirstChildElement(); pGroupNode != NULL; pGroupNode = pCategoryNode->IterateChildren(pGroupNode))
+    //{
+      ATTRIBUTES_LIST groupAttributesList;
+      if(pGroupNode && pGroupNode->Type() == TiXmlNode::TINYXML_ELEMENT)
+      {
+        getAttributesAsList(pGroupNode->ToElement(), groupAttributesList);
+      }
+
+      if(pGroupNode && pGroupNode->Type() == TiXmlNode::TINYXML_ELEMENT && groupAttributesList.size() == 2 && pGroupNode->ValueStr() == "settings_group")
+      {
+        string subCategory = "";
+        string groupName = "";
+        for(ATTRIBUTES_LIST::iterator iter = groupAttributesList.begin(); iter != groupAttributesList.end(); iter++)
+        {
+          if(iter->first == "sub_category")
+          {
+            subCategory = iter->second;
+          }
+
+          if(iter->first == "group_name")
+          {
+            groupName = iter->second;
+          }
+        }
+
+        for(TiXmlNode *pKeyNode = pGroupNode->FirstChild(); pKeyNode != NULL; pKeyNode = pGroupNode->IterateChildren(pKeyNode))
+        {
+          if(pKeyNode && pKeyNode->Type() == TiXmlNode::TINYXML_ELEMENT && pKeyNode->ValueStr() == "setting")
+          {
+            ATTRIBUTES_LIST settingAttributesList;
+            if(getAttributesAsList(pKeyNode->ToElement(), settingAttributesList) == 2)
+            {
+              string key = "";
+              ISettingsElement::SettingsTypes type = ISettingsElement::UNKNOWN_SETTING;
+              string value = "";
+              for(ATTRIBUTES_LIST::iterator iter = settingAttributesList.begin(); iter != settingAttributesList.end(); iter++)
+              {
+                if(iter->first == "key")
+                {
+                  key = iter->second;
+                }
+                else
+                {
+                  type = CSettingsHelpers::TranslateTypeStrToEnum(iter->first);
+                  value = iter->second;
+                }
+              }
+
+              ISettingsElement *setting = find_Setting(mainCategory, subCategory, groupName, key);
+              if(setting && setting->get_Type() == type)
+              {
+                switch(type)
+                  {
+                    case ISettingsElement::STRING_SETTING:
+                      STRING_SETTINGS(setting)->set_Setting(value);
+                    break;
+
+                    case ISettingsElement::UNSIGNED_INT_SETTING:
+                      {
+                        unsigned int val = stringToVal<unsigned int>(value);
+                        UNSIGNED_INT_SETTINGS(setting)->set_Setting(val);
+                      }
+                    break;
+
+                    case ISettingsElement::INT_SETTING:
+                      {
+                        int val = stringToVal<int>(value);
+                        INT_SETTINGS(setting)->set_Setting(val);
+                      }
+                    break;
+
+                    case ISettingsElement::FLOAT_SETTING:
+                      {
+                        float val = stringToVal<float>(value);
+                        FLOAT_SETTINGS(setting)->set_Setting(val);
+                      }
+                    break;
+
+                    case ISettingsElement::DOUBLE_SETTING:
+                      {
+                        double val = stringToVal<double>(value);
+                        DOUBLE_SETTINGS(setting)->set_Setting(val);
+                      }
+                    break;
+
+                    case ISettingsElement::BOOL_SETTING:
+                      if(value == "true" || value == "TRUE" || value == "True")
+                      {
+                        bool val = true;
+                        BOOL_SETTINGS(setting)->set_Setting(val);
+                      }
+                      else if(value == "false" || value == "FALSE" || value == "False")
+                      {
+                        bool val = false;
+                        BOOL_SETTINGS(setting)->set_Setting(val);
+                      }
+                      else
+                      {
+                        // ToDo: show error Log
+                      }
+                    break;
+
+                    default:
+                      // ToDo: Show error Log
+                    break;
+                  }
+              }
+              else
+              {
+                // ToDo: Show error Log
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 bool CSettingsManager::add_Setting( string MainCategory, string SubCategory,
@@ -231,7 +371,7 @@ bool CSettingsManager::add_Setting( string MainCategory, string SubCategory,
 
   // No element with the requested Main- and Subcategory and Type exists
   // so we create a new one
-  ISettingsElement *settingsElement = CreateElement(Key, Type, Value);
+  ISettingsElement *settingsElement = CSettingsManager::CreateElement(Key, Type, Value);
   if(!settingsElement)
   {
     // ToDo: add a error message to kodi.log
@@ -463,4 +603,29 @@ ISettingsElement *CSettingsManager::find_Setting(string MainCategory, string Sub
 
   // ToDo: show some warning log message
   return NULL;
+}
+
+
+// Helper functions for XML-Files
+int getAttributesAsList(TiXmlElement* pElement, ATTRIBUTES_LIST &AttributesList)
+{
+  if ( !pElement ) return -1;
+
+  // alternative traversing
+  //TiXmlAttribute* pAttrib=pElement->FirstAttribute();
+  //int maxAttributes = 0;
+  //for(pAttrib = pElement->FirstAttribute(); pAttrib; pAttrib = pAttrib->Next())
+  //{
+  //  maxAttributes++;
+  //}
+
+  //attribute_t attribute;
+  //TiXmlAttribute *pAttrib = pElement->FirstAttribute();
+  //while (pAttrib)
+  for(TiXmlAttribute *pAttrib = pElement->FirstAttribute(); pAttrib != NULL; pAttrib = pAttrib->Next())
+  {
+    AttributesList.push_back(ATTRIBUTE_PAIR(pAttrib->Name(), pAttrib->Value()));
+  }
+
+  return AttributesList.size();
 }
