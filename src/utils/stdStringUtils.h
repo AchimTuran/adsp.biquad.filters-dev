@@ -37,6 +37,14 @@ std::string toString(T Val)
   return str;
 }
 
+template<typename T>
+T stringToVal(std::string Str)
+{
+  T val;
+  std::istringstream(Str) >> val;
+  return val;
+}
+
 inline unsigned int strTokenizer(std::string Str, std::string Delimiter, std::vector<std::string> &StrTokens)
 {
   unsigned int lastPos = Str.find_first_not_of(Delimiter, 0);
