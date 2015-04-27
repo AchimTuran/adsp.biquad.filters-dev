@@ -30,6 +30,6 @@ public:
   CSettingsHelpers();
   ~CSettingsHelpers();
 
-  static std::string                      TranslateTypeToStr(ISettingsElement::SettingsTypes eType);
-  static ISettingsElement::SettingsTypes  TranslateTypeToEnum(std::string strType);
+  static std::string                      TranslateTypeEnumToStr(ISettingsElement::SettingsTypes eType);
+  static ISettingsElement::SettingsTypes  TranslateTypeStrToEnum(std::string strType);
 };

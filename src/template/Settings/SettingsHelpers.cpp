@@ -33,7 +33,7 @@ CSettingsHelpers::~CSettingsHelpers()
 {
 }
 
-string CSettingsHelpers::TranslateTypeToStr(ISettingsElement::SettingsTypes eType)
+string CSettingsHelpers::TranslateTypeEnumToStr(ISettingsElement::SettingsTypes eType)
 {
   string type = "Unknown";
 
@@ -71,7 +71,7 @@ string CSettingsHelpers::TranslateTypeToStr(ISettingsElement::SettingsTypes eTyp
   return type;
 }
 
-ISettingsElement::SettingsTypes CSettingsHelpers::TranslateTypeToEnum(string strType)
+ISettingsElement::SettingsTypes CSettingsHelpers::TranslateTypeStrToEnum(string strType)
 {
   ISettingsElement::SettingsTypes eType = ISettingsElement::UNKNOWN_SETTING;
 
