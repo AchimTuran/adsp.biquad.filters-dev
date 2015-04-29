@@ -5,7 +5,7 @@ Debug/
 *.sln
 *.suo
 *.vcxproj
-*.filters
+#*.filters
 *.lib
 *.pdb
 *.exp
@@ -13,7 +13,7 @@ Debug/
 VS2013Kodi_AddonProject/
 src/asplib/extern documents
 extern documents/
-adsp.parametric.eq/resources/skins/media/tmp/
+adsp.biquad.filters/resources/skins/media/tmp/
 
 #ignore eclipse project files
 .cproject
