@@ -21,7 +21,7 @@
 
 
 #include <iterator>
-#include <tinyxml/tinyxml.h>
+#include <tinyxml.h>
 #include "utils/stdStringUtils.h"
 #include "SettingsHelpers.h"
 #include "SettingsManager.h"

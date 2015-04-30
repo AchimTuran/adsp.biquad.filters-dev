@@ -8,11 +8,12 @@ enable_language(CXX)
 
 find_package(kodi REQUIRED)
 find_package(kodiplatform REQUIRED)
-find_package(tinyxml REQUIRED)
+find_package(TinyXML REQUIRED)
 find_package(asplib REQUIRED)
 
 include_directories(${kodiplatform_INCLUDE_DIRS}
-					${tinyxml_INCLUDE_DIRS}
+					${TINYXML_INCLUDE_DIRS}
+					${KODI_INCLUDE_DIR}
 					${asplib_INCLUDE_DIRS}
                     ${PROJECT_SOURCE_DIR}/src
                     ${PROJECT_SOURCE_DIR}/src/template)
@@ -36,7 +37,7 @@ set(TEMPLATE_SOURCES 	src/DSPProcessor.cpp
 
 set(DEPLIBS ${kodiplatform_LIBRARIES}
 			${asplib_LIBRARIES}
-			${tinyxml_LIBRARIES})
+			${TINYXML_LIBRARIES})
 
 build_addon(adsp.biquad.filters TEMPLATE DEPLIBS)
 
