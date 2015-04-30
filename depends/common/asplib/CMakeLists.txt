@@ -12,7 +12,7 @@ if(WIN32)
   add_definitions(-DWIN32 -D_LIB)
 endif()
 
-add_library(asplib ${SOURCES})
+add_library(asplib STATIC ${SOURCES})
 
 include_directories(${PROJECT_SOURCE_DIR}
 					${PROJECT_SOURCE_DIR}/Biquads)
