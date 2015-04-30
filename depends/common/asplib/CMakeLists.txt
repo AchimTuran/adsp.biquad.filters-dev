@@ -25,5 +25,5 @@ set(HEADERS ${PROJECT_SOURCE_DIR}/Biquads/apslib_BiquadFactory.h
 			${PROJECT_SOURCE_DIR}/constants_typedefs/asplib_typedefs.h
 			${PROJECT_SOURCE_DIR}/interfaces/asplib_IBaseBiquad.h)
 
-install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/asplib)
+install(DIRECTORY ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/asplib)
 install(TARGETS asplib DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
