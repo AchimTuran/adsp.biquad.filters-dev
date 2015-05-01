@@ -37,6 +37,8 @@ private:
 	virtual bool OnAction(int actionId);
   virtual void OnClose();
 
+  // [0] = PostAmp
+  // [1], ...[N] = Gain frequency bands
   CAddonGUISliderControl *m_Sliders[MAX_FREQ_BANDS +1];
   float m_Gains[AE_DSP_CH_MAX][MAX_FREQ_BANDS +1];
   float m_InitialGains[AE_DSP_CH_MAX][MAX_FREQ_BANDS +1];

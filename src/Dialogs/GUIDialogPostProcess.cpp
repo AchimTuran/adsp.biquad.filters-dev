@@ -154,7 +154,56 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
 
     case BUTTON_CANCEL:
     {
-      // ToDo: Restore old EQ gains
+      // set frequency bands to 0dB
+      CADSPModeMessage message;
+      message.set_AudioChannel(AE_DSP_CH_MAX);
+      message.set_ProcessingModeId(POST_MODE_PARAMETRIC_EQ_ID);
+      message.set_MessageDataSize(sizeof(BIQUAD_COEFFICIENTS_LIST*));
+      message.set_MessageType(CDSPProcessor::EQ_MESSAGE_BIQUAD_COEFFICIENTS_LIST);
+      BIQUAD_COEFFICIENTS_LIST coefficientsList;
+      for(AE_DSP_STREAM_ID id = 0; id < AE_DSP_STREAM_MAX_STREAMS; id++)
+      {
+        AE_DSP_SETTINGS streamSettings;
+        AE_DSP_STREAM_PROPERTIES streamProperties;
+        BIQUAD_INFOS BiquadInfos;
+        coefficientsList.clear();
+        if(g_AddonHandler.GetStreamInfos(id, &streamSettings, &streamProperties, (void*)&BiquadInfos) == AE_DSP_ERROR_NO_ERROR)
+        { // send new gain values to the biquad filter
+          for(uint band = 0; band < MAX_FREQ_BANDS; band++)
+          {
+            BIQUAD_COEFFICIENTS coefficients;
+            ASPLIB_ERR err = CBiquadFactory::get_constQPeakingBiquadCoes(streamSettings.iProcessSamplerate, MAX_FREQ_BANDS, m_InitialGains[AE_DSP_CH_FL][band +1], band, &coefficients.coefficients);
+            if(err == ASPLIB_ERR_NO_ERROR)
+            {
+              coefficients.biquadIndex = band;
+              coefficients.c0 = 1.0f;
+              coefficients.d0 = 0.0f;
+              coefficientsList.push_back(coefficients);
+            }
+            else
+            {
+              // ToDo: show error log message
+            }
+          }
+
+          if(coefficientsList.size() > 0)
+          {
+            message.set_StreamId(id);
+            message.set_MessageData((void*)&coefficientsList);
+
+            // send message to AddonHandler
+            g_AddonHandler.SendMessageToStream(message);
+          }
+          else
+          {
+            // ToDo: show error log message
+          }
+        }
+        else
+        {
+          // ToDo: Log error message!
+        }
+      }
       this->Close();
     }
     break;
@@ -169,6 +218,80 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
         }
         m_Sliders[band]->SetFloatValue(m_Gains[AE_DSP_CH_FL][band]);
         m_window->SetControlLabel(SLIDER_PREAMP_VALUE + band, float_dB_toString(m_Gains[AE_DSP_CH_FL][band]).c_str());
+      }
+
+      // set post gain to 0dB
+      CADSPModeMessage message;
+      message.set_AudioChannel(AE_DSP_CH_MAX);
+      message.set_ProcessingModeId(POST_MODE_PARAMETRIC_EQ_ID);
+      message.set_MessageData((void*)&m_Gains[AE_DSP_CH_FL][0], sizeof(float));
+      message.set_MessageType(CDSPProcessor::EQ_MESSAGE_POST_GAIN);
+      for(AE_DSP_STREAM_ID id = 0; id < AE_DSP_STREAM_MAX_STREAMS; id++)
+      {
+        AE_DSP_SETTINGS streamSettings;
+        AE_DSP_STREAM_PROPERTIES streamProperties;
+        BIQUAD_INFOS BiquadInfos;
+        if(g_AddonHandler.GetStreamInfos(id, &streamSettings, &streamProperties, (void*)&BiquadInfos) == AE_DSP_ERROR_NO_ERROR)
+        {
+          message.set_StreamId(id);
+
+          // send mesage to AddonHandler
+          g_AddonHandler.SendMessageToStream(message);
+        }
+        else
+        {
+          // ToDo: Log error message!
+        }
+      }
+
+      // set frequency bands to 0dB
+      message.set_AudioChannel(AE_DSP_CH_MAX);
+      message.set_ProcessingModeId(POST_MODE_PARAMETRIC_EQ_ID);
+      message.set_MessageDataSize(sizeof(BIQUAD_COEFFICIENTS_LIST*));
+      message.set_MessageType(CDSPProcessor::EQ_MESSAGE_BIQUAD_COEFFICIENTS_LIST);
+      BIQUAD_COEFFICIENTS_LIST coefficientsList;
+      for(AE_DSP_STREAM_ID id = 0; id < AE_DSP_STREAM_MAX_STREAMS; id++)
+      {
+        AE_DSP_SETTINGS streamSettings;
+        AE_DSP_STREAM_PROPERTIES streamProperties;
+        BIQUAD_INFOS BiquadInfos;
+        coefficientsList.clear();
+        if(g_AddonHandler.GetStreamInfos(id, &streamSettings, &streamProperties, (void*)&BiquadInfos) == AE_DSP_ERROR_NO_ERROR)
+        { // send new gain values to the biquad filter
+          for(uint band = 0; band < MAX_FREQ_BANDS; band++)
+          {
+            BIQUAD_COEFFICIENTS coefficients;
+            ASPLIB_ERR err = CBiquadFactory::get_constQPeakingBiquadCoes(streamSettings.iProcessSamplerate, MAX_FREQ_BANDS, m_Gains[AE_DSP_CH_FL][band +1], band, &coefficients.coefficients);
+            if(err == ASPLIB_ERR_NO_ERROR)
+            {
+              coefficients.biquadIndex = band;
+              coefficients.c0 = 1.0f;
+              coefficients.d0 = 0.0f;
+              coefficientsList.push_back(coefficients);
+            }
+            else
+            {
+              // ToDo: show error log message
+            }
+          }
+
+          if(coefficientsList.size() > 0)
+          {
+            message.set_StreamId(id);
+            message.set_MessageData((void*)&coefficientsList);
+
+            // send message to AddonHandler
+            g_AddonHandler.SendMessageToStream(message);
+          }
+          else
+          {
+            // ToDo: show error log message
+          }
+        }
+        else
+        {
+          // ToDo: Log error message!
+        }
       }
     }
     break;
@@ -199,6 +322,10 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
           
           // send mesage to AddonHandler
           g_AddonHandler.SendMessageToStream(message);
+        }
+        else
+        {
+          // ToDo: Log error message!
         }
       } 
     }
