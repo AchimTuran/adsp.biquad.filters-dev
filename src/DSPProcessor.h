@@ -31,24 +31,6 @@
 #include "template/include/ADSPModeMessage.h"
 #include "Messages/BiquadMessage_types.h"
 
-//typedef struct
-//{
-//  unsigned long         ChannelFlag;
-//  unsigned int          ChannelID;
-//  ASPLIB_BIQUAD_HANDLE *BiquadHandle;
-//}ADSP_CHANNEL_HANDLE;
-
-struct  BIQUAD_COEFFICIENTS
-{
-  ASPLIB_BIQUAD_COEFFICIENTS coefficients;
-  float d0;
-  float c0;
-  uint biquadIndex;
-  BIQUAD_COEFFICIENTS(){  coefficients.a0=0.0f; coefficients.a1=0.0f; coefficients.a2=0.0f;
-                          coefficients.b1=0.0f; coefficients.b2=0.0f;
-                          d0=0.0f; c0=0.0f; biquadIndex=0;};
-};
-
 //!	In this class you can define your processing modes.
 /*! 
  * All processing modes can be enabled or disabled in the templateConfiguration.h.
@@ -60,6 +42,7 @@ public:
   {
     EQ_MESSAGE_UNKNOWN = 0,
     EQ_MESSAGE_BIQUAD_IDX_COEFFICIENTS,
+    EQ_MESSAGE_BIQUAD_COEFFICIENTS_LIST,
     EQ_MESSAGE_POST_GAIN,
     EQ_MESSAGE_MAX
   }EQ_MESSAGES;

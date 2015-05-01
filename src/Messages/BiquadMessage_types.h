@@ -24,6 +24,7 @@
 #include <asplib/Biquads/apslib_BiquadFactory.h>
 #include <kodi/kodi_adsp_types.h>
 #include "template/ADSPHelpers.h"
+#include <list>
 
 typedef enum
 {
@@ -51,3 +52,19 @@ struct BIQUAD_INFOS
   unsigned int BiquadAmount;
   BIQUAD_INFOS() { SampleFrequency=0; BiquadAmount=0; };
 };
+
+struct  BIQUAD_COEFFICIENTS
+{
+  ASPLIB_BIQUAD_COEFFICIENTS coefficients;
+  float d0;
+  float c0;
+  uint biquadIndex;
+  BIQUAD_COEFFICIENTS()
+  {
+    coefficients.a0 = 0.0f; coefficients.a1 = 0.0f; coefficients.a2 = 0.0f;
+    coefficients.b1 = 0.0f; coefficients.b2 = 0.0f;
+    d0 = 0.0f; c0 = 0.0f; biquadIndex = 0;
+  };
+};
+
+typedef std::list<BIQUAD_COEFFICIENTS> BIQUAD_COEFFICIENTS_LIST;
