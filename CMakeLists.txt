@@ -36,7 +36,7 @@ set(TEMPLATE_SOURCES 	src/DSPProcessor.cpp
 						src/template/configuration/templateConfiguration.cpp)
 
 set(DEPLIBS ${kodiplatform_LIBRARIES}
-			${asplib_LIBRARIES}
+			${ASPLIB_LIBRARIES}
 			${TINYXML_LIBRARIES})
 
 build_addon(adsp.biquad.filters TEMPLATE DEPLIBS)
