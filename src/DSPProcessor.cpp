@@ -132,7 +132,6 @@ AE_DSP_ERROR CDSPProcessor::Create()
         gain = 0.0f;
       }
 
-      // ToDo: get gains from settings manager
       CBiquadFactory::set_constQPeakingParams(m_Biquads[ch].BiquadHandle, gain, idx);
     }
 

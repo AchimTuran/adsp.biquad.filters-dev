@@ -182,7 +182,7 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
             }
             else
             {
-              // ToDo: show error log message
+              KODI->Log(ADDON::LOG_ERROR, "%s line %i: Failed getting const Q Peaking biquad coefficients from asplin!", __func__, __LINE__);
             }
           }
 
@@ -196,12 +196,12 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
           }
           else
           {
-            // ToDo: show error log message
+            KODI->Log(ADDON::LOG_ERROR, "%s line %i: Invalid coefficient list!", __func__, __LINE__);
           }
         }
         else
         {
-          // ToDo: Log error message!
+          KODI->Log(ADDON::LOG_ERROR, "%s line %i: Failed getting audio stream infos!", __func__, __LINE__);
         }
       }
       this->Close();
@@ -240,7 +240,7 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
         }
         else
         {
-          // ToDo: Log error message!
+          KODI->Log(ADDON::LOG_ERROR, "%s line %i: Failed getting audio stream infos!", __func__, __LINE__);
         }
       }
 
@@ -271,7 +271,7 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
             }
             else
             {
-              // ToDo: show error log message
+              KODI->Log(ADDON::LOG_ERROR, "%s line %i: Failed getting const Q Peaking biquad coefficients from asplin!", __func__, __LINE__);
             }
           }
 
@@ -285,12 +285,12 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
           }
           else
           {
-            // ToDo: show error log message
+            KODI->Log(ADDON::LOG_ERROR, "%s line %i: Invalid coefficient list!", __func__, __LINE__);
           }
         }
         else
         {
-          // ToDo: Log error message!
+          KODI->Log(ADDON::LOG_ERROR, "%s line %i: Failed getting audio stream infos!", __func__, __LINE__);
         }
       }
     }
@@ -325,7 +325,7 @@ bool CGUIDialogPostProcess::OnClick(int controlId)
         }
         else
         {
-          // ToDo: Log error message!
+          KODI->Log(ADDON::LOG_ERROR, "%s line %i: Failed getting audio stream infos!", __func__, __LINE__);
         }
       } 
     }

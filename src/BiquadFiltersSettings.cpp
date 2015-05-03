@@ -99,6 +99,7 @@ void CBiquadFiltersSettings::Init_Parametric10BandEQSettings()
   if(!m_10BandEQSettings)
   {
     // ToDo: throw some exception!
+    KODI->Log(ADDON::LOG_ERROR, "CBiquadFiltersSettings: Couldn't create CSettingsManager class! Not enough free memory?");
     return;
   }
 

@@ -48,6 +48,7 @@ CSettingsManager::CSettingsManager(string XMLFilename, string Path)
     throw ADDON_STRING_EXCEPTION_HANDLER("Invalid XML filename!");
   }
   m_XMLFilename = generateFilePath(Path, XMLFilename);
+  KODI->Log(LOG_DEBUG, "CSettingsManager will save it's XML file to: %s", m_XMLFilename.c_str());
 
   m_IsSettingsXMLLoaded = false;
 
@@ -75,7 +76,6 @@ void CSettingsManager::destroy()
   // delete settings map and its elements
   for(SettingsMap::iterator mapIter = m_Settings.begin(); mapIter != m_Settings.end(); mapIter++)
   {
-    //string key = iter->first;
     for(CSettingsList::iterator listIter = mapIter->second.begin(); listIter != mapIter->second.end(); listIter++)
     {
       ISettingsElement *settingsElement = *listIter;
@@ -220,8 +220,6 @@ void CSettingsManager::read_SettingsXML()
   {
     if(pGroupNode->ValueStr() == "settings_group")
     {
-    //for(TiXmlNode *pGroupNode = pCategoryNode->FirstChildElement(); pGroupNode != NULL; pGroupNode = pCategoryNode->IterateChildren(pGroupNode))
-    //{
       ATTRIBUTES_LIST groupAttributesList;
       if(pGroupNode && pGroupNode->Type() == TiXmlNode::TINYXML_ELEMENT)
       {
@@ -318,18 +316,18 @@ void CSettingsManager::read_SettingsXML()
                       }
                       else
                       {
-                        // ToDo: show error Log
+                        KODI->Log(LOG_ERROR, "CSettingsManager: Failed reading bool setting");
                       }
                     break;
 
                     default:
-                      // ToDo: Show error Log
+                      KODI->Log(LOG_ERROR, "CSettingsManager: Unknown settings type!");
                     break;
                   }
               }
               else
               {
-                // ToDo: Show error Log
+                KODI->Log(LOG_ERROR, "CSettingsManager: Read settings element does not match the created settings element type!");
               }
             }
           }
@@ -345,7 +343,7 @@ bool CSettingsManager::add_Setting( string MainCategory, string SubCategory,
 {
   if(!Value)
   {
-    // ToDo: add some error log text to kodi.log
+    KODI->Log(LOG_ERROR, "CSettingsManager: Invalid input for %s", __FUNCTION__);
     return false;
   }
 
@@ -361,10 +359,6 @@ bool CSettingsManager::add_Setting( string MainCategory, string SubCategory,
 
     if(settingsIter != mapIter->second.end() && (*settingsIter)->get_Key() == Key && Type == (*settingsIter)->get_Type())
     { // if the Type and Key are the same, we override the current setting with the new value
-      // ToDo: add some warning to kodi.log
-      // current setting is overwritten!
-
-      // call set function of setting element
       return SetNewElementValue(*settingsIter, Value);
     }
   }
@@ -374,7 +368,7 @@ bool CSettingsManager::add_Setting( string MainCategory, string SubCategory,
   ISettingsElement *settingsElement = CSettingsManager::CreateElement(Key, Type, Value);
   if(!settingsElement)
   {
-    // ToDo: add a error message to kodi.log
+    KODI->Log(LOG_ERROR, "CSettingsManager: Couldn't create settings element!");
     return false;
   }
 
@@ -396,7 +390,7 @@ ISettingsElement *CSettingsManager::CreateElement(string Key, ISettingsElement::
 {
   if(!Value)
   {
-    // ToDo: add some warning message to kodi.log
+    KODI->Log(LOG_ERROR, "CSettingsManager: Invalid input for %s", __FUNCTION__);
     return NULL;
   }
 
@@ -495,7 +489,7 @@ bool CSettingsManager::SetNewElementValue(ISettingsElement *Element, void *Value
 {
   if(!Element || !Value)
   {
-    // ToDo: add some warning message to kodi.log
+    KODI->Log(LOG_ERROR, "CSettingsManager: Invalid input for %s", __FUNCTION__);
     return false;
   }
 
@@ -568,12 +562,12 @@ void CSettingsManager::destroy_Setting(string MainCategory, string SubCategory, 
 
     if(listIter == mapIter->second.end())
     {
-      // ToDo: show some warning log message
+      KODI->Log(LOG_NOTICE, "CSettingsManager: Requested settings element \"%s\" in method \"%s\" not found!", settingsStr.c_str(), __FUNCTION__);
     }
   }
   else
   {
-    // ToDo: show some warning log message
+    KODI->Log(LOG_NOTICE, "CSettingsManager: Requested settings element \"%s\" in method \"%s\" not found!", settingsStr.c_str(), __FUNCTION__);
   }
 }
 
@@ -601,7 +595,7 @@ ISettingsElement *CSettingsManager::find_Setting(string MainCategory, string Sub
     }
   }
 
-  // ToDo: show some warning log message
+  KODI->Log(LOG_NOTICE, "CSettingsManager: Couldn't find requested settings element \"%s\" in method \"%s\" not found!", settingsStr.c_str(), __FUNCTION__);
   return NULL;
 }
 
@@ -611,17 +605,6 @@ int getAttributesAsList(TiXmlElement* pElement, ATTRIBUTES_LIST &AttributesList)
 {
   if ( !pElement ) return -1;
 
-  // alternative traversing
-  //TiXmlAttribute* pAttrib=pElement->FirstAttribute();
-  //int maxAttributes = 0;
-  //for(pAttrib = pElement->FirstAttribute(); pAttrib; pAttrib = pAttrib->Next())
-  //{
-  //  maxAttributes++;
-  //}
-
-  //attribute_t attribute;
-  //TiXmlAttribute *pAttrib = pElement->FirstAttribute();
-  //while (pAttrib)
   for(TiXmlAttribute *pAttrib = pElement->FirstAttribute(); pAttrib != NULL; pAttrib = pAttrib->Next())
   {
     AttributesList.push_back(ATTRIBUTE_PAIR(pAttrib->Name(), pAttrib->Value()));
