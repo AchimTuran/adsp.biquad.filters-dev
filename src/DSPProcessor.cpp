@@ -82,7 +82,6 @@ AE_DSP_ERROR CDSPProcessor::Create()
   {
     KODI->Log(ADDON::LOG_ERROR, "%s line %i: Biquads not created! Not enough free memory?", __func__, __LINE__);
     return AE_DSP_ERROR_FAILED;
-    // ToDo: throw error message!
   }
 
   m_PostGain = new float[m_MaxProcessingChannels];
@@ -168,7 +167,6 @@ unsigned int CDSPProcessor::PostProcess(unsigned int Mode_id, float **Array_in, 
       if(err != ASPLIB_ERR_NO_ERROR)
       {
         KODI->Log(ADDON::LOG_ERROR, "Biquad sample calculation on audio channel \"%s\" failed!", CADSPHelpers::Translate_ChID_TO_String(m_Biquads[ch].AudioChannel).c_str());
-        // ToDo: throw some error message!
         return 0;
       }
 

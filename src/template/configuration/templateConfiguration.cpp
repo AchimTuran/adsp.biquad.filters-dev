@@ -1,7 +1,7 @@
 //! Example array mode settings.
 /*!
  * \file templateConfiguration.cpp
- * ToDo: detailed description!
+ * This file configures the adsp.template for the adsp.biquad.filters addon
  */
 
 /*

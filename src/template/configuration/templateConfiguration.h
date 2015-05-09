@@ -23,7 +23,7 @@
 //! In this file you can configure the hole template.
 /*!
  * \file templateConfiguration.h
- * ToDo: detailed description!
+ * This file configures the adsp.template for the adsp.biquad.filters addon
  */
 #include "../include/typedefs.h"
 
@@ -32,7 +32,7 @@
 //! Here you must define the name of the header file from your processing class.
 #define ADSP_PROCESSOR_HEADER_FILE  "DSPProcessor.h"
 //! Here you must define the name of your ADSP addon.
-#define ADSP_ADDON_NAME             "BiQuad Filters"
+#define ADSP_ADDON_NAME             "Biquad Filters"
 //! Here you must define the version of your ADSP addon.
 #define ADSP_ADDON_VERSION          "0.0.1"
 //#define ADSP_ADDON_ID
@@ -53,11 +53,11 @@
 #define ADSP_ADDON_USE_READSETTINGS
 //! If you define this, then your ADSP addon can get settings from xbmc.
 #define ADSP_ADDON_USE_GETSETTINGS
-//! ToDo!
+//! Use stop function
 #define ADSP_ADDON_USE_STOP
-//! ToDo!
+//! Use free settings function
 #define ADSP_ADDON_USE_FREESETTINGS
-//! ToDo!
+//! Use addon announce function
 #define ADSP_ADDON_USE_ANNOUNCE
 //! If you define this, then your ADSP addon can have a settings GUI for processing modes.
 #define ADSP_ADDON_USE_MENUHOOK
