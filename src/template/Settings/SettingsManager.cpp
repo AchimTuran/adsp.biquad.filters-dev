@@ -190,7 +190,10 @@ void CSettingsManager::write_SettingsXML()
         }
       }
 
-      doc.SaveFile(m_XMLFilename.c_str());
+      if(!doc.SaveFile(m_XMLFilename.c_str()))
+      {
+        KODI->Log(LOG_ERROR, "Couldn't save XML settings to file %s", m_XMLFilename.c_str());
+      }
     }
   }
   catch(bad_alloc &e)
